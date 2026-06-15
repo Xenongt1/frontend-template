@@ -1,0 +1,100 @@
+import React, { useState } from 'react';
+import type { InventoryFilters, InventoryStatus } from '../types';
+import AdvancedFilterModal from './AdvancedFilterModal';
+import { useNavigate } from '@tanstack/react-router';
+import { useTranslation } from 'react-i18next';
+
+interface Props {
+  filters: InventoryFilters;
+  onSearch: (value: string) => void;
+  onFiltersApply: (status: InventoryStatus | 'All', category: string) => void;
+}
+
+const SearchIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <circle cx="7" cy="7" r="5" stroke="#395362" strokeWidth="1.5" />
+    <path d="M11 11L14 14" stroke="#395362" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+const FilterIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <path d="M2 4h12M4 8h8M6 12h4" stroke="#061C2A" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+const PlusIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <path d="M8 3v10M3 8h10" stroke="#FDFDFD" strokeWidth="2" strokeLinecap="round" />
+  </svg>
+);
+
+const XIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <path d="M2 2l10 10M12 2L2 12" stroke="#395362" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+const ToolBar: React.FC<Props> = ({ filters, onSearch, onFiltersApply }) => {
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  return (
+    <>
+      <div className="flex justify-between items-center gap-3 px-5 py-4 flex-wrap">
+        {/* Search input */}
+        <div className="relative flex-1  min-w-[220px] min-w-0 max-w-[400px]">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
+            <SearchIcon />
+          </span>
+          <input
+            type="text"
+            placeholder={t('toolbar.searchPlaceholder')}
+            value={filters.search}
+            onChange={(e) => onSearch(e.target.value)}
+            className="w-full pl-9 py-2 bg-canvas-200 border border-navy-300 rounded-lg text-sm text-navy-900 outline-none box-border focus:border-navy-600 transition-colors"
+            style={{ paddingRight: filters.search ? 36 : 12 }}
+          />
+          {filters.search && (
+            <button
+              onClick={() => onSearch('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 border-none bg-transparent cursor-pointer flex items-center p-0.5"
+              aria-label={t('toolbar.clearSearch')}
+            >
+              <XIcon />
+            </button>
+          )}
+        </div>
+
+        {/* Right buttons */}
+        <div className="flex items-center gap-2.5 flex-shrink-0 flex-wrap">
+          <button
+            onClick={() => setShowAdvanced(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 border border-[#061C2A] rounded-lg bg-transparent text-[#061C2A] text-sm font-medium cursor-pointer whitespace-nowrap transition-colors hover:bg-[#F0F2F3]"
+          >
+            <FilterIcon />
+            {t('toolbar.filter')}
+          </button>
+
+          <button
+          onClick={() => navigate({ to: '/inventory/register' })}
+            className="inline-flex items-center gap-2 px-[18px] py-2 border-none rounded-lg bg-navy-900 text-canvas-50 text-sm font-medium cursor-pointer whitespace-nowrap transition-colors hover:bg-navy-800"
+          >
+            <PlusIcon  />
+            {t('toolbar.addInventory')}
+          </button>
+        </div>
+      </div>
+
+      <AdvancedFilterModal
+        isOpen={showAdvanced}
+        currentFilters={filters}
+        onApply={onFiltersApply}
+        onClose={() => setShowAdvanced(false)}
+      />
+    </>
+  );
+};
+
+export default ToolBar;

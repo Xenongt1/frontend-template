@@ -1,0 +1,652 @@
+{
+  "nav": {
+    "mainMenu": "Menu principal",
+    "dashboard": "Tableau de bord",
+    "operations": "Opérations",
+    "inventory": "Inventaire",
+    "catalogue": "Catalogue",
+    "registerItem": "Enregistrer un article",
+    "stock": "Stock",
+    "warehouse": "Entrepôt",
+    "iam": "IAM",
+    "stockLocations": "Emplacements de stock",
+    "movements": "Mouvements",
+    "suppliers": "Fournisseurs",
+    "users": "Utilisateurs",
+    "userAvatarAlt": "Avatar de l'utilisateur",
+    "roleManagement": "Gestion des rôles"
+  },
+  "dialog": {
+    "close": "Fermer",
+    "dismissNotification": "Ignorer la notification",
+    "processing": "Traitement…"
+  },
+  "setup": {
+    "title": "Configuration de l'environnement",
+    "description": "Configurez les paramètres de connexion avant de lancer l'application. Contactez votre équipe DevOps si vous n'êtes sûr d'aucune valeur.",
+    "apiBaseUrlLabel": "URL de base de l'API",
+    "apiBaseUrlHint": "ex. https://api.chainpilot.example.com/api (n'incluez pas /v1)",
+    "environmentLabel": "Environnement",
+    "environmentDevelopment": "Développement",
+    "environmentStaging": "Préproduction",
+    "environmentProduction": "Production",
+    "tenantIdLabel": "Identifiant de locataire",
+    "tenantIdHint": "Identifiant unique pour le locataire de votre organisation",
+    "wsUrlLabel": "URL WebSocket",
+    "wsUrlHint": "Optionnel — requis pour les fonctionnalités en temps réel (ex. wss://ws.chainpilot.example.com)",
+    "launchButton": "Lancer l'application",
+    "errorApiRequired": "L'URL de base de l'API est obligatoire.",
+    "errorApiInvalid": "Doit être une URL valide commençant par http:// ou https://",
+    "errorTenantRequired": "L'identifiant de locataire est obligatoire.",
+    "errorWsInvalid": "Doit être une URL WebSocket valide commençant par ws:// ou wss://"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "description": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "goBack": "Retour",
+    "goHome": "Aller au tableau de bord"
+  },
+  "page": {
+    "inventoryManagement": "Gestion de l'inventaire",
+    "dashboard": "Tableau de bord",
+    "production": "Production",
+    "suppliers": "Fournisseurs",
+    "orders": "Commandes",
+    "payments": "Paiements",
+    "fulfillment": "Exécution",
+    "reports": "Rapports",
+    "users": "Utilisateurs",
+    "notifications": "Notifications",
+    "inventory": "Inventaire",
+    "stock": "Stock",
+    "warehouse": "Entrepôt",
+    "dashboardWelcome": "Bienvenue sur le tableau de bord ChainPilot",
+    "inventoryDescription": "Gérer votre inventaire",
+    "suppliersDescription": "Gérer vos fournisseurs",
+    "ordersDescription": "Gérer vos commandes",
+    "paymentsDescription": "Gérer vos paiements",
+    "fulfillmentDescription": "Gérer l'exécution",
+    "reportsDescription": "Gérer vos rapports",
+    "usersDescription": "Gérer vos utilisateurs",
+    "notificationsDescription": "Gérer vos notifications",
+    "productionDescription": "Gérer votre production",
+    "roleManagement": "Gestion des rôles"
+  },
+  "common": {
+    "loading": "Chargement…",
+    "all": "Tous",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "select": "Sélectionner",
+    "save": "Enregistrer",
+    "confirm": "Confirmer",
+    "required": "Obligatoire",
+    "optional": "Optionnel",
+    "days_one": "{{count}} jour",
+    "days_other": "{{count}} jours",
+    "true": "Vrai",
+    "false": "Faux"
+  },
+  "toolbar": {
+    "searchPlaceholder": "Recherche rapide",
+    "clearSearch": "Effacer la recherche",
+    "filter": "Filtrer",
+    "addInventory": "Ajouter un article"
+  },
+  "status": {
+    "active": "Actif",
+    "inactive": "Inactif",
+    "intakeSuspended": "Réception suspendue",
+    "suspended": "Suspendu"
+  },
+  "pagination": {
+    "rowsPerPage": "Lignes par page :",
+    "totalItems_one": "sur {{count}} article",
+    "totalItems_other": "sur {{count}} articles",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante"
+  },
+  "table": {
+    "loading": "Chargement des articles d'inventaire",
+    "empty": "Aucun article d'inventaire trouvé",
+    "columns": {
+      "sku": "SKU",
+      "name": "Nom",
+      "category": "Catégorie",
+      "unit": "Unité",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "rowActions": {
+      "open": "Actions",
+      "view": "Voir",
+      "edit": "Modifier",
+      "suspendIntake": "Suspendre la réception",
+      "activateItem": "Activer l'article"
+    }
+  },
+  "filter": {
+    "closeDialog": "Fermer la boîte de dialogue de filtre",
+    "title": "Filtrer l'inventaire",
+    "loadError": "Échec du chargement des options de filtre",
+    "statusLabel": "Statut",
+    "allStatuses": "Tous les statuts",
+    "categoryLabel": "Catégorie",
+    "allCategories": "Toutes les catégories",
+    "clear": "Effacer les filtres",
+    "apply": "Appliquer les filtres"
+  },
+  "stockLocations": {
+    "list": {
+      "title": "Emplacements de stock",
+      "subtitle": "Afficher et configurer les points de stockage",
+      "emptyTitle": "Aucun emplacement de stockage défini",
+      "emptyDescription": "Ajoutez vos emplacements de stockage pour commencer à affecter du stock à des emplacements physiques",
+      "newButton": "Nouvel emplacement",
+      "searchPlaceholder": "Recherche rapide"
+    },
+    "register": {
+      "title": "Nouveau emplacement",
+      "subtitle": "Ajoutez des emplacements dans votre installation",
+      "backButton": "Retour aux emplacements",
+      "nameLabel": "Nom",
+      "namePlaceholder": "Ex. Entrepôt",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Informations supplémentaires..Ex. Pour stocker les journaux",
+      "cancelButton": "Annuler",
+      "createButton": "Créer l'emplacement",
+      "creating": "Création…",
+      "successToast": "Emplacement de stockage créé avec succès",
+      "genericFailure": "Impossible de créer l'emplacement"
+    },
+    "edit": {
+      "title": "Modifier l'emplacement",
+      "subtitle": "Modifiez cet emplacement de stockage ici. Les modifications seront immédiatement répercutées sur tous les suivis de stock actifs et les mouvements de matériaux en cours",
+      "updateButton": "Mettre à jour l'emplacement",
+      "updating": "Mise à jour…",
+      "successToast": "Emplacement mis à jour avec succès",
+      "loadError": "Impossible de charger l'emplacement"
+    },
+    "validation": {
+      "nameRequired": "Le nom est obligatoire"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Suspendu"
+    },
+    "suspend": {
+      "confirmTitle": "Suspendre l'emplacement de stockage ?",
+      "confirmDescription": "Êtes-vous sûr de vouloir suspendre {{name}} ? Le personnel ne pourra plus affecter de nouvelles entrées de stock à cette zone.",
+      "confirmButton": "Suspendre",
+      "successToast": "Emplacement suspendu avec succès"
+    },
+    "activate": {
+      "confirmTitle": "Activer l'emplacement de stockage ?",
+      "confirmDescription": "Êtes-vous sûr de vouloir activer {{name}} ? Une fois activé, le personnel pourra immédiatement affecter de nouvelles entrées de stock.",
+      "confirmButton": "Activer",
+      "successToast": "Emplacement activé avec succès"
+    }
+  },
+  "suppliers": {
+    "list": {
+      "title": "Fournisseurs",
+      "subtitle": "Consulter et configurer les fournisseurs ici",
+      "searchPlaceholder": "Recherche rapide",
+      "allStatuses": "Tous les statuts",
+      "newButton": "Nouveau fournisseur",
+      "colCompanyName": "Nom de la société",
+      "colStatus": "Statut",
+      "colSupplierName": "Nom du fournisseur",
+      "colApprovedMaterials": "Matériaux approuvés",
+      "colActions": "Actions",
+      "empty": "Aucun fournisseur trouvé.",
+      "showing": "Affichage de {{start}}–{{end}} sur {{total}} approbations",
+      "viewDetails": "Voir les détails",
+      "editAction": "Modifier",
+      "activate": "Activer le fournisseur",
+      "suspend": "Suspendre le fournisseur",
+      "badgeActive": "Actif",
+      "badgeSuspended": "Suspendu",
+      "registerButton": "Enregistrer un fournisseur",
+      "emptyTitle": "Aucun fournisseur enregistré",
+      "emptyDescription": "Enregistrez votre premier fournisseur pour commencer à suivre les livraisons."
+    },
+    "register": {
+      "backButton": "Retour aux fournisseurs",
+      "title": "Enregistrer un nouveau fournisseur",
+      "subtitle": "Ajoutez un fournisseur et précisez les matériaux et unités de livraison pour lesquels il est approuvé.",
+      "generalInfoTitle": "Informations générales",
+      "generalInfoSubtitle": "Remplissez les informations de base ici",
+      "companyNameLabel": "Nom de l'entreprise",
+      "companyNamePlaceholder": "ex. Forest Prime SARL",
+      "fullNameLabel": "Personne de contact",
+      "fullNamePlaceholder": "ex. Noah Reed",
+      "phoneLabel": "Téléphone",
+      "emailLabel": "Email",
+      "emailPlaceholder": "contact@entreprise.com",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "ex. Fournisseur régulier de matières premières",
+      "approvedItemsTitle": "Articles d'inventaire approuvés",
+      "approvedItemsSubtitle": "Sélectionnez les matériaux approuvés ici",
+      "approvedItemsLabel": "Articles d'inventaire approuvés",
+      "approvedItemsPlaceholder": "Parcourir les matériaux",
+      "deliveryUnitsTitle": "Unités de livraison",
+      "deliveryUnitsSubtitle": "Sélectionnez les unités dans lesquelles ce fournisseur livre",
+      "deliveryUnitsLabel": "Unités de livraison",
+      "deliveryUnitsPlaceholder": "Parcourir les unités",
+      "submitButton": "Enregistrer le fournisseur",
+      "submitting": "Enregistrement…",
+      "successToast": "Fournisseur enregistré avec succès",
+      "genericFailure": "Impossible d'enregistrer le fournisseur"
+    },
+    "validation": {
+      "fullNameRequired": "La personne de contact est obligatoire",
+      "phoneRequired": "Le numéro de téléphone est obligatoire",
+      "phoneTooShort": "Le numéro de téléphone doit comporter au moins 7 chiffres",
+      "emailRequired": "L'adresse e-mail est obligatoire",
+      "emailInvalid": "Adresse e-mail invalide",
+      "itemsRequired": "Veuillez sélectionner au moins un matériau approuvé",
+      "unitsRequired": "Veuillez sélectionner au moins une unité de livraison"
+    },
+    "suspend": {
+      "title": "Suspendre le fournisseur",
+      "description": "La suspension de ce fournisseur l'empêchera d'apparaître dans les sélections actives",
+      "confirm": "Suspendre",
+      "cancel": "Annuler"
+    },
+    "detail": {
+      "backButton": "Retour aux fournisseurs",
+      "generalInfoTitle": "Informations générales",
+      "fieldCompanyName": "Nom de la société",
+      "fieldSupplierName": "Nom du fournisseur",
+      "fieldPhone": "Téléphone",
+      "fieldEmail": "Adresse e-mail",
+      "fieldStatus": "Statut",
+      "fieldNotes": "Notes",
+      "approvedMaterialsTitle": "Matériaux approuvés",
+      "approvedMaterialsSubtitle": "Consulter les matériaux approuvés ici",
+      "noMaterials": "Aucun matériau approuvé.",
+      "notFound": "Fournisseur introuvable."
+    },
+    "edit": {
+      "backButton": "Retour aux fournisseurs",
+      "title": "Mettre à jour les détails du fournisseur",
+      "subtitle": "Mettre à jour les informations générales et les matériaux approuvés pour ce fournisseur",
+      "generalInfoTitle": "Informations générales",
+      "generalInfoSubtitle": "Remplir les informations de base ici",
+      "companyNameLabel": "Nom de la société",
+      "contactPersonLabel": "Personne de contact",
+      "phoneLabel": "Téléphone",
+      "emailLabel": "E-mail",
+      "notesLabel": "Notes",
+      "notesPlaceholder": "Toute information supplémentaire, certifications ou observations...",
+      "approvedItemsTitle": "Articles d'inventaire approuvés",
+      "approvedItemsSubtitle": "Sélectionner les matériaux approuvés ici",
+      "approvedItemsLabel": "Articles d'inventaire approuvés",
+      "approvedItemsPlaceholder": "Parcourir les matériaux",
+      "itemsRequired": "Au moins un article approuvé est requis",
+      "submit": "Mettre à jour",
+      "submitting": "Mise à jour…",
+      "success": "Fournisseur mis à jour avec succès",
+      "notFound": "Fournisseur introuvable."
+    }
+  },
+  "inventory": {
+    "catalogue": {
+      "title": "Catalogue d'inventair",
+      "description": "Afficher et gérer tous les articles d'inventaire enregistrés dans le système.",
+      "confirm": {
+        "suspendTitle": "Suspendre la réception",
+        "activateTitle": "Activer l'article",
+        "suspendDescription": "Suspendre cet article empêchera son apparition dans le formulaire de réception pour les nouvelles entrées de stock.",
+        "activateDescription": "Activer cet article le fera réapparaître dans le formulaire de réception pour les nouvelles entrées de stock.",
+        "suspend": "Suspendre",
+        "activate": "Activer",
+        "cancel": "Annuler"
+      },
+      "toast": {
+        "suspended": "Réception suspendue pour {{name}}",
+        "reactivated": "{{name}} réactivé",
+        "updateFailed": "Échec de la mise à jour du statut de l'article"
+      }
+    },
+    "validation": {
+      "stockUnitRequired": "Les unités de stock sont obligatoires",
+      "nameRequired": "Le nom est obligatoire",
+      "nameTooShort": "Le nom doit comporter au moins 2 caractères",
+      "skuRequired": "Le SKU est obligatoire",
+      "categoryRequired": "La catégorie est obligatoire",
+      "uomRequired": "L'unité de mesure est obligatoire",
+      "reorderPositive": "Doit être un nombre positif",
+      "gradeNameRequired": "Le nom du grade est obligatoire",
+      "gradeNameDuplicate": "Un grade portant ce nom existe déjà",
+      "gradeRankRequired": "Le rang du grade est obligatoire",
+      "intakeFieldLabelRequired": "Le libellé du champ est obligatoire",
+      "intakeFieldNameRequired": "Le nom du champ est obligatoire",
+      "attrNameRequired": "Le nom de la propriété est obligatoire",
+      "attrValueRequired": "La valeur est obligatoire",
+      "attrValueNumber": "La valeur doit être un nombre valide",
+      "attrValueDate": "La valeur doit être une date valide",
+      "expiryDaysRequired": "La durée est requise lorsque l'alerte d'expiration est activée",
+      "expiryDaysPositive": "Doit être un nombre positif",
+      "reorderRequired": "Le seuil de réapprovisionnement est requis lorsque l'alerte est activée",
+      "minStockRequired": "Le stock minimum est requis lorsque l'alerte est activée",
+      "minStockPositive": "Doit être un nombre positif"
+    },
+    "review": {
+      "ariaLabel": "Récapitulatif",
+      "title": "Récapitulatif du matériau",
+      "description": "Veuillez vérifier toutes les informations avant de soumettre.",
+      "basicInformation": "Informations générales",
+      "nameLabel": "Nom",
+      "stockUnitLabel": "Unité de stock",
+      "categoryLabel": "Catégorie",
+      "uomLabel": "Unités de mesure (UDM)",
+      "reorderLabel": "Seuil de réapprovisionnement",
+      "descriptionLabel": "Description",
+      "qualityGrades": "Grades de qualité ({{count}})",
+      "noGrades": "Aucun grade ajouté.",
+      "attributes": "Attribut(s)",
+      "expiryNotification": "Notification d'expiration",
+      "expiryNotSet": "Non défini",
+      "intakeFields": "Champs de réception définis",
+      "noIntakeFields": "Aucun champ de réception défini.",
+      "tagsLabel": "Étiquettes",
+      "notifications": "Notifications",
+      "reorderLevel": "Seuil de réapprovisionnement",
+      "minStockLevel": "Stock minimum",
+      "notSet": "Non défini"
+    },
+    "properties": {
+      "title": "Propriétés de l'article",
+      "description": "Définissez des propriétés supplémentaires — dimensions, poids, etc.",
+      "addButton": "Ajouter une propriété",
+      "addedLabel": "Propriétés ajoutées",
+      "stockLevelTitle": "Propriétés de niveau de stock",
+      "stockLevelDescription": "Définissez les champs à saisir lors de l'entrée en stock (ex. Numéro de lot, Date d'expiration)",
+      "addStockButton": "Ajouter une propriété de stock",
+      "fieldNameLabel": "Nom du champ",
+      "fieldNamePlaceholder": "ex. Numéro de lot",
+      "typeNumber": "Nombre",
+      "typeText": "Texte",
+      "typeBoolean": "Booléen",
+      "typeDate": "Date",
+      "propertyTypeLabel": "Type de propriété",
+      "propertyTypePlaceholder": "Sélectionner un type de propriété",
+      "requiredFieldLabel": "Champ obligatoire",
+      "requiredFieldDesc": "Cochez si ce champ est requis pour l'entrée en stock",
+      "removeField": "Supprimer le champ",
+      "tagsTitle": "Étiquettes",
+      "tagsDescription": "Ajoutez des étiquettes pour catégoriser cet article (ex. dangereux, alimentaire)",
+      "addTagButton": "Ajouter une étiquette",
+      "tagPlaceholder": "ex. importé",
+      "tagsAddedLabel": "Étiquettes ajoutées",
+      "removeTag": "Supprimer l'étiquette {{name}}"
+    },
+    "notifications": {
+      "expiryTitle": "Alerte d'expiration",
+      "expiryDescription": "Définissez le nombre de jours avant l'expiration pour alerter les utilisateurs.",
+      "enableExpiry": "Activer l'alerte d'expiration",
+      "durationLabel": "Durée",
+      "durationPlaceholder": "ex. 12 jours",
+      "reorderTitle": "Seuil de réapprovisionnement",
+      "reorderSubtitle": "(Le déclencheur de réapprovisionnement)",
+      "reorderDescription": "Entrez le niveau de stock qui doit déclencher un nouveau bon de commande.",
+      "enableReorder": "Activer l'alerte de réapprovisionnement",
+      "reorderLevelLabel": "Seuil minimum de réapprovisionnement",
+      "reorderLevelPlaceholder": "ex. 50 pcs",
+      "minStockTitle": "Stock minimum",
+      "minStockSubtitle": "(Le coussin d'urgence)",
+      "minStockDescription": "Entrez le nombre minimum absolu d'unités à conserver en réserve.",
+      "enableMinStock": "Activer l'alerte de stock minimum",
+      "minStockLevelLabel": "Niveau de stock minimum",
+      "minStockLevelPlaceholder": "ex. 12 pcs"
+    },
+    "grades": {
+      "ariaLabel": "Grades de qualité",
+      "title": "Grades de qualité",
+      "description": "Définissez les grades pour ce matériau (ex. A, B, Premium, Retouche)",
+      "addButton": "Ajouter un grade",
+      "nameLabel": "Nom du grade",
+      "namePlaceholder": "ex. Grade",
+      "rankLabel": "Rang",
+      "rankPlaceholder": "ex. A, 1, 2",
+      "empty": "Aucun grade défini pour le moment. Cliquez sur « Ajouter un grade » pour en créer un",
+      "openActions": "Ouvrir les actions pour {{name}}",
+      "edit": "Modifier",
+      "deactivate": "Désactiver",
+      "toggleRequired": "Marquer comme obligatoire",
+      "toggleOptional": "Marquer comme optionnel"
+    },
+    "intakeFields": {
+      "ariaLabel": "Définir les champs de réception",
+      "title": "Définir les champs de réception",
+      "description": "Les champs obligatoires doivent être remplis avant l'enregistrement du lot.",
+      "addButton": "Ajouter un champ personnalisé",
+      "empty": "Aucun champ personnalisé défini. Cliquez sur « Ajouter un champ personnalisé » pour en créer un",
+      "fieldLabel": "Libellé du champ",
+      "fieldPlaceholder": "ex. immatriculation du véhicule",
+      "removeAriaLabel": "Supprimer le champ de réception"
+    },
+    "expiryNotification": {
+      "title": "Notification d'expiration",
+      "description": "Définissez le nombre de jours avant l'expiration du matériau pour alerter les utilisateurs.",
+      "subheading": "Alerter avant expiration",
+      "durationLabel": "Durée",
+      "durationPlaceholder": "ex. 12 jours"
+    },
+    "attributes": {
+      "title": "Attributs",
+      "description": "Définissez des propriétés supplémentaires — dimensions, poids, etc.",
+      "addButton": "Ajouter un attribut",
+      "empty": "Aucun attribut ajouté. Cliquez sur « Ajouter un attribut » pour en créer un",
+      "addedLabel": "Attributs ajoutés",
+      "remove": "Supprimer {{name}}",
+      "nameLabel": "Nom de l'attribut",
+      "namePlaceholder": "ex. Épaisseur",
+      "valueLabel": "Valeur",
+      "valuePlaceholder": "ex. 0,9 mm",
+      "valuePlaceholderNumber": "ex. 9,5",
+      "add": "Ajouter"
+    },
+    "basicInfo": {
+      "ariaLabel": "Informations générales",
+      "title": "Informations générales",
+      "stockUnitLabel": "Unités de stock",
+      "stockUnitPlaceholder": "ex. 1,5",
+      "description": "Saisissez les détails essentiels pour identifier et suivre cet article.",
+      "nameLabel": "Nom",
+      "namePlaceholder": "ex. Bois rond",
+      "skuLabel": "SKU",
+      "skuPlaceholder": "ex. LOG 001",
+      "skuReadOnlyHint": "(non modifiable)",
+      "categoryLabel": "Catégorie",
+      "categoryPlaceholder": "Sélectionner une catégorie",
+      "uomLabel": "Unité de mesure",
+      "uomHint": "(UDM)",
+      "reorderLevelLabel": "Seuil de réapprovisionnement",
+      "reorderLevelPlaceholder": "ex. 50",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Conditions de livraison, notes d'inspection, documentation"
+    },
+    "stepper": {
+      "ariaLabel": "Étapes d'enregistrement",
+      "basicInformation": "Informations générales",
+      "properties": "Propriétés",
+      "notifications": "Notifications",
+      "intakeParameters": "Paramètres de réception",
+      "review": "Récapitulatif"
+    },
+    "register": {
+      "back": "Retour à l'inventaire",
+      "title": "Enregistrer un article",
+      "description": "Ajoutez un nouvel article à votre catalogue d'usine. Définissez sa catégorie, son unité de mesure et ses attributs de suivi etc..",
+      "submit": "Enregistrer l'article",
+      "submitting": "Enregistrement…",
+      "successToast": "Article enregistré avec succès",
+      "skuExists": "Un article avec ce SKU existe déjà",
+      "genericFailure": "Impossible d'enregistrer l'article"
+    },
+    "edit": {
+      "submit": "Enregistrer les modifications",
+      "submitting": "Enregistrement…",
+      "title": "Modifier un article",
+      "description": "Modifier les détails d'un article existant.",
+      "successToast": "Article mis à jour avec succès",
+      "genericFailure": "Impossible de mettre à jour l'article",
+      "missingId": "Aucun identifiant d'article fourni.",
+      "loadFailure": "Échec du chargement de l'article"
+    },
+    "detail": {
+      "title": "Détails de l'article d'inventaire",
+      "closeAriaLabel": "Fermer le panneau",
+      "field": {
+        "category": "Catégorie",
+        "unitOfMeasure": "Unité de mesure",
+        "stockUnit": "Unité de stock",
+        "sku": "SKU",
+        "reorderLevel": "Niveau de réapprovisionnement",
+        "minStockLevel": "Niveau de stock minimum",
+        "created": "Enregistré le",
+        "expiryNotifications": "Notification d'expiration",
+        "reorderThreshold": "Seuil de réapprovisionnement",
+        "notifyExpiryEnabled": "Alerte Expiration Activée",
+        "reorderOnMinStockEnabled": "Réapprovisionnement Stock Min Activé",
+        "notifyOnMinStockEnabled": "Alerte Stock Min Activée"
+      },
+      "section": {
+        "grades": "Grades",
+        "attributes": "Propriétés de l'article",
+        "batchFields": "Propriétés de niveau de stock",
+        "tags": "Étiquettes",
+        "description": "Description"
+      },
+      "action": {
+        "suspendIntake": "Suspendre la réception",
+        "activateItem": "Activer l'article",
+        "updating": "Mise à jour…"
+      }
+    }
+  },
+  "roles": {
+    "list": {
+      "title": "Gestion des rôles",
+      "description": "Créez des rôles fonctionnels et configurez ce que votre équipe est autorisée à faire",
+      "searchPlaceholder": "Rechercher un rôle",
+      "clearSearch": "Effacer la recherche",
+      "createRole": "Créer un rôle",
+      "loading": "Chargement des rôles",
+      "empty": "Aucun rôle trouvé",
+      "table": {
+        "roleName": "Nom du rôle",
+        "description": "Description",
+        "assignedUsers": "Utilisateurs assignés",
+        "actions": "Actions",
+        "openActions": "Ouvrir les actions"
+      },
+      "actions": {
+        "edit": "Modifier",
+        "view": "Voir les détails",
+        "delete": "Supprimer"
+      },
+      "pagination": {
+        "showing": "Affichage de <b>{{start}}-{{end}}</b> sur <b>{{total}} rôles</b>",
+        "rowsPerPage": "Lignes par page",
+        "previousPage": "Page précédente",
+        "nextPage": "Page suivante"
+      },
+      "peoplePopover": {
+        "title": "Personnes ({{count}})",
+        "openLabel": "Afficher les {{count}} personnes assignées à ce rôle",
+        "searchPlaceholder": "Rechercher des utilisateurs",
+        "close": "Fermer"
+      }
+    },
+    "create": {
+      "backToRoles": "Retour aux rôles",
+      "title": "Créer un rôle",
+      "description": "Définissez un nouveau rôle et configurez ses autorisations système",
+      "saveAndApply": "Enregistrer et appliquer",
+      "saving": "Enregistrement…",
+      "successToast": "Rôle créé avec succès",
+      "genericFailure": "Impossible de créer le rôle"
+    },
+    "form": {
+      "selectAll": "Tout sélectionner",
+      "permissionsGrantedCount": "({{granted}} sur {{total}} accordé(s))",
+      "grantedPermissions": "Autorisations accordées",
+      "assignedMembers": "Membres assignés ({{count}})",
+      "searchMembers": "Rechercher un membre",
+      "noMembersYet": "Aucun utilisateur n'est actuellement assigné à ce rôle",
+      "roleNameLabel": "Nom du rôle",
+      "roleNamePlaceholder": "Ex. Gestionnaire",
+      "roleNameRequired": "Le nom du rôle est obligatoire",
+      "roleNameDuplicate": "Un rôle portant ce nom existe déjà",
+      "descriptionLabel": "Description",
+      "descriptionOptional": "(optionnel)",
+      "descriptionPlaceholder": "Saisissez la description ici…",
+      "noMembersMatch": "Aucun membre ne correspond à votre recherche"
+    },
+    "detail": {
+      "title": "Détails du rôle",
+      "description": "Consultez la liste complète des autorisations et niveaux d'accès de ce rôle."
+    },
+    "edit": {
+      "backToDetail": "Retour au rôle",
+      "title": "Modifier le rôle",
+      "description": "Mettez à jour les autorisations et les paramètres d'accès de ce rôle. Toute modification s'applique immédiatement à tous les utilisateurs qui occupent ce poste.",
+      "updateRole": "Mettre à jour le rôle",
+      "saving": "Enregistrement…",
+      "successToast": "Rôle mis à jour. Les changements s'appliquent immédiatement à chaque membre.",
+      "genericFailure": "Impossible de mettre à jour le rôle"
+    }
+  },
+  "permission": {
+    "area": {
+      "userInvitation": "Invitation des utilisateurs",
+      "userRoleManagement": "Gestion des rôles utilisateurs",
+      "inventoryWarehouseLocation": "Configuration des emplacements d'entrepôt",
+      "inventoryItems": "Configuration des articles d'inventaire"
+    },
+    "userInvitation": {
+      "view": "Voir les utilisateurs",
+      "viewHint": "Consulter la liste des utilisateurs invités et leur statut.",
+      "invite": "Inviter des utilisateurs",
+      "inviteHint": "Envoyer une invitation à un nouveau membre avec un rôle initial.",
+      "assign": "Attribuer des rôles",
+      "assignHint": "Ajouter ou retirer des rôles à un membre existant.",
+      "suspend": "Suspendre des utilisateurs",
+      "suspendHint": "Suspendre ou réactiver l'accès d'un membre."
+    },
+    "userRoleManagement": {
+      "view": "Voir les rôles",
+      "viewHint": "Consulter la liste des rôles définis et leurs membres.",
+      "create": "Créer des rôles",
+      "createHint": "Définir un nouveau rôle avec un nom, une description et un ensemble de permissions.",
+      "edit": "Modifier les rôles",
+      "editHint": "Mettre à jour le nom, la description ou les permissions d'un rôle ; effet immédiat pour tous les membres concernés."
+    },
+    "inventoryWarehouseLocation": {
+      "view": "Voir les emplacements",
+      "viewHint": "Consulter la liste des emplacements de stock enregistrés.",
+      "create": "Créer des emplacements",
+      "createHint": "Enregistrer un nouvel emplacement de stock avec un nom et un type.",
+      "edit": "Modifier les emplacements",
+      "editHint": "Mettre à jour les détails d'un emplacement existant.",
+      "suspend": "Suspendre des emplacements",
+      "suspendHint": "Marquer un emplacement comme suspendu pour qu'il ne reçoive plus de réception."
+    },
+    "inventoryItems": {
+      "view": "Voir les articles",
+      "viewHint": "Accès en lecture seule au catalogue et aux détails des articles.",
+      "create": "Enregistrer des articles",
+      "createHint": "Ajouter un nouvel article avec ses grades, attributs et champs de réception.",
+      "edit": "Modifier les articles",
+      "editHint": "Mettre à jour les propriétés, grades, attributs ou seuils d'un article.",
+      "suspend": "Suspendre la réception",
+      "suspendHint": "Suspendre ou rétablir la réception sur un article d'inventaire."
+    }
+  }
+}

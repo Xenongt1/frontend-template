@@ -1,8 +1,10 @@
-import { Outlet, createRootRoute } from '@tanstack/react-router'
+import { createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
+import { Toaster } from 'sonner'
 
 import '../styles.css'
+import AppLayout from '../shared/layout/AppLayout'
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -11,7 +13,8 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <>
-      <Outlet />
+      <AppLayout />
+      <Toaster richColors position="top-right" />
       <TanStackDevtools
         config={{
           position: 'bottom-right',

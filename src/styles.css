@@ -24,6 +24,41 @@ body {
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: 'Geist Variable', sans-serif;
+  /* ChainPilot brand palette */
+  --color-navy-900: #08283B;
+  --color-navy-800: #0c3446;
+  --color-navy-600: #395362;
+  --color-navy-500: #5A6F7C;
+  --color-navy-300: #B2BCC2;
+  --color-canvas-50: #FDFDFD;
+  --color-canvas-100: #F7F7F7;
+  --color-canvas-200: #ECECEB;
+  --color-canvas-300: #E6EAEB;
+  /* ChainPilot surface tokens */
+  --color-surface-page: #F7F7F7;
+  --color-surface-card: #FDFDFD;
+  --color-surface-input: #F9FAFB;
+  --color-surface-overlay: #ECECEB;
+  /* ChainPilot stroke tokens */
+  --color-stroke-light: #E6EAEB;
+  --color-stroke-medium: #B2BCC2;
+  --color-stroke-input: #D0D5DD;
+  --color-stroke-focus: #1A7FC1;
+  /* ChainPilot text color tokens */
+  --color-text-primary: #08283B;
+  --color-text-secondary: #395362;
+  --color-text-tertiary: #5A6F7C;
+  --color-text-placeholder: #9CA3AF;
+  /* ChainPilot brand tokens */
+  --color-brand-navy: #08283B;
+  --color-brand-navy-dark: #041620;
+  --color-brand-navy-mid: #061C2A;
+  --color-brand-navy-disabled: #9FB1BB;
+  /* Legacy primary (sky-blue scale) */
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  /* ChainPilot fonts */
+  --font-inter: 'Inter', system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -143,4 +178,33 @@ body {
   html {
     @apply font-sans;
   }
+}
+
+/* Sonner toast overrides — align with app's status badge palette */
+[data-sonner-toast][data-type='success'] {
+  --success-bg: #F3FAF7;
+  --success-border: #DEF7EC;
+  --success-text: #03543F;
+}
+
+[data-sonner-toast][data-type='error'] {
+  --error-bg: #FDF2F2;
+  --error-border: #FDE8E8;
+  --error-text: #9B1C1C;
+}
+
+/* ChainPilot design tokens */
+:root {
+  --Background-General-Light: #FDFDFD;
+  --Stroke-Default-Light: #E6EAEB;
+  --Buttons-Filled-Dark-Blue-Default: #08283B;
+  --Buttons-Filled-Dark-Blue-Icon: #FDFDFD;
+  --Body-Text-Primary: #08283B;
+  --Body-Text-Tertiary: #5A6F7C;
+  --Background-Sidepanel-Active: #CDE6FC;
+  --Logo-Dark-Blue: #08283B;
+  --Page-Background: #F7F7F7;
+  --Header-Text-Secondary: #395362;
+  --body-text-primary: #08283B;
+  --background-general-light: #FDFDFD;
 }
