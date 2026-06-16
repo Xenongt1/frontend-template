@@ -31,12 +31,14 @@ export async function apiRequest<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const { method = 'GET', body, headers = {} } = options;
+  const token = localStorage.getItem('chainpilot_access_token');
 
   const config: AxiosRequestConfig = {
     method,
     url: `${getApiBaseUrl()}${path}`,
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(headers as Record<string, string>),
     },
     ...(body !== undefined && {

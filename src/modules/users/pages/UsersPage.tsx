@@ -54,7 +54,7 @@ const UsersPage: React.FC = () => {
   // Reset to page 1 when filters change
   useEffect(() => { setPage(1); }, [roleFilter, statusFilter]);
 
-  const { data, isLoading, isFetching } = useGetMembersQuery(
+  const { data, isLoading, isFetching, isError, error } = useGetMembersQuery(
     {
       page: page - 1,
       pageSize,
@@ -137,8 +137,9 @@ const UsersPage: React.FC = () => {
     ? (t('users.list.emptyDescription', { returnObjects: true }) as string[])
     : t('users.list.emptyDescription');
 
-  const showEmptyState = !isTableLoading && totalItems === 0;
-  const showTable = isTableLoading || totalItems > 0;
+  const showErrorState = !isTableLoading && isError;
+  const showEmptyState = !isTableLoading && !isError && totalItems === 0;
+  const showTable = isTableLoading || (!isError && totalItems > 0);
 
   const STATUS_OPTIONS = [
     { value: '', label: t('users.list.allStatus') },
@@ -226,6 +227,22 @@ const UsersPage: React.FC = () => {
             >
               {t('users.list.clearFilters')}
             </button>
+          </div>
+        )}
+
+        {/* Request error */}
+        {showErrorState && (
+          <div style={{
+            background: '#FEF2F2',
+            border: '1px solid #FECACA',
+            borderRadius: 8,
+            color: '#991B1B',
+            fontFamily: 'Inter',
+            fontSize: 14,
+            lineHeight: '20px',
+            padding: '14px 16px',
+          }}>
+            {(error as Error | undefined)?.message || t('users.members.error')}
           </div>
         )}
 
