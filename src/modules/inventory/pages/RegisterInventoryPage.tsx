@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { ApiError } from '@/core/api';
 import type { ApiResponse, UnitOfMeasure } from '@/types';
 import { SuccessToast } from '@/shared/components/ui';
+import Button from '@/shared/components/ui/Button';
 import {
   RegistrationStepper,
   BasicInfoStep,
@@ -21,6 +22,15 @@ const STEP0_FIELD_MAP: Record<string, string> = {
   uomLabel:    'uom',
   description: 'description',
 };
+
+// Same shared classes as EditInventoryPage so the two wizard pages stay
+// in sync visually. Kept inline rather than exported because both pages
+// own a thin wrapper around the same hook + step list; the duplication
+// is two short strings.
+const errorBannerClass =
+  'p-3 border border-[#FDE8E8] rounded-lg bg-[#FDF2F2] text-[#9B1C1C] text-sm font-inter';
+const outerWrapperClass =
+  'flex-1 flex flex-col gap-[clamp(12px,1.8vh,20px)] overflow-y-auto min-h-0 pr-0.5';
 
 const RegisterInventoryPage: React.FC = () => {
   const navigate = useNavigate();
@@ -195,58 +205,45 @@ const RegisterInventoryPage: React.FC = () => {
 
   /* ── Footer ── */
   const renderFooter = () => (
-    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 12, flexShrink: 0, paddingBottom: 4 }}>
+    <div className="flex justify-end items-center gap-3 shrink-0 pb-1">
       {form.activeStep === 0 ? (
-        <button type="button" onClick={() => navigate({ to: '/inventory/catalogue' })} className="btn-outline" style={{ minWidth: 87 }}>
+        <button type="button" onClick={() => navigate({ to: '/inventory/catalogue' })} className="btn-outline min-w-[87px]">
           {t('common.cancel')}
         </button>
       ) : (
-        <button type="button" onClick={form.goPrev} className="btn-outline" style={{ minWidth: 100 }}>
+        <button type="button" onClick={form.goPrev} className="btn-outline min-w-[100px]">
           {t('common.previous')}
         </button>
       )}
 
       {form.activeStep < FORM_STEPS.length - 1 ? (
-        <button type="button" onClick={() => { handleGoNext(); }} className="btn-primary" style={{ minWidth: 111 }}>
+        <Button variant="primary" onClick={() => { handleGoNext(); }} className="min-w-[111px]">
           {t('common.next')}
-        </button>
+        </Button>
       ) : (
-        <button type="button" onClick={handleSubmit} className="btn-primary" disabled={form.isSubmitting} style={{ minWidth: 160 }}>
+        <Button variant="primary" onClick={handleSubmit} disabled={form.isSubmitting} className="min-w-[160px]">
           {form.isSubmitting ? t('inventory.register.submitting') : t('inventory.register.submit')}
-        </button>
+        </Button>
       )}
     </div>
   );
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'clamp(12px, 1.8vh, 20px)', overflowY: 'auto', minHeight: 0, paddingRight: 2 }}>
-      <button type="button" onClick={() => navigate({ to: '/inventory/catalogue' })} className="btn-ghost" style={{ width: 'fit-content' }}>
+    <div className={outerWrapperClass}>
+      <button
+        type="button"
+        onClick={() => navigate({ to: '/inventory/catalogue' })}
+        className="btn-ghost w-fit"
+      >
         <ArrowLeft size={16} aria-hidden="true" />
         {t('inventory.register.back')}
       </button>
 
       <div>
-        <h1
-          style={{
-            margin: 0,
-            fontSize: 20,
-            fontWeight: 600,
-            fontFamily: "'Inter', system-ui, sans-serif",
-            color: '#041620',
-            lineHeight: '28px',
-          }}
-        >
+        <h1 className="m-0 font-inter text-xl font-semibold leading-7 text-brand-navy-dark">
           {t('inventory.register.title')}
         </h1>
-        <p
-          style={{
-            margin: '4px 0 0 0',
-            fontSize: 14,
-            fontWeight: 400,
-            fontFamily: "'Inter', system-ui, sans-serif",
-            color: '#08283B',
-          }}
-        >
+        <p className="mt-1 mb-0 font-inter text-sm font-normal text-text-primary">
           {t('inventory.register.description')}
         </p>
       </div>
@@ -261,12 +258,12 @@ const RegisterInventoryPage: React.FC = () => {
         activeStep={form.activeStep}
       />
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(12px, 2vh, 20px)', flexShrink: 0 }}>
+      <div className="flex flex-col gap-[clamp(12px,2vh,20px)] shrink-0">
         {renderStep()}
       </div>
 
       {form.submitError ? (
-        <div role="alert" style={{ padding: 12, border: '1px solid #FDE8E8', borderRadius: 8, background: '#FDF2F2', color: '#9B1C1C', fontSize: 14, fontFamily: "'Inter', system-ui, sans-serif" }}>
+        <div role="alert" className={errorBannerClass}>
           {form.submitError}
         </div>
       ) : null}

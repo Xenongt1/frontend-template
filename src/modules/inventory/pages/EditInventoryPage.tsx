@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { ApiError } from '@/core/api';
 import type { ApiResponse, UnitOfMeasure } from '@/types';
 import { SuccessToast, Skeleton } from '@/shared/components/ui';
+import Button from '@/shared/components/ui/Button';
 import {
   RegistrationStepper,
   BasicInfoStep,
@@ -15,6 +16,16 @@ import {
 import { useInventoryForm, FORM_STEPS } from '../hooks/useInventoryForm';
 import { inventoryApi } from '../api/inventoryApi';
 import PageHeader from '@/shared/components/PageHeader';
+
+// Error banner colours match the original (#FDE8E8 / #FDF2F2 / #9B1C1C);
+// not in design tokens yet, kept as arbitrary Tailwind values.
+const errorBannerClass =
+  'p-3 border border-[#FDE8E8] rounded-lg bg-[#FDF2F2] text-[#9B1C1C] text-sm font-inter';
+
+// clamp() values for vertical rhythm are tied to viewport height; pass them
+// through as arbitrary Tailwind utilities so the responsive behaviour is preserved.
+const outerWrapperClass =
+  'flex-1 flex flex-col gap-[clamp(12px,1.8vh,20px)] overflow-y-auto min-h-0 pr-0.5';
 
 const EditInventoryPage: React.FC = () => {
   const { id } = useParams({ strict: false }) as { id?: string };
@@ -105,12 +116,16 @@ const EditInventoryPage: React.FC = () => {
   /* ── Early states ── */
   if (loadError) {
     return (
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12, padding: '24px 0' }}>
-        <button type="button" onClick={() => navigate({ to: '/inventory/catalogue' })} className="btn-ghost" style={{ width: 'fit-content' }}>
+      <div className="flex-1 flex flex-col gap-3 py-6">
+        <button
+          type="button"
+          onClick={() => navigate({ to: '/inventory/catalogue' })}
+          className="btn-ghost w-fit"
+        >
           <ArrowLeft size={16} aria-hidden="true" />
           {t('inventory.register.back')}
         </button>
-        <div role="alert" style={{ padding: 12, border: '1px solid #FDE8E8', borderRadius: 8, background: '#FDF2F2', color: '#9B1C1C', fontSize: 14, fontFamily: "'Inter', system-ui, sans-serif" }}>
+        <div role="alert" className={errorBannerClass}>
           {loadError}
         </div>
       </div>
@@ -119,8 +134,12 @@ const EditInventoryPage: React.FC = () => {
 
   if (isLoadingItem) {
     return (
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'clamp(12px, 1.8vh, 20px)', overflowY: 'auto', minHeight: 0, paddingRight: 2 }}>
-        <button type="button" onClick={() => navigate({ to: '/inventory/catalogue' })} className="btn-ghost" style={{ width: 'fit-content' }}>
+      <div className={outerWrapperClass}>
+        <button
+          type="button"
+          onClick={() => navigate({ to: '/inventory/catalogue' })}
+          className="btn-ghost w-fit"
+        >
           <ArrowLeft size={16} aria-hidden="true" />
           {t('inventory.register.back')}
         </button>
@@ -134,32 +153,32 @@ const EditInventoryPage: React.FC = () => {
           activeStep={0}
         />
 
-        <div style={{ background: '#FDFDFD', border: '1px solid #E6EAEB', borderRadius: 10, padding: 'clamp(12px, 2vh, 24px)', display: 'flex', flexDirection: 'column', gap: 'clamp(8px, 1.5vh, 16px)' }}>
-          <div style={{ borderBottom: '1px solid #E6EAEB', paddingBottom: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div className="bg-canvas-50 border border-stroke-light rounded-[10px] p-[clamp(12px,2vh,24px)] flex flex-col gap-[clamp(8px,1.5vh,16px)]">
+          <div className="border-b border-stroke-light pb-2.5 flex flex-col gap-2">
             <Skeleton variant="text" className="w-48 h-5" />
             <Skeleton variant="text" className="w-80 h-4" />
           </div>
-          <div style={{ display: 'flex', gap: 16 }}>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div className="flex gap-4">
+            <div className="flex-1 flex flex-col gap-1.5">
               <Skeleton variant="text" className="w-14 h-3.5" />
               <Skeleton variant="block" className="w-full h-10" />
             </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div className="flex-1 flex flex-col gap-1.5">
               <Skeleton variant="text" className="w-10 h-3.5" />
               <Skeleton variant="block" className="w-full h-10" />
             </div>
           </div>
-          <div style={{ display: 'flex', gap: 16 }}>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div className="flex gap-4">
+            <div className="flex-1 flex flex-col gap-1.5">
               <Skeleton variant="text" className="w-20 h-3.5" />
               <Skeleton variant="block" className="w-full h-10" />
             </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div className="flex-1 flex flex-col gap-1.5">
               <Skeleton variant="text" className="w-32 h-3.5" />
               <Skeleton variant="block" className="w-full h-10" />
             </div>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div className="flex flex-col gap-1.5">
             <Skeleton variant="text" className="w-24 h-3.5" />
             <Skeleton variant="block" className="w-full h-20" />
           </div>
@@ -256,32 +275,36 @@ const EditInventoryPage: React.FC = () => {
 
   /* ── Footer ── */
   const renderFooter = () => (
-    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 12, flexShrink: 0, paddingBottom: 4 }}>
+    <div className="flex justify-end items-center gap-3 shrink-0 pb-1">
       {form.activeStep === 0 ? (
-        <button type="button" onClick={() => navigate({ to: '/inventory/catalogue' })} className="btn-outline" style={{ minWidth: 87 }}>
+        <button type="button" onClick={() => navigate({ to: '/inventory/catalogue' })} className="btn-outline min-w-[87px]">
           {t('common.cancel')}
         </button>
       ) : (
-        <button type="button" onClick={form.goPrev} className="btn-outline" style={{ minWidth: 100 }}>
+        <button type="button" onClick={form.goPrev} className="btn-outline min-w-[100px]">
           {t('common.previous')}
         </button>
       )}
 
       {form.activeStep < FORM_STEPS.length - 1 ? (
-        <button type="button" onClick={() => { form.goNext(); }} className="btn-primary" style={{ minWidth: 111 }}>
+        <Button variant="primary" onClick={() => { form.goNext(); }} className="min-w-[111px]">
           {t('common.next')}
-        </button>
+        </Button>
       ) : (
-        <button type="button" onClick={handleSubmit} className="btn-primary" disabled={form.isSubmitting} style={{ minWidth: 140 }}>
+        <Button variant="primary" onClick={handleSubmit} disabled={form.isSubmitting} className="min-w-[140px]">
           {form.isSubmitting ? t('inventory.edit.submitting') : t('inventory.edit.submit')}
-        </button>
+        </Button>
       )}
     </div>
   );
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'clamp(12px, 1.8vh, 20px)', overflowY: 'auto', minHeight: 0, paddingRight: 2 }}>
-      <button type="button" onClick={() => navigate({ to: '/inventory/catalogue' })} className="btn-ghost" style={{ width: 'fit-content' }}>
+    <div className={outerWrapperClass}>
+      <button
+        type="button"
+        onClick={() => navigate({ to: '/inventory/catalogue' })}
+        className="btn-ghost w-fit"
+      >
         <ArrowLeft size={16} aria-hidden="true" />
         {t('inventory.register.back')}
       </button>
@@ -299,12 +322,12 @@ const EditInventoryPage: React.FC = () => {
         activeStep={form.activeStep}
       />
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(12px, 2vh, 20px)', flexShrink: 0 }}>
+      <div className="flex flex-col gap-[clamp(12px,2vh,20px)] shrink-0">
         {renderStep()}
       </div>
 
       {form.submitError ? (
-        <div role="alert" style={{ padding: 12, border: '1px solid #FDE8E8', borderRadius: 8, background: '#FDF2F2', color: '#9B1C1C', fontSize: 14, fontFamily: "'Inter', system-ui, sans-serif" }}>
+        <div role="alert" className={errorBannerClass}>
           {form.submitError}
         </div>
       ) : null}

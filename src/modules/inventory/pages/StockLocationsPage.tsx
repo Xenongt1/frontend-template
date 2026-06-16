@@ -10,37 +10,38 @@ import InventoryPageShell, { InventoryPageHeader } from '../components/Inventory
 import StockLocationFilterModal from '../components/StockLocationFilterModal';
 import { storageLocationApi } from '@/core/api';
 import { ConfirmDialog, SuccessToast } from '@/shared/components/ui';
+import Button from '@/shared/components/ui/Button';
 import type { StockLocation, StorageLocationStatus } from '@/types';
 
 type StatusFilter = 'All' | StorageLocationStatus;
 
 const STATUS_OPTIONS: StorageLocationStatus[] = ['ACTIVE', 'INACTIVE'];
 
+// Status badge bg/border/text aren't in the project's design tokens yet;
+// keep the literal hexes here (matches Figma) and revisit once tokens land.
 const StatusBadge: React.FC<{ active: boolean }> = ({ active }) => (
-  <span style={{
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '2px 10px',
-    borderRadius: 6,
-    fontSize: 12,
-    fontFamily: 'Inter',
-    fontWeight: 500,
-    lineHeight: 1.5,
-    background: active ? '#F3FAF7' : '#ECECEB',
-    border: `1px solid ${active ? '#DEF7EC' : '#C3C3C2'}`,
-    color: active ? '#03543F' : '#222220',
-    whiteSpace: 'nowrap',
-  }}>
+  <span
+    className={[
+      'inline-flex items-center justify-center px-2.5 py-0.5 rounded-md',
+      'font-inter text-xs font-medium leading-[1.5] whitespace-nowrap border',
+      active
+        ? 'bg-[#F3FAF7] border-[#DEF7EC] text-[#03543F]'
+        : 'bg-canvas-200 border-[#C3C3C2] text-[#222220]',
+    ].join(' ')}
+  >
     {active ? 'Active' : 'Suspended'}
   </span>
 );
+
+const menuItemClass =
+  'block w-full text-left px-4 py-2 bg-transparent border-none cursor-pointer ' +
+  'font-inter text-sm font-medium leading-[1.5] text-text-primary ' +
+  'transition-colors duration-150 hover:bg-canvas-200';
 
 const StockLocationsPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [activeTooltip, setActiveTooltip] = useState<{
     id: string; description: string; top: number; left: number; arrowLeft: number;
   } | null>(null);
@@ -171,6 +172,11 @@ const StockLocationsPage: React.FC = () => {
     }
   };
 
+  const thClass =
+    'px-4 py-4 text-left border-b border-stroke-light ' +
+    'font-poppins text-base font-medium text-text-secondary whitespace-nowrap';
+  const tdClass = 'p-4';
+
   return (
     <>
       {toastMessage && (
@@ -198,48 +204,42 @@ const StockLocationsPage: React.FC = () => {
         onConfirm={handleConfirmAction}
         onCancel={() => setConfirmAction(null)}
       />
+
       {/* Row action menu — fixed to escape overflow:hidden */}
       {openMenu && menuLoc && (
         <div
           ref={menuRef}
-          style={{
-            position: 'fixed',
-            top: openMenu.top,
-            bottom: openMenu.bottom,
-            right: openMenu.right,
-            zIndex: 1000,
-            minWidth: 160,
-            background: '#FDFDFD',
-            border: '1px solid #E6EAEB',
-            borderRadius: 8,
-            boxShadow: '0px 4px 6px -1px rgba(0,0,0,0.10), 0px 2px 4px -2px rgba(0,0,0,0.10)',
-            overflow: 'hidden',
-          }}
+          style={{ top: openMenu.top, bottom: openMenu.bottom, right: openMenu.right }}
+          className="fixed z-[1000] min-w-[160px] bg-canvas-50 border border-stroke-light rounded-lg overflow-hidden shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.10),_0px_2px_4px_-2px_rgba(0,0,0,0.10)]"
         >
           <button
+            type="button"
             onClick={() => { setOpenMenu(null); navigate({ to: `/inventory/stock-locations/${menuLoc.id}` }); }}
-            style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', background: 'none', border: 'none', fontFamily: 'Inter', fontWeight: 500, fontSize: 14, lineHeight: 1.5, color: '#08283B', cursor: 'pointer' }}
+            className={menuItemClass}
           >
             View details
           </button>
           <button
+            type="button"
             onClick={() => { setOpenMenu(null); navigate({ to: `/inventory/stock-locations/${menuLoc.id}/edit` }); }}
-            style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', background: 'none', border: 'none', fontFamily: 'Inter', fontWeight: 500, fontSize: 14, lineHeight: 1.5, color: '#08283B', cursor: 'pointer' }}
+            className={menuItemClass}
           >
             Edit
           </button>
-          <div style={{ height: 1, background: '#E6EAEB' }} />
+          <div className="h-px bg-stroke-light" />
           {menuLoc.status === 'ACTIVE' ? (
             <button
+              type="button"
               onClick={() => { setOpenMenu(null); setConfirmAction({ id: menuLoc.id, name: menuLoc.name, action: 'suspend' }); }}
-              style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', background: 'none', border: 'none', fontFamily: 'Inter', fontWeight: 500, fontSize: 14, lineHeight: 1.5, color: '#08283B', cursor: 'pointer' }}
+              className={menuItemClass}
             >
               Suspend location
             </button>
           ) : (
             <button
+              type="button"
               onClick={() => { setOpenMenu(null); setConfirmAction({ id: menuLoc.id, name: menuLoc.name, action: 'activate' }); }}
-              style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', background: 'none', border: 'none', fontFamily: 'Inter', fontWeight: 500, fontSize: 14, lineHeight: 1.5, color: '#08283B', cursor: 'pointer' }}
+              className={menuItemClass}
             >
               Activate location
             </button>
@@ -247,258 +247,273 @@ const StockLocationsPage: React.FC = () => {
         </div>
       )}
 
+      {/* Tooltip — fixed positioning is computed at runtime */}
       {activeTooltip && (
-        <div style={{ position: 'fixed', top: activeTooltip.top, left: activeTooltip.left, zIndex: 9999, width: 224, background: '#08283B', borderRadius: 8, padding: '10px 12px', pointerEvents: 'none', boxShadow: '0px 4px 6px -1px rgba(0,0,0,0.10)' }}>
-          <div style={{ position: 'absolute', top: -8, left: activeTooltip.arrowLeft, transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: '8px solid #08283B' }} />
-          <p style={{ margin: 0, fontFamily: 'Inter', fontWeight: 400, fontSize: 14, lineHeight: 1.5, color: '#FDFDFD' }}>
+        <div
+          style={{ top: activeTooltip.top, left: activeTooltip.left }}
+          className="fixed z-[9999] w-56 bg-brand-navy rounded-lg px-3 py-2.5 pointer-events-none shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.10)]"
+        >
+          <div
+            style={{ left: activeTooltip.arrowLeft }}
+            className="absolute -top-2 -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-l-transparent border-r-transparent border-b-8 border-b-brand-navy"
+          />
+          <p className="m-0 font-inter text-sm font-normal leading-[1.5] text-canvas-50">
             {activeTooltip.description}
           </p>
         </div>
       )}
+
       <InventoryPageShell>
-      <InventoryPageHeader
-        title={t('stockLocations.list.title')}
-        subtitle={t('stockLocations.list.subtitle')}
-      />
-
-      {/* Search bar */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 8,
-        padding: '8px 16px', background: '#ECECEB',
-        border: '1px solid #B2BCC2', borderRadius: 8, width: 364, boxSizing: 'border-box',
-      }}>
-        <Search size={16} color="#395362" />
-        <input
-          type="text"
-          value={search}
-          onChange={e => handleSearch(e.target.value)}
-          placeholder={t('stockLocations.list.searchPlaceholder')}
-          style={{
-            flex: 1, border: 'none', background: 'transparent', outline: 'none',
-            fontFamily: 'Inter', fontWeight: 400, fontSize: 14, lineHeight: 1.5, color: '#395362',
-          }}
+        <InventoryPageHeader
+          title={t('stockLocations.list.title')}
+          subtitle={t('stockLocations.list.subtitle')}
         />
-      </div>
 
-      {loading && (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
-          <span style={{ fontFamily: 'Inter', fontSize: 14, color: '#395362' }}>Loading…</span>
-        </div>
-      )}
-      {!loading && error && (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
-          <span style={{ fontFamily: 'Inter', fontSize: 14, color: '#B91C1C' }}>{error}</span>
-        </div>
-      )}
-
-      {/* Empty state — only when no filters active */}
-      {!loading && !error && locations.length === 0 && !hasActiveFilters && (
-
-        <div style={{
-          background: 'var(--Background-General-Light, #FDFDFD)', borderRadius: 8,
-          flex: 1, minHeight: 400, display: 'flex', alignItems: 'center',
-          justifyContent: 'center', padding: '128px 80px', boxSizing: 'border-box',
-        }}>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, maxWidth: 600, width: '100%' }}>
-            <img src={emptyStateIllustration} alt="" style={{ width: 290, height: 220, flexShrink: 0 }} />
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, width: '100%' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, textAlign: 'center' }}>
-                <p style={{ margin: 0, fontFamily: 'Poppins, Inter, sans-serif', fontWeight: 500, fontSize: 24, lineHeight: '36px', color: '#041620' }}>
-                  {t('stockLocations.list.emptyTitle')}
-                </p>
-                <p style={{ margin: 0, fontFamily: 'Inter', fontWeight: 400, fontSize: 16, lineHeight: '24px', color: 'var(--Body-Text-Secondary, #395362)' }}>
-                  {t('stockLocations.list.emptyDescription')}
-                </p>
-              </div>
-              <button
-                onClick={() => navigate({ to: '/inventory/stock-locations/register' })}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 8,
-                  padding: '10px 20px', background: 'var(--Buttons-Filled-Dark-Blue-Default, #08283B)',
-                  border: 'none', borderRadius: 8, cursor: 'pointer',
-                }}
-              >
-                <Plus size={20} color="#FDFDFD" />
-                <span style={{ fontFamily: 'Inter', fontWeight: 500, fontSize: 14, lineHeight: '21px', color: '#FDFDFD', whiteSpace: 'nowrap' }}>
-                  {t('stockLocations.list.newButton')}
-                </span>
-              </button>
-            </div>
-          </div>
+        {/* Search bar */}
+        <div className="flex items-center gap-2 px-4 py-2 bg-canvas-200 border border-stroke-medium rounded-lg w-[364px] box-border">
+          <Search size={16} color="#395362" />
+          <input
+            type="text"
+            value={search}
+            onChange={e => handleSearch(e.target.value)}
+            placeholder={t('stockLocations.list.searchPlaceholder')}
+            className="flex-1 bg-transparent border-none outline-none font-inter text-sm font-normal leading-[1.5] text-text-secondary"
+          />
         </div>
 
-      )}
-
-      {!loading && !error && (locations.length > 0 || hasActiveFilters) && (
-
-        <div style={{ background: '#FDFDFD', border: '1px solid #E6EAEB', borderRadius: 8, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-
-          {/* Table toolbar */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', borderBottom: '1px solid #E6EAEB' }}>
-            <p style={{ margin: 0, fontFamily: 'Poppins, Inter, sans-serif', fontWeight: 500, fontSize: 20, lineHeight: 1.5, color: '#041620' }}>
-              Locations
-            </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <button
-                onClick={() => setShowFilterModal(true)}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 8,
-                  padding: '10px 20px', background: 'transparent',
-                  border: statusFilter !== 'All' ? '1px solid #08283B' : '1px solid #061C2A',
-                  borderRadius: 8, cursor: 'pointer', position: 'relative',
-                }}
-              >
-                <ListFilter size={16} color="#061C2A" />
-                <span style={{ fontFamily: 'Inter', fontWeight: 500, fontSize: 14, color: '#061C2A' }}>Filter</span>
-              </button>
-              <button
-                onClick={() => navigate({ to: '/inventory/stock-locations/register' })}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 8,
-                  padding: '10px 20px', background: 'var(--Buttons-Filled-Dark-Blue-Default, #08283B)',
-                  border: 'none', borderRadius: 8, cursor: 'pointer',
-                }}
-              >
-                <Plus size={20} color="#FDFDFD" />
-                <span style={{ fontFamily: 'Inter', fontWeight: 500, fontSize: 14, lineHeight: '21px', color: '#FDFDFD', whiteSpace: 'nowrap' }}>
-                  {t('stockLocations.list.newButton')}
-                </span>
-              </button>
-            </div>
+        {loading && (
+          <div className="flex justify-center p-12">
+            <span className="font-inter text-sm text-text-secondary">Loading…</span>
           </div>
-
-          {/* Table */}
-          <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 480 }}>
-            <thead>
-              <tr style={{ background: '#E6EAEB' }}>
-                <th style={{ padding: '16px', textAlign: 'left', borderBottom: '1px solid #E6EAEB', fontFamily: 'Poppins, Inter, sans-serif', fontWeight: 500, fontSize: 16, color: '#395362', whiteSpace: 'nowrap', width: '50%' }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    Name <ArrowDownNarrowWide size={16} color="#395362" />
-                  </span>
-                </th>
-                <th style={{ padding: '16px', textAlign: 'left', borderBottom: '1px solid #E6EAEB', fontFamily: 'Poppins, Inter, sans-serif', fontWeight: 500, fontSize: 16, color: '#395362', whiteSpace: 'nowrap' }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    Status <ArrowDownNarrowWide size={16} color="#395362" />
-                  </span>
-                </th>
-                <th style={{ padding: '16px', textAlign: 'right', borderBottom: '1px solid #E6EAEB', fontFamily: 'Poppins, Inter, sans-serif', fontWeight: 500, fontSize: 16, color: '#395362', whiteSpace: 'nowrap' }}>
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {locations.length === 0 && (
-                <tr>
-                  <td colSpan={3} style={{ padding: '48px 16px', textAlign: 'center', fontFamily: 'Inter', fontSize: 14, color: '#395362' }}>
-                    {t('stockLocations.list.noMatch', 'No locations match your filters.')}
-                  </td>
-                </tr>
-              )}
-              {locations.map((loc: StockLocation) => (
-                <tr
-                  key={loc.id}
-                  onMouseEnter={() => setHoveredId(loc.id)}
-                  onMouseLeave={() => setHoveredId(null)}
-                  style={{ background: hoveredId === loc.id ? '#ECECEB' : '#FDFDFD', borderBottom: '1px solid #E6EAEB', height: 80, cursor: 'pointer', transition: 'background 0.15s ease' }}
-                >
-                  <td style={{ padding: 16 }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: 16, lineHeight: 1.5, color: '#08283B', whiteSpace: 'nowrap' }}>
-                        {loc.name}
-                      </span>
-                      <button
-                        onMouseEnter={(e) => handleInfoMouseEnter(loc.id, loc.description ?? '', e)}
-                        onMouseLeave={() => setActiveTooltip(null)}
-                        style={{ background: 'none', border: 'none', padding: 0, cursor: 'default', display: 'flex', alignItems: 'center' }}
-                        aria-label={`Description for ${loc.name}`}
-                      >
-                        <Info size={18} color="#395362" />
-                      </button>
-                    </div>
-                  </td>
-                  <td style={{ padding: 16 }}>
-                    <StatusBadge active={loc.status === 'ACTIVE'} />
-                  </td>
-                  <td style={{ padding: 16, textAlign: 'right' }}>
-                    <button
-                      onMouseDown={(e) => handleMenuToggle(loc.id, e)}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8, borderRadius: 8, display: 'inline-flex', alignItems: 'center' }}
-                      aria-label="Row actions"
-                    >
-                      <MoreVertical size={16} color="#08283B" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        )}
+        {!loading && error && (
+          <div className="flex justify-center p-12">
+            <span className="font-inter text-sm text-[#B91C1C]">{error}</span>
           </div>
+        )}
 
-          {/* Pagination footer */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 16 }}>
-            <p style={{ margin: 0, fontFamily: 'Inter', fontWeight: 400, fontSize: 14, color: '#395362' }}>
-              {'Showing '}
-              <strong style={{ fontWeight: 600, color: '#08283B' }}>{from}-{to}</strong>
-              {' of '}
-              <strong style={{ fontWeight: 600, color: '#08283B' }}>{total} locations</strong>
-            </p>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <div ref={rowsMenuRef} style={{ position: 'relative' }}>
-                  <button
-                    onClick={() => setShowRowsMenu(p => !p)}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 10, padding: '12px 16px', background: '#ECECEB', border: '1px solid #B2BCC2', borderRadius: 8, cursor: 'pointer' }}
-                  >
-                    <span style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: 14, lineHeight: 1.25, color: '#5A6F7C' }}>{rowsPerPage}</span>
-                    <ChevronDown size={16} color="#5A6F7C" />
-                  </button>
-                  {showRowsMenu && (
-                    <div style={{ position: 'absolute', bottom: 'calc(100% + 4px)', left: 0, background: '#FDFDFD', border: '1px solid #E6EAEB', borderRadius: 8, overflow: 'hidden', zIndex: 200, minWidth: '100%', boxShadow: '0px 4px 6px -1px rgba(0,0,0,0.10)' }}>
-                      {[5, 10, 20, 25].map(n => (
-                        <button key={n} onClick={() => { setRowsPerPage(n); setPage(1); setShowRowsMenu(false); }} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', background: n === rowsPerPage ? '#ECECEB' : 'none', border: 'none', fontFamily: 'Inter', fontWeight: 500, fontSize: 14, color: '#08283B', cursor: 'pointer' }}>
-                          {n}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+        {/* Empty state — only when no filters active */}
+        {!loading && !error && locations.length === 0 && !hasActiveFilters && (
+          <div className="bg-surface-card rounded-lg flex-1 min-h-[400px] flex items-center justify-center px-20 py-32 box-border">
+            <div className="flex flex-col items-center gap-6 max-w-[600px] w-full">
+              <img src={emptyStateIllustration} alt="" className="w-[290px] h-[220px] shrink-0" />
+              <div className="flex flex-col items-center gap-6 w-full">
+                <div className="flex flex-col gap-2 text-center">
+                  <p className="m-0 font-poppins text-2xl font-medium leading-9 text-brand-navy-dark">
+                    {t('stockLocations.list.emptyTitle')}
+                  </p>
+                  <p className="m-0 font-inter text-base font-normal leading-6 text-text-secondary">
+                    {t('stockLocations.list.emptyDescription')}
+                  </p>
                 </div>
-                <span style={{ fontFamily: 'Inter', fontWeight: 400, fontSize: 14, lineHeight: 1.5, color: '#395362', whiteSpace: 'nowrap' }}>
-                  Rows per page
-                </span>
-              </div>
-              <div style={{ display: 'flex', border: '1px solid #E6EAEB', borderRadius: 4, overflow: 'hidden' }}>
-                <button onClick={() => setPage(p => Math.max(1, p - 1))} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px 12px', background: '#FDFDFD', border: 'none', borderRight: '1px solid #E6EAEB', cursor: 'pointer' }}>
-                  <ChevronLeft size={20} color="#08283B" />
-                </button>
-                {getPageItems().map((item, i) => {
-                  const isEllipsis = item === '...';
-                  const isActive = item === page;
-                  return (
-                    <button key={`${item}-${i}`} onClick={() => !isEllipsis && setPage(Number(item))} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px 12px', minWidth: 32, background: isActive ? '#B2BCC2' : '#FDFDFD', border: 'none', borderRight: '1px solid #E6EAEB', cursor: isEllipsis ? 'default' : 'pointer', fontFamily: 'Inter', fontWeight: 500, fontSize: 14, lineHeight: 1.5, color: isActive ? '#08283B' : '#395362' }}>
-                      {item}
-                    </button>
-                  );
-                })}
-                <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px 12px', background: '#FDFDFD', border: 'none', cursor: 'pointer' }}>
-                  <ChevronRight size={20} color="#08283B" />
-                </button>
+                <Button
+                  variant="primary"
+                  onClick={() => navigate({ to: '/inventory/stock-locations/register' })}
+                  leftIcon={<Plus size={20} />}
+                >
+                  {t('stockLocations.list.newButton')}
+                </Button>
               </div>
             </div>
           </div>
+        )}
 
-        </div>
-      )}
+        {!loading && !error && (locations.length > 0 || hasActiveFilters) && (
+          <div className="bg-surface-card border border-stroke-light rounded-lg flex flex-col overflow-hidden">
 
-      <StockLocationFilterModal
-        isOpen={showFilterModal}
-        currentStatus={statusFilter}
-        statusOptions={STATUS_OPTIONS}
-        onApply={(s) => { setStatusFilter(s); setPage(1); }}
-        onClose={() => setShowFilterModal(false)}
-      />
-    </InventoryPageShell>
-  </>
+            {/* Table toolbar */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-stroke-light">
+              <p className="m-0 font-poppins text-xl font-medium leading-[1.5] text-brand-navy-dark">
+                Locations
+              </p>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => setShowFilterModal(true)}
+                  className={[
+                    'relative inline-flex items-center gap-2 px-5 py-2.5 rounded-lg cursor-pointer',
+                    'bg-transparent transition-colors duration-150 hover:bg-canvas-200',
+                    'font-inter text-sm font-medium text-brand-navy-mid',
+                    statusFilter !== 'All' ? 'border border-brand-navy' : 'border border-brand-navy-mid',
+                  ].join(' ')}
+                >
+                  <ListFilter size={16} color="#061C2A" />
+                  <span>Filter</span>
+                </button>
+                <Button
+                  variant="primary"
+                  onClick={() => navigate({ to: '/inventory/stock-locations/register' })}
+                  leftIcon={<Plus size={20} />}
+                >
+                  {t('stockLocations.list.newButton')}
+                </Button>
+              </div>
+            </div>
+
+            {/* Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse min-w-[480px]">
+                <thead>
+                  <tr className="bg-stroke-light">
+                    <th className={`${thClass} w-1/2`}>
+                      <span className="inline-flex items-center gap-1.5">
+                        Name <ArrowDownNarrowWide size={16} color="#395362" />
+                      </span>
+                    </th>
+                    <th className={thClass}>
+                      <span className="inline-flex items-center gap-1.5">
+                        Status <ArrowDownNarrowWide size={16} color="#395362" />
+                      </span>
+                    </th>
+                    <th className={`${thClass} text-right`}>
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {locations.length === 0 && (
+                    <tr>
+                      <td colSpan={3} className="px-4 py-12 text-center font-inter text-sm text-text-secondary">
+                        {t('stockLocations.list.noMatch', 'No locations match your filters.')}
+                      </td>
+                    </tr>
+                  )}
+                  {locations.map((loc: StockLocation) => (
+                    <tr
+                      key={loc.id}
+                      className="bg-canvas-50 hover:bg-canvas-200 border-b border-stroke-light h-20 cursor-pointer transition-colors duration-150"
+                    >
+                      <td className={tdClass}>
+                        <div className="inline-flex items-center gap-2">
+                          <span className="font-inter text-base font-normal leading-[1.5] text-text-primary whitespace-nowrap">
+                            {loc.name}
+                          </span>
+                          <button
+                            type="button"
+                            onMouseEnter={(e) => handleInfoMouseEnter(loc.id, loc.description ?? '', e)}
+                            onMouseLeave={() => setActiveTooltip(null)}
+                            className="bg-transparent border-none p-0 cursor-default flex items-center"
+                            aria-label={`Description for ${loc.name}`}
+                          >
+                            <Info size={18} color="#395362" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className={tdClass}>
+                        <StatusBadge active={loc.status === 'ACTIVE'} />
+                      </td>
+                      <td className={`${tdClass} text-right`}>
+                        <button
+                          type="button"
+                          onMouseDown={(e) => handleMenuToggle(loc.id, e)}
+                          className="bg-transparent border-none cursor-pointer p-2 rounded-lg inline-flex items-center transition-colors duration-150 hover:bg-stroke-light"
+                          aria-label="Row actions"
+                        >
+                          <MoreVertical size={16} color="#08283B" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination footer */}
+            <div className="flex items-center justify-between p-4">
+              <p className="m-0 font-inter text-sm font-normal text-text-secondary">
+                {'Showing '}
+                <strong className="font-semibold text-text-primary">{from}-{to}</strong>
+                {' of '}
+                <strong className="font-semibold text-text-primary">{total} locations</strong>
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div ref={rowsMenuRef} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setShowRowsMenu(p => !p)}
+                      className="inline-flex items-center gap-2.5 px-4 py-3 bg-canvas-200 border border-stroke-medium rounded-lg cursor-pointer transition-colors duration-150 hover:bg-canvas-300"
+                    >
+                      <span className="font-inter text-sm font-normal leading-tight text-text-tertiary">{rowsPerPage}</span>
+                      <ChevronDown size={16} color="#5A6F7C" />
+                    </button>
+                    {showRowsMenu && (
+                      <div className="absolute bottom-[calc(100%+4px)] left-0 bg-canvas-50 border border-stroke-light rounded-lg overflow-hidden z-[200] min-w-full shadow-[0px_4px_6px_-1px_rgba(0,0,0,0.10)]">
+                        {[5, 10, 20, 25].map(n => (
+                          <button
+                            type="button"
+                            key={n}
+                            onClick={() => { setRowsPerPage(n); setPage(1); setShowRowsMenu(false); }}
+                            className={[
+                              'block w-full text-left px-4 py-2 border-none cursor-pointer',
+                              'font-inter text-sm font-medium text-text-primary',
+                              'transition-colors duration-150',
+                              n === rowsPerPage ? 'bg-canvas-200' : 'bg-transparent hover:bg-canvas-200',
+                            ].join(' ')}
+                          >
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <span className="font-inter text-sm font-normal leading-[1.5] text-text-secondary whitespace-nowrap">
+                    Rows per page
+                  </span>
+                </div>
+                <div className="flex border border-stroke-light rounded overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    className="flex items-center justify-center px-3 py-1.5 bg-canvas-50 border-none border-r border-r-stroke-light cursor-pointer transition-colors duration-150 hover:bg-canvas-200"
+                  >
+                    <ChevronLeft size={20} color="#08283B" />
+                  </button>
+                  {getPageItems().map((item, i) => {
+                    const isEllipsis = item === '...';
+                    const isActive = item === page;
+                    return (
+                      <button
+                        type="button"
+                        key={`${item}-${i}`}
+                        onClick={() => !isEllipsis && setPage(Number(item))}
+                        className={[
+                          'flex items-center justify-center px-3 py-1.5 min-w-8',
+                          'border-none border-r border-r-stroke-light',
+                          'font-inter text-sm font-medium leading-[1.5]',
+                          'transition-colors duration-150',
+                          isActive
+                            ? 'bg-stroke-medium text-text-primary cursor-pointer'
+                            : 'bg-canvas-50 text-text-secondary hover:bg-canvas-200',
+                          isEllipsis ? 'cursor-default' : 'cursor-pointer',
+                        ].join(' ')}
+                      >
+                        {item}
+                      </button>
+                    );
+                  })}
+                  <button
+                    type="button"
+                    onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                    className="flex items-center justify-center px-3 py-1.5 bg-canvas-50 border-none cursor-pointer transition-colors duration-150 hover:bg-canvas-200"
+                  >
+                    <ChevronRight size={20} color="#08283B" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <StockLocationFilterModal
+          isOpen={showFilterModal}
+          currentStatus={statusFilter}
+          statusOptions={STATUS_OPTIONS}
+          onApply={(s) => { setStatusFilter(s); setPage(1); }}
+          onClose={() => setShowFilterModal(false)}
+        />
+      </InventoryPageShell>
+    </>
   );
 };
 

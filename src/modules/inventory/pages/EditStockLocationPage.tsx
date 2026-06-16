@@ -49,8 +49,8 @@ const EditStockLocationPage: React.FC = () => {
   if (loading) {
     return (
       <InventoryPageShell>
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 48 }}>
-          <span style={{ fontFamily: 'Inter', fontSize: 14, color: '#395362' }}>Loading…</span>
+        <div className="flex justify-center p-12">
+          <span className="font-inter text-sm text-text-secondary">Loading…</span>
         </div>
       </InventoryPageShell>
     );
@@ -59,8 +59,8 @@ const EditStockLocationPage: React.FC = () => {
   if (loadError || !location) {
     return (
       <InventoryPageShell>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 16, padding: 48 }}>
-          <span style={{ fontFamily: 'Inter', fontSize: 14, color: '#B91C1C' }}>
+        <div className="flex flex-col items-start gap-4 p-12">
+          <span className="font-inter text-sm text-[#B91C1C]">
             {loadError ?? t('stockLocations.edit.loadError', 'Failed to load location')}
           </span>
           <BackButton
@@ -87,7 +87,7 @@ const EditStockLocationPage: React.FC = () => {
           onClick={() => navigate({ to: LIST_ROUTE })}
         />
 
-        <div style={{ borderBottom: '1px solid #E6EAEB', paddingBottom: 10 }}>
+        <div className="border-b border-stroke-light pb-2.5">
           <InventoryPageHeader
             title={t('stockLocations.edit.title')}
             subtitle={t('stockLocations.edit.subtitle')}
