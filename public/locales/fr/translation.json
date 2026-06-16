@@ -650,5 +650,109 @@
       "suspend": "Suspendre la réception",
       "suspendHint": "Suspendre ou rétablir la réception sur un article d'inventaire."
     }
+  },
+  "users": {
+    "invite": {
+      "title": "Inviter un utilisateur",
+      "subtitle": "Invitez un nouvel utilisateur dans votre organisation.",
+      "nameLabel": "Nom",
+      "namePlaceholder": "Entrez le nom de l'utilisateur",
+      "emailLabel": "Adresse e-mail",
+      "emailPlaceholder": "ex. collègue@entreprise.com",
+      "roleLabel": "Attribuer un rôle",
+      "rolePlaceholder": "Choisir un rôle",
+      "cancelButton": "Annuler",
+      "sendButton": "Envoyer l'invitation",
+      "sending": "Envoi…",
+      "emailRequired": "L'adresse e-mail est requise",
+      "emailInvalid": "Veuillez entrer une adresse e-mail valide",
+      "genericFailure": "Échec de l'envoi de l'invitation",
+      "successToast": "Invitation envoyée avec succès"
+    },
+    "list": {
+      "title": "Utilisateurs",
+      "subtitle": "Gérer les membres de l'équipe, les rôles et les accès système",
+      "emptyTitle": "Aucun utilisateur trouvé",
+      "emptyDescription": [
+        "Il n'y a actuellement aucun utilisateur dans le système",
+        "Commencez par cliquer sur le bouton « Inviter un utilisateur » ci-dessous."
+      ],
+      "inviteButton": "Inviter un utilisateur",
+      "searchPlaceholder": "Rechercher un utilisateur",
+      "allRoles": "Tous les rôles",
+      "allStatus": "Tous les statuts",
+      "export": "Exporter",
+      "filterLabel": "filtre(s)",
+      "clearFilters": "Effacer les filtres",
+      "pagination": {
+        "showing": "Affichage de <b>{{start}}-{{end}}</b> sur <b>{{total}} membres</b>",
+        "rowsPerPage": "Lignes par page",
+        "previousPage": "Page précédente",
+        "nextPage": "Page suivante"
+      }
+    },
+    "details": {
+      "back": "Retour aux utilisateurs",
+      "title": "Détails de l'utilisateur",
+      "subtitle": "Consultez les informations du profil et les rôles attribués à cet utilisateur",
+      "created": "Créé le",
+      "lastActive": "Dernière activité",
+      "suspendUser": "Suspendre l'utilisateur",
+      "activateUser": "Activer l'utilisateur",
+      "roleAssignment": "Attribution des rôles",
+      "minimumRequired": "Minimum 1 requis",
+      "addRole": "Ajouter un rôle",
+      "remove": "Retirer",
+      "removeTitle": "Retirer le rôle ?",
+      "removeDescription": "Êtes-vous sûr de vouloir retirer ce rôle de cet utilisateur ? L'utilisateur pourrait perdre l'accès à certaines fonctionnalités et permissions associées à ce rôle.",
+      "noRoles": "Aucun rôle attribué pour le moment.",
+      "addRoleTitle": "Ajouter un rôle",
+      "addRolePlaceholder": "Rechercher des rôles par nom ou mot-clé...",
+      "addRoleConfirm": "Ajouter le rôle sélectionné",
+      "addRoleEmpty": "Aucun rôle trouvé",
+      "addRoleNoneAvailable": "Tous les rôles disponibles sont déjà attribués.",
+      "cancel": "Annuler",
+      "loadError": "Échec du chargement des détails de l'utilisateur",
+      "notFound": "Utilisateur introuvable",
+      "roleAddedToast": "Rôle ajouté avec succès",
+      "roleRemovedToast": "Rôle retiré avec succès",
+      "roleUpdateError": "Échec de la mise à jour des rôles",
+      "minimumRoleError": "Un utilisateur doit conserver au moins un rôle"
+    },
+    "members": {
+      "loading": "Chargement des membres…",
+      "columns": {
+        "member": "Utilisateur",
+        "roles": "Rôle",
+        "status": "Statut",
+        "invitedAt": "Invité le",
+        "lastActive": "Dernière activité",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Actif",
+        "invited": "Invité",
+        "suspended": "Suspendu"
+      },
+      "actions": {
+        "suspend": "Suspendre",
+        "activate": "Activer",
+        "viewDetails": "Voir les détails",
+        "reactivate": "Réactiver"
+      },
+      "suspend": {
+        "title": "Suspendre le membre",
+        "description": "Cela empêchera {{name}} de se connecter. Vous pouvez le réactiver à tout moment.",
+        "confirm": "Suspendre"
+      },
+      "activate": {
+        "title": "Activer le membre",
+        "description": "Cela restaurera l'accès de {{name}} au système.",
+        "confirm": "Activer"
+      },
+      "suspendSuccess": "Membre suspendu avec succès",
+      "activateSuccess": "Membre activé avec succès",
+      "error": "Échec de la mise à jour du statut du membre"
+    }
   }
 }

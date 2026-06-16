@@ -658,5 +658,109 @@
       "suspend": "تعليق استلام العنصر",
       "suspendHint": "تعليق أو رفع التعليق عن استلام عنصر من المخزون."
     }
+  },
+  "users": {
+    "invite": {
+      "title": "دعوة مستخدم",
+      "subtitle": "دعوة مستخدم جديد إلى مؤسستك.",
+      "nameLabel": "الاسم",
+      "namePlaceholder": "أدخل اسم المستخدم هنا",
+      "emailLabel": "عنوان البريد الإلكتروني",
+      "emailPlaceholder": "مثال: زميل@شركة.com",
+      "roleLabel": "تعيين دور",
+      "rolePlaceholder": "اختر دوراً",
+      "cancelButton": "إلغاء",
+      "sendButton": "إرسال الدعوة",
+      "sending": "جارٍ الإرسال…",
+      "emailRequired": "عنوان البريد الإلكتروني مطلوب",
+      "emailInvalid": "يرجى إدخال عنوان بريد إلكتروني صالح",
+      "genericFailure": "فشل إرسال الدعوة",
+      "successToast": "تم إرسال الدعوة بنجاح"
+    },
+    "list": {
+      "title": "المستخدمون",
+      "subtitle": "إدارة أعضاء الفريق والأدوار وصلاحيات النظام",
+      "emptyTitle": "لا يوجد مستخدمون",
+      "emptyDescription": [
+        "لا يوجد حالياً أي مستخدمين في النظام",
+        "ابدأ بالنقر على زر «دعوة مستخدم» أدناه للبدء."
+      ],
+      "inviteButton": "دعوة مستخدم",
+      "searchPlaceholder": "بحث عن مستخدم",
+      "allRoles": "جميع الأدوار",
+      "allStatus": "جميع الحالات",
+      "export": "تصدير",
+      "filterLabel": "فلتر",
+      "clearFilters": "مسح الفلاتر",
+      "pagination": {
+        "showing": "عرض <b>{{start}}-{{end}}</b> من <b>{{total}} عضو</b>",
+        "rowsPerPage": "صفوف لكل صفحة",
+        "previousPage": "الصفحة السابقة",
+        "nextPage": "الصفحة التالية"
+      }
+    },
+    "details": {
+      "back": "العودة إلى المستخدمين",
+      "title": "تفاصيل المستخدم",
+      "subtitle": "عرض معلومات الملف الشخصي والأدوار المعيّنة لهذا المستخدم",
+      "created": "تاريخ الإنشاء",
+      "lastActive": "آخر نشاط",
+      "suspendUser": "إيقاف المستخدم",
+      "activateUser": "تفعيل المستخدم",
+      "roleAssignment": "تعيين الأدوار",
+      "minimumRequired": "مطلوب دور واحد على الأقل",
+      "addRole": "إضافة دور",
+      "remove": "إزالة",
+      "removeTitle": "إزالة الدور؟",
+      "removeDescription": "هل أنت متأكد من رغبتك في إزالة هذا الدور من هذا المستخدم؟ قد يفقد المستخدم الوصول إلى بعض الميزات والصلاحيات المرتبطة بهذا الدور.",
+      "noRoles": "لم يتم تعيين أي دور بعد.",
+      "addRoleTitle": "إضافة دور",
+      "addRolePlaceholder": "ابحث عن الأدوار بالاسم أو الكلمة المفتاحية...",
+      "addRoleConfirm": "إضافة الدور المحدد",
+      "addRoleEmpty": "لم يتم العثور على أدوار",
+      "addRoleNoneAvailable": "جميع الأدوار المتاحة معيّنة بالفعل.",
+      "cancel": "إلغاء",
+      "loadError": "فشل تحميل تفاصيل المستخدم",
+      "notFound": "المستخدم غير موجود",
+      "roleAddedToast": "تمت إضافة الدور بنجاح",
+      "roleRemovedToast": "تمت إزالة الدور بنجاح",
+      "roleUpdateError": "فشل تحديث الأدوار",
+      "minimumRoleError": "يجب أن يحتفظ المستخدم بدور واحد على الأقل"
+    },
+    "members": {
+      "loading": "جارٍ تحميل الأعضاء…",
+      "columns": {
+        "member": "المستخدم",
+        "roles": "الدور",
+        "status": "الحالة",
+        "invitedAt": "تاريخ الدعوة",
+        "lastActive": "آخر نشاط",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "active": "نشط",
+        "invited": "مدعو",
+        "suspended": "موقوف"
+      },
+      "actions": {
+        "suspend": "إيقاف",
+        "activate": "تفعيل",
+        "viewDetails": "عرض التفاصيل",
+        "reactivate": "إعادة التفعيل"
+      },
+      "suspend": {
+        "title": "إيقاف العضو",
+        "description": "سيمنع هذا {{name}} من تسجيل الدخول. يمكنك إعادة تفعيله في أي وقت.",
+        "confirm": "إيقاف"
+      },
+      "activate": {
+        "title": "تفعيل العضو",
+        "description": "سيُعيد هذا صلاحيات {{name}} في النظام.",
+        "confirm": "تفعيل"
+      },
+      "suspendSuccess": "تم إيقاف العضو بنجاح",
+      "activateSuccess": "تم تفعيل العضو بنجاح",
+      "error": "فشل تحديث حالة العضو"
+    }
   }
 }

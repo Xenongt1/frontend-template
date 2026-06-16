@@ -32,4 +32,5 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   );
 };
 
+export { default as PanaIllustration } from './PanaIllustration';
 export default EmptyState;

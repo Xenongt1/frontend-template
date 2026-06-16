@@ -650,5 +650,109 @@
       "suspend": "Suspend item intake",
       "suspendHint": "Suspend or lift the intake suspension on an inventory item."
     }
+  },
+  "users": {
+    "invite": {
+      "title": "Invite User",
+      "subtitle": "Invite a new user to your organization.",
+      "nameLabel": "Name",
+      "namePlaceholder": "Enter the users name here",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "eg. colleague@company.com",
+      "roleLabel": "Assign Role",
+      "rolePlaceholder": "Choose a role",
+      "cancelButton": "Cancel",
+      "sendButton": "Send invitation",
+      "sending": "Sending…",
+      "emailRequired": "Email address is required",
+      "emailInvalid": "Please enter a valid email address",
+      "genericFailure": "Failed to send invitation",
+      "successToast": "Invitation sent successfully"
+    },
+    "list": {
+      "title": "Users",
+      "subtitle": "Manage team members, roles, and system access",
+      "emptyTitle": "No users Found",
+      "emptyDescription": [
+        "There are currently no users in the system",
+        "Start by clicking on the \"Invite user\" button below to get started."
+      ],
+      "inviteButton": "Invite User",
+      "searchPlaceholder": "Search user",
+      "allRoles": "All Roles",
+      "allStatus": "All Status",
+      "export": "Export",
+      "filterLabel": "filter(s)",
+      "clearFilters": "Clear filter(s)",
+      "pagination": {
+        "showing": "Showing <b>{{start}}-{{end}}</b> of <b>{{total}} members</b>",
+        "rowsPerPage": "Rows per page",
+        "previousPage": "Previous page",
+        "nextPage": "Next page"
+      }
+    },
+    "details": {
+      "back": "Back to users",
+      "title": "Users Details",
+      "subtitle": "View profile information and assigned roles for this user",
+      "created": "Created",
+      "lastActive": "Last Active",
+      "suspendUser": "Suspend User",
+      "activateUser": "Activate User",
+      "roleAssignment": "Role Assignment",
+      "minimumRequired": "Minimum 1 required",
+      "addRole": "Add Role",
+      "remove": "Remove",
+      "removeTitle": "Remove Role?",
+      "removeDescription": "Are you sure you want to remove this role from this user? The user may lose access to certain features and permissions associated with this role.",
+      "noRoles": "No roles assigned yet.",
+      "addRoleTitle": "Add Role",
+      "addRolePlaceholder": "Search for roles by title or keyword...",
+      "addRoleConfirm": "Add Selected Role",
+      "addRoleEmpty": "No roles found",
+      "addRoleNoneAvailable": "All available roles are already assigned.",
+      "cancel": "Cancel",
+      "loadError": "Failed to load user details",
+      "notFound": "User not found",
+      "roleAddedToast": "Role added successfully",
+      "roleRemovedToast": "Role removed successfully",
+      "roleUpdateError": "Failed to update roles",
+      "minimumRoleError": "A user must keep at least one role"
+    },
+    "members": {
+      "loading": "Loading members…",
+      "columns": {
+        "member": "User",
+        "roles": "Role",
+        "status": "Status",
+        "invitedAt": "Invited",
+        "lastActive": "Last Active",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "invited": "Invited",
+        "suspended": "Suspended"
+      },
+      "actions": {
+        "suspend": "Suspend",
+        "activate": "Activate",
+        "viewDetails": "View details",
+        "reactivate": "Reactivate"
+      },
+      "suspend": {
+        "title": "Suspend member",
+        "description": "This will prevent {{name}} from signing in. You can reactivate them at any time.",
+        "confirm": "Suspend"
+      },
+      "activate": {
+        "title": "Activate member",
+        "description": "This will restore {{name}}'s access to the system.",
+        "confirm": "Activate"
+      },
+      "suspendSuccess": "Member suspended successfully",
+      "activateSuccess": "Member activated successfully",
+      "error": "Failed to update member status"
+    }
   }
 }

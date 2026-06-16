@@ -10,6 +10,7 @@ interface Props {
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
   disabled?: boolean;
+  i18nKeyPrefix?: string;
 }
 
 const ChevronLeft = () => (
@@ -41,7 +42,7 @@ function getPageNumbers(page: number, totalPages: number): PageEntry[] {
 const cellBase = 'inline-flex items-center justify-center min-w-[36px] h-[33px] px-3 text-[14px] font-medium border border-canvas-300 bg-canvas-50 transition-colors';
 
 const RolesPagination: React.FC<Props> = ({
-  page, pageSize, total, totalPages, pageSizeOptions, onPageChange, onPageSizeChange, disabled = false,
+  page, pageSize, total, totalPages, pageSizeOptions, onPageChange, onPageSizeChange, disabled = false, i18nKeyPrefix = 'roles.list.pagination',
 }) => {
   const { t } = useTranslation();
   const start = total === 0 ? 0 : (page - 1) * pageSize + 1;
@@ -52,7 +53,7 @@ const RolesPagination: React.FC<Props> = ({
     <div className="flex items-center justify-between px-4 py-4 gap-3 flex-wrap min-h-[69px]">
       <div className="text-[14px] text-navy-600">
         <Trans
-          i18nKey="roles.list.pagination.showing"
+          i18nKey={`${i18nKeyPrefix}.showing`}
           values={{ start, end, total }}
           components={{ b: <span className="font-semibold text-navy-900" /> }}
         />
@@ -65,7 +66,7 @@ const RolesPagination: React.FC<Props> = ({
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
               disabled={disabled}
-              aria-label={t('roles.list.pagination.rowsPerPage')}
+              aria-label={t(`${i18nKeyPrefix}.rowsPerPage`)}
               className="appearance-none pl-4 pr-8 py-3 bg-[#ECECEB] border border-[#B2BCC2] rounded-lg text-[14px] text-navy-500 cursor-pointer outline-none disabled:opacity-50"
             >
               {pageSizeOptions.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -74,7 +75,7 @@ const RolesPagination: React.FC<Props> = ({
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#5A6F7C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </span>
           </div>
-          <span className="text-[14px] text-navy-600 whitespace-nowrap">{t('roles.list.pagination.rowsPerPage')}</span>
+          <span className="text-[14px] text-navy-600 whitespace-nowrap">{t(`${i18nKeyPrefix}.rowsPerPage`)}</span>
         </div>
 
         <div className="inline-flex items-center rounded">
@@ -82,7 +83,7 @@ const RolesPagination: React.FC<Props> = ({
             type="button"
             onClick={() => onPageChange(page - 1)}
             disabled={disabled || page === 1}
-            aria-label={t('roles.list.pagination.previousPage')}
+            aria-label={t(`${i18nKeyPrefix}.previousPage`)}
             className={`${cellBase} rounded-l hover:bg-canvas-100 disabled:opacity-40 disabled:cursor-not-allowed`}
           >
             <ChevronLeft />
@@ -110,7 +111,7 @@ const RolesPagination: React.FC<Props> = ({
             type="button"
             onClick={() => onPageChange(page + 1)}
             disabled={disabled || page === totalPages}
-            aria-label={t('roles.list.pagination.nextPage')}
+            aria-label={t(`${i18nKeyPrefix}.nextPage`)}
             className={`${cellBase} rounded-r border-l-0 hover:bg-canvas-100 disabled:opacity-40 disabled:cursor-not-allowed`}
           >
             <ChevronRight />
