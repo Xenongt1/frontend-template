@@ -1,17 +1,10 @@
-import React from 'react';
-
-interface PageHeaderProps {
-  title: string;
-  description?: string;
+const PageHeader: React.FC<{ title: string; description?: string }> = ({ title, description }) => {
+  return (
+     <div className=" items-center  gap-2">
+          <h1 className="text-navy-900 text-[20px] font-semibold leading-8 m-0">{title}</h1>
+          <p className="text-navy-900 text-[14px] font-semibold leading-8 m-0">{description}</p>
+        </div>
+)
 }
-
-const PageHeader: React.FC<PageHeaderProps> = ({ title, description }) => (
-  <div className="flex flex-col gap-1">
-    <h1 className="m-0 font-semibold text-lg leading-7 text-[#041620]">{title}</h1>
-    {description && (
-      <p className="m-0 text-sm text-[#395362]">{description}</p>
-    )}
-  </div>
-);
 
 export default PageHeader;

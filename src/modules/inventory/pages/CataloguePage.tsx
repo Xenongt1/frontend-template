@@ -183,7 +183,7 @@ const CataloguePage: React.FC = () => {
               loading={loading}
               skeletonRowCount={pagination.pageSize}
               onView={handleView}
-              onEdit={(item) => navigate({ to: '/inventory/edit/$id', params: { id: item.id } })}
+              onEdit={(item) => navigate({ to: `/inventory/edit/${item.id}` })}
              onToggleSuspension={openConfirm}
             />
           </div>

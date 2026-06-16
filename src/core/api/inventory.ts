@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { apiRequest } from './client';
+import { apiRequest } from '@/core/api/client';
 import type {
   ApiResponse,
   FilterOption,
@@ -11,22 +11,10 @@ import type {
   InventoryStatus,
   UnitOfMeasure,
 } from '@/types';
+import type { InventoryFormPayload } from '@/modules/inventory/hooks/useInventoryForm';
 
-export interface InventoryFormPayload {
-  name: string;
-  description?: string;
-  categoryId: string;
-  uomLabel: string;
-  stockUnit: number;
-  properties: Array<{ id?: string; label: string; type: string; value: string | number | boolean }>;
-  stockIntakeProperties: Array<{ id?: string; label: string; type: string; required: boolean }>;
-  tags: string[];
-  notifyExpiryEnabled: boolean;
-  daysBeforeExpiryNotification?: number;
-  reorderOnMinStockEnabled: boolean;
-  minStockReorderLevel?: number;
-  notifyOnMinStockEnabled: boolean;
-  minStockNotificationLevel?: number;
+function wrap<T>(data: T): ApiResponse<T> {
+  return { success: true, data };
 }
 
 function toRequestError(err: unknown): Error {
@@ -35,13 +23,13 @@ function toRequestError(err: unknown): Error {
   }
   if (axios.isAxiosError(err)) {
     const status = err.response?.status;
-    const data = err.response?.data as Record<string, unknown> | undefined;
+    const data = err.response?.data;
     if (status === 501) {
-      return new Error('This feature is not yet available.');
+      return new Error('This feature is not yet available. Please contact the backend team.');
     }
     const isProxyError = !err.response || (status === 500 && typeof data === 'string');
     if (isProxyError) return new Error('Please check your connection.');
-    const backendMessage = (data?.message ?? data?.error ?? err.response?.statusText) as string | undefined;
+    const backendMessage = data?.message ?? data?.error ?? err.response?.statusText;
     if (backendMessage) return new Error(backendMessage);
   }
   return err instanceof Error ? err : new Error('Request failed');
@@ -68,28 +56,25 @@ function normalizeItem(item: InventoryItem): InventoryItem {
   });
   return {
     ...item,
-    category: item.category ?? '',
-    stockUnit: Number(item.stockUnit ?? 0),
-    uomLabel: item.uomLabel ?? (raw.baseUnitOfMeasure as string) ?? '',
-    status: toStatusEnum(item.status),
-    properties: Array.isArray(item.properties) ? item.properties : [],
+    category:              item.category                          ?? '',
+    stockUnit:             Number(item.stockUnit ?? 0),
+    uomLabel:              item.uomLabel                         ?? item.baseUnitOfMeasure ?? '',
+    status:                toStatusEnum(item.status),
+    properties:            Array.isArray(item.properties)            ? item.properties            : [],
     stockIntakeProperties: Array.isArray(item.stockIntakeProperties) ? item.stockIntakeProperties : [],
     tags,
-    grades: Array.isArray(item.grades) ? item.grades : [],
-    attributes: Array.isArray(item.attributes) ? item.attributes : [],
-    batchFields: Array.isArray(item.batchFields) ? item.batchFields : [],
-    expiryNotificationSchedule: Array.isArray(item.expiryNotificationSchedule)
-      ? item.expiryNotificationSchedule
-      : [],
+    grades:                Array.isArray(item.grades)                ? item.grades                : [],
+    attributes:            Array.isArray(item.attributes)            ? item.attributes            : [],
+    batchFields:           Array.isArray(item.batchFields)           ? item.batchFields           : [],
+    expiryNotificationSchedule: Array.isArray(item.expiryNotificationSchedule) ? item.expiryNotificationSchedule : [],
   };
 }
 
-function wrap<T>(data: T): ApiResponse<T> {
-  return { success: true, data };
-}
-
 export const inventoryApi = {
-  async getItems(params: InventoryQueryParams, signal?: AbortSignal): Promise<InventoryApiResponse> {
+  async getItems(
+    params: InventoryQueryParams,
+    signal?: AbortSignal,
+  ): Promise<InventoryApiResponse> {
     const query = new URLSearchParams();
     query.set('page', String(params.page - 1));
     query.set('size', String(params.pageSize));
@@ -127,7 +112,10 @@ export const inventoryApi = {
     return wrap(created);
   },
 
-  async updateItem(id: string, payload: InventoryFormPayload): Promise<ApiResponse<InventoryItem>> {
+  async updateItem(
+    id: string,
+    payload: InventoryFormPayload,
+  ): Promise<ApiResponse<InventoryItem>> {
     const { name, ...rest } = payload;
     const updated = await apiRequest<InventoryItem>(`/api/inventory/items/${id}`, {
       method: 'PATCH',
@@ -169,9 +157,11 @@ export const inventoryApi = {
     }
   },
 
-  async getStatuses(_signal?: AbortSignal): Promise<Array<FilterOption<InventoryStatus>>> {
+  async getStatuses(
+    _signal?: AbortSignal,
+  ): Promise<Array<FilterOption<InventoryStatus>>> {
     return [
-      { value: 'ACTIVE', label: 'Active' },
+      { value: 'ACTIVE',           label: 'Active' },
       { value: 'INTAKE_SUSPENDED', label: 'Intake Suspended' },
     ];
   },

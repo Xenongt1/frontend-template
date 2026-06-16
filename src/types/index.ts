@@ -72,6 +72,7 @@ export interface InventoryTag {
   color: string;
 }
 
+// Matches InventoryItemSummaryResponse and InventoryItemResponse from backend
 export interface InventoryItem {
   id: string;
   sku: string;
@@ -84,6 +85,7 @@ export interface InventoryItem {
   properties: InventoryProperty[];
   stockIntakeProperties: StockIntakeProperty[];
   tags: string[];
+  // Notification fields
   daysBeforeExpiryNotification?: number;
   minStockNotificationLevel?: number;
   minStockReorderLevel?: number;
@@ -91,6 +93,7 @@ export interface InventoryItem {
   notifyOnMinStockEnabled?: boolean;
   reorderOnMinStockEnabled?: boolean;
   createdAt?: string;
+  // Legacy optional fields kept for backward compatibility
   baseUnitOfMeasure?: string;
   attributes?: InventoryAttribute[];
   batchFields?: InventoryBatchField[];
@@ -100,6 +103,7 @@ export interface InventoryItem {
   reorderThreshold?: number;
 }
 
+// Matches InventoryItemRequest from backend (feature/CHAIN-69)
 export interface CreateInventoryItemPayload {
   sku: string;
   name: string;
@@ -113,6 +117,7 @@ export interface CreateInventoryItemPayload {
   batchFields: InventoryBatchField[];
 }
 
+// Matches CategoryResponse from backend
 export interface Category {
   id: string;
   name: string;

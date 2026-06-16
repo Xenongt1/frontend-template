@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import {
   Plus, Search, Info, MoreVertical, ListFilter,
   ArrowDownNarrowWide, ChevronDown, ChevronLeft, ChevronRight,
 } from 'lucide-react';
+import emptyStateIllustration from '@/assert/Empty-state-illustration.svg';
 import InventoryPageShell, { InventoryPageHeader } from '../components/InventoryPageShell';
 import StockLocationFilterModal from '../components/StockLocationFilterModal';
 import { storageLocationApi } from '@/core/api';
@@ -94,37 +94,41 @@ const StockLocationsPage: React.FC = () => {
     }
   };
 
+  const [locations, setLocations] = useState<StockLocation[]>([]);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('All');
   const [showFilterModal, setShowFilterModal] = useState(false);
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(search), 400);
     return () => clearTimeout(timer);
   }, [search]);
 
-  const active = statusFilter === 'ACTIVE' ? true : statusFilter === 'INACTIVE' ? false : undefined;
-
-  const { data, isLoading: loading, error: queryError } = useQuery({
-    queryKey: ['stock-locations', { page, size: rowsPerPage, search: debouncedSearch, statusFilter }],
-    queryFn: () => storageLocationApi.getStorageLocations({ page, size: rowsPerPage, search: debouncedSearch, active }),
-  });
-
-  const locations: StockLocation[] = data?.data ?? [];
-  const total = data?.pagination.totalItems ?? 0;
-  const totalPages = data?.pagination.totalPages ?? 1;
-  const error = queryError ? (queryError as Error).message : null;
-
-  const toggleLocationMutation = useMutation({
-    mutationFn: ({ id, action }: { id: string; action: 'suspend' | 'activate' }) =>
-      action === 'suspend'
-        ? storageLocationApi.suspendStorageLocation(id)
-        : storageLocationApi.activateStorageLocation(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['stock-locations'] });
-    },
-  });
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    let active: boolean | undefined;
+    if (statusFilter === 'ACTIVE') active = true;
+    else if (statusFilter === 'INACTIVE') active = false;
+    storageLocationApi.getStorageLocations({ page, size: rowsPerPage, search: debouncedSearch, active })
+      .then(res => {
+        if (cancelled) return;
+        setLocations(res.data);
+        setTotal(res.pagination.totalItems);
+        setTotalPages(res.pagination.totalPages);
+      })
+      .catch(err => {
+        if (cancelled) return;
+        setError(err?.message ?? 'Failed to load locations');
+      })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, [page, rowsPerPage, debouncedSearch, statusFilter]);
 
   const hasActiveFilters = statusFilter !== 'All' || debouncedSearch !== '';
 
@@ -143,26 +147,29 @@ const StockLocationsPage: React.FC = () => {
   const menuLoc = openMenu ? locations.find(l => l.id === openMenu.id) ?? null : null;
 
   const [confirmAction, setConfirmAction] = useState<{ id: string; name: string; action: 'suspend' | 'activate' } | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const handleConfirmAction = async () => {
     if (!confirmAction) return;
-    toggleLocationMutation.mutate(
-      { id: confirmAction.id, action: confirmAction.action },
-      {
-        onSuccess: () => {
-          setToastMessage(
-            confirmAction.action === 'suspend'
-              ? t('stockLocations.suspend.successToast')
-              : t('stockLocations.activate.successToast'),
-          );
-          setConfirmAction(null);
-        },
-      },
-    );
+    setActionLoading(true);
+    try {
+      const updated = confirmAction.action === 'suspend'
+        ? await storageLocationApi.suspendStorageLocation(confirmAction.id)
+        : await storageLocationApi.activateStorageLocation(confirmAction.id);
+      setLocations(prev => prev.map(loc => loc.id === updated.id ? updated : loc));
+      setToastMessage(
+        confirmAction.action === 'suspend'
+          ? t('stockLocations.suspend.successToast')
+          : t('stockLocations.activate.successToast')
+      );
+      setConfirmAction(null);
+    } catch {
+      // error surfaces to the user via the existing error state on reload
+    } finally {
+      setActionLoading(false);
+    }
   };
-
-  const actionLoading = toggleLocationMutation.isPending;
 
   return (
     <>
@@ -210,13 +217,13 @@ const StockLocationsPage: React.FC = () => {
           }}
         >
           <button
-            onClick={() => { setOpenMenu(null); navigate({ to: '/inventory/stock-locations/$id', params: { id: menuLoc.id } }); }}
+            onClick={() => { setOpenMenu(null); navigate({ to: `/inventory/stock-locations/${menuLoc.id}` }); }}
             style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', background: 'none', border: 'none', fontFamily: 'Inter', fontWeight: 500, fontSize: 14, lineHeight: 1.5, color: '#08283B', cursor: 'pointer' }}
           >
             View details
           </button>
           <button
-            onClick={() => { setOpenMenu(null); navigate({ to: '/inventory/stock-locations/$id/edit', params: { id: menuLoc.id } }); }}
+            onClick={() => { setOpenMenu(null); navigate({ to: `/inventory/stock-locations/${menuLoc.id}/edit` }); }}
             style={{ display: 'block', width: '100%', textAlign: 'left', padding: '8px 16px', background: 'none', border: 'none', fontFamily: 'Inter', fontWeight: 500, fontSize: 14, lineHeight: 1.5, color: '#08283B', cursor: 'pointer' }}
           >
             Edit
@@ -293,7 +300,7 @@ const StockLocationsPage: React.FC = () => {
           justifyContent: 'center', padding: '128px 80px', boxSizing: 'border-box',
         }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, maxWidth: 600, width: '100%' }}>
-            <div style={{ width: 290, height: 220, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F7F7F7', borderRadius: 12 }} />
+            <img src={emptyStateIllustration} alt="" style={{ width: 290, height: 220, flexShrink: 0 }} />
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 24, width: '100%' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, textAlign: 'center' }}>
                 <p style={{ margin: 0, fontFamily: 'Poppins, Inter, sans-serif', fontWeight: 500, fontSize: 24, lineHeight: '36px', color: '#041620' }}>

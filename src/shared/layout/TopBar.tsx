@@ -1,21 +1,36 @@
-import { useRouterState } from '@tanstack/react-router';
+import React from 'react';
+import { useLocation } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
-const PAGE_TITLE_PREFIXES: Array<[prefix: string, key: string]> = [
-  ['/iam/roles', 'page.roleManagement'],
-  ['/inventory', 'page.inventoryManagement'],
-  ['/suppliers', 'page.suppliers'],
-  ['/users', 'page.users'],
-  ['/dashboard', 'page.dashboard'],
-];
+// "Inventory Management" is confirmed from Figma (node 1019-33558).
+// Other titles are derived from route — update when those Figma pages are available.
+const PAGE_TITLE_KEYS: Record<string, string> = {
+  '/dashboard': 'page.dashboard',
+  '/inventory': 'page.inventoryManagement',
+  '/inventory/edit/:id': 'page.inventoryManagement',
+  '/inventory/catalogue': 'page.inventoryManagement',
+  '/inventory/register': 'page.inventoryManagement',
+  '/inventory/stock': 'page.inventoryManagement',
+  '/inventory/warehouse': 'page.inventoryManagement',
+  '/production': 'page.production',
+  '/suppliers': 'page.suppliers',
+  '/orders': 'page.orders',
+  '/payments': 'page.payments',
+  '/fulfillment': 'page.fulfillment',
+  '/reports': 'page.reports',
+  '/users': 'page.users',
+  '/notifications': 'page.notifications',
+  '/iam/roles': 'page.roleManagement',
+  '/iam/roles/new': 'page.roleManagement',
+  '/iam/roles/:id': 'page.roleManagement',
+  '/iam/roles/:id/edit': 'page.roleManagement',
+};
 
 const TopBar: React.FC = () => {
-  const { location: { pathname } } = useRouterState();
+  const { pathname } = useLocation();
   const { t } = useTranslation();
-  const match = PAGE_TITLE_PREFIXES.find(
-    ([prefix]) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  );
-  const title = match ? t(match[1]) : 'ChainPilot';
+  const titleKey = PAGE_TITLE_KEYS[pathname];
+  const title = titleKey ? t(titleKey) : 'ChainPilot';
 
   return (
     <header

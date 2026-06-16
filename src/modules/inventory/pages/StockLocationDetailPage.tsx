@@ -7,7 +7,7 @@ import type { StockLocation } from '@/types';
 
 const StockLocationDetailPage: React.FC = () => {
   const navigate = useNavigate();
-  const { id } = useParams({ strict: false }) as { id: string };
+  const { id } = useParams({ strict: false }) as { id?: string };
 
   const [location, setLocation] = useState<StockLocation | null>(null);
   const [loading, setLoading] = useState(true);

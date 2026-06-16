@@ -1,0 +1,211 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Figma Design Tokens ─────────────────────────────────────────────────── */
+:root {
+  /* Backgrounds / Surfaces */
+  --color-page-bg: #F7F7F7;
+  --color-card-bg: #FDFDFD;
+  --color-input-bg: #F9FAFB;
+  --color-overlay-bg: #ECECEB;
+
+  /* Strokes */
+  --color-stroke-light: #E6EAEB;
+  --color-stroke-medium: #B2BCC2;
+  --color-stroke-input: #D0D5DD;
+  --color-stroke-focus: #1A7FC1;
+
+  /* Brand */
+  --color-brand-navy: #08283B;
+  --color-brand-navy-dark: #041620;
+  --color-brand-navy-mid: #061C2A;
+  --color-brand-disabled: #9FB1BB;
+
+  /* Text */
+  --color-text-primary: #08283B;
+  --color-text-secondary: #395362;
+  --color-text-tertiary: #5A6F7C;
+  --color-text-placeholder: #9CA3AF;
+
+  /* Status */
+  --color-error: #C81E1E;
+  --color-success-fill: #F3FAF7;
+  --color-success-stroke: #DEF7EC;
+  --color-success-text: #00684A;
+
+  /* Legacy aliases (keep for backward compatibility) */
+  --Background-General-Light: #FDFDFD;
+  --Background-Sidepanel-Active: #CDE6FC;
+  --Page-Background: #F7F7F7;
+  --Stroke-Default-Light: #E6EAEB;
+  --Logo-Dark-Blue: #08283B;
+  --Body-Text-Primary: #08283B;
+  --Body-Text-Secondary: #395362;
+  --Body-Text-Tertiary: #5A6F7C;
+  --Header-Text-Primary: #041620;
+  --Header-Text-Secondary: #395362;
+  --Icon-Primary: #08283B;
+  --Buttons-Filled-Dark-Blue-Default: #08283B;
+  --Buttons-Filled-Dark-Blue-Icon: #FDFDFD;
+  --Buttons-Filled-Dark-Blue-Text: #FDFDFD;
+}
+
+/* Font utilities */
+.font-inter { font-family: 'Inter', system-ui, sans-serif; }
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: var(--color-page-bg);
+    color: var(--color-text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* ─── Component classes ───────────────────────────────────────────────────── */
+@layer components {
+
+  /* ── Buttons ── */
+
+  /* Primary filled — dark navy (Next, Register, Add) */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    background: var(--color-brand-navy);
+    color: #FDFDFD;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 20px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, opacity 0.15s ease;
+    white-space: nowrap;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: #0A3249;
+  }
+  .btn-primary:active:not(:disabled) {
+    background: var(--color-brand-navy-dark);
+  }
+  .btn-primary:disabled {
+    background: var(--color-brand-disabled);
+    cursor: not-allowed;
+  }
+
+  /* Outline — bordered transparent (Cancel, Previous, Add attribute/grade) */
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--color-brand-navy);
+    background: transparent;
+    color: var(--color-brand-navy-mid);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 20px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    white-space: nowrap;
+  }
+  .btn-outline:hover:not(:disabled) {
+    background: rgba(8, 40, 59, 0.05);
+  }
+  .btn-outline:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Ghost / back button — light border */
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--color-stroke-medium);
+    background: var(--color-card-bg);
+    color: var(--color-brand-navy-mid);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height: 20px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+    white-space: nowrap;
+  }
+  .btn-ghost:hover {
+    background: var(--color-input-bg);
+  }
+
+  /* Danger button (delete/remove) */
+  .btn-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: none;
+    background: var(--color-error);
+    color: #FDFDFD;
+    cursor: pointer;
+    transition: opacity 0.15s ease;
+  }
+  .btn-danger:hover {
+    opacity: 0.88;
+  }
+
+  /* ── Form elements ── */
+
+  .form-input {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--color-stroke-input);
+    background: var(--color-input-bg);
+    font-size: 14px;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--color-text-primary);
+    box-sizing: border-box;
+    outline: none;
+    line-height: 20px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .form-input:focus {
+    border-color: var(--color-stroke-focus);
+    border-width: 1.5px;
+    box-shadow: 0 0 0 3px rgba(26, 127, 193, 0.12);
+  }
+  .form-input::placeholder {
+    color: var(--color-text-placeholder);
+  }
+
+  /* ── Cards / sections ── */
+  .card {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-stroke-light);
+    border-radius: 10px;
+    padding: clamp(16px, 2.5vh, 24px);
+  }
+}

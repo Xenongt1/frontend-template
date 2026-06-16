@@ -12,7 +12,7 @@ const LIST_ROUTE = '/inventory/stock-locations';
 const EditStockLocationPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { id } = useParams({ strict: false }) as { id: string };
+  const { id } = useParams({ strict: false }) as { id?: string };
 
   const [location, setLocation] = useState<StockLocation | null>(null);
   const [loading, setLoading] = useState(true);

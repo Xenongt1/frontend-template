@@ -1,136 +1,188 @@
 import { useState, useEffect } from 'react';
-import { useSearch, useNavigate } from '@tanstack/react-router';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { InventoryStatus } from '../types';
+import { useNavigate, useRouterState } from '@tanstack/react-router';
+import type { InventoryItem, InventoryFilters, InventoryStatus } from '../types';
 import { inventoryApi } from '../api/inventoryApi';
 
 const PAGE_SIZE_OPTIONS = [10, 20];
 
 export const useInventory = () => {
-  // ── URL search params (typed by the catalogue route's validateSearch) ────────
-  const search = useSearch({ from: '/inventory/catalogue' });
-  const navigate = useNavigate({ from: '/inventory/catalogue' });
-  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const rawSearch = useRouterState({ select: (s) => s.location.searchStr });
+  const searchParams = new URLSearchParams(rawSearch);
 
-  const urlSearch = search.q ?? '';
-  const urlCategory = search.category ?? 'All';
-  const urlStatus = (search.status ?? 'All') as InventoryStatus | 'All';
-  const urlPage = search.page ?? 1;
-  const urlPageSize = PAGE_SIZE_OPTIONS.includes(search.pageSize ?? 10)
-    ? (search.pageSize ?? 10)
+  const setSearchParams = (
+    updater: URLSearchParams | ((prev: URLSearchParams) => URLSearchParams),
+    options?: { replace?: boolean },
+  ) => {
+    const current = new URLSearchParams(rawSearch);
+    const next = typeof updater === 'function' ? updater(current) : updater;
+    (navigate as any)({
+      search: () => Object.fromEntries(next.entries()),
+      replace: options?.replace ?? false,
+    });
+  };
+
+  // ── Read all filter/pagination state from the URL ──────────────────────────
+  const urlSearch   = searchParams.get('search')   ?? '';
+  const urlCategory = searchParams.get('category') ?? 'All';
+  const urlStatus   = (searchParams.get('status')  ?? 'All') as InventoryStatus | 'All';
+  const urlPage     = Math.max(1, Number(searchParams.get('page')     ?? '1'));
+  const urlPageSize = PAGE_SIZE_OPTIONS.includes(Number(searchParams.get('pageSize')))
+    ? Number(searchParams.get('pageSize'))
     : 10;
 
-  // ── Local state for the visible search input (stays snappy on keystroke) ─────
+  // ── Local state for the visible search input ───────────────────────────────
+  // Keeps the input responsive on every keystroke while the URL lags by 300 ms.
   const [inputSearch, setInputSearch] = useState(urlSearch);
 
+  // Sync input when the URL changes externally (browser back / forward).
   useEffect(() => {
     setInputSearch(urlSearch);
   }, [urlSearch]);
 
-  // Debounce: write inputSearch → URL after 300 ms of inactivity
+  // Debounce: write inputSearch → URL after 300 ms of inactivity.
   useEffect(() => {
     const timer = setTimeout(() => {
-      const trimmed = inputSearch.trim();
-      if ((search.q ?? '') === trimmed) return;
-      navigate({
-        search: (prev) => ({
-          ...prev,
-          q: trimmed || undefined,
-          page: 1,
-        }),
-        replace: true,
-      });
+      setSearchParams(
+        (prev) => {
+          const trimmed = inputSearch.trim();
+          // Guard: skip the write if nothing actually changed.
+          if ((prev.get('search') ?? '') === trimmed) return prev;
+          const next = new URLSearchParams(prev);
+          trimmed ? next.set('search', trimmed) : next.delete('search');
+          next.set('page', '1');
+          return next;
+        },
+        { replace: true },
+      );
     }, 300);
     return () => clearTimeout(timer);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: inputSearch drives the debounce
-  }, [inputSearch]);
+  }, [inputSearch, setSearchParams]);
 
-  // ── TanStack Query for data fetching ─────────────────────────────────────────
-  const queryKey = ['inventory', { q: urlSearch, category: urlCategory, status: urlStatus, page: urlPage, pageSize: urlPageSize }] as const;
+  // ── API state ──────────────────────────────────────────────────────────────
+  const [items, setItems] = useState<InventoryItem[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [reloadTick, setReloadTick] = useState(0);
 
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey,
-    queryFn: ({ signal }) =>
-      inventoryApi.getItems(
-        {
-          page: urlPage,
-          pageSize: urlPageSize,
-          search: urlSearch || undefined,
-          category: urlCategory !== 'All' ? urlCategory : undefined,
-          status: urlStatus !== 'All' ? urlStatus : undefined,
-        },
-        signal,
-      ),
-  });
+  const reload = () => setReloadTick((t) => t + 1);
 
-  const items = data?.items ?? [];
-  const total = data?.total ?? 0;
+  // Fetch whenever any URL-driven value changes (search is already debounced).
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await inventoryApi.getItems(
+          {
+            page: urlPage,
+            pageSize: urlPageSize,
+            search: urlSearch || undefined,
+            category: urlCategory,
+            status: urlStatus,
+          },
+          controller.signal,
+        );
+        setItems(data.items);
+        setTotal(data.total);
+      } catch (err) {
+        const e = err as Error;
+        if (e.name === 'AbortError' || controller.signal.aborted) return;
+        console.error('Error fetching inventory:', e);
+        setError(e.message || 'Failed to load inventory');
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    };
+
+    load();
+    return () => controller.abort();
+  }, [urlSearch, urlCategory, urlStatus, urlPage, urlPageSize, reloadTick]);
+
   const totalPages = Math.max(1, Math.ceil(total / urlPageSize));
 
-  const reload = () => {
-    queryClient.invalidateQueries({ queryKey: ['inventory'] });
-  };
+  // ── Update functions ───────────────────────────────────────────────────────
 
-  // ── URL navigation helpers ────────────────────────────────────────────────────
+  // Search: update local state immediately; the debounce effect writes to URL.
+  const updateSearch = (search: string) => setInputSearch(search);
 
-  const updateSearch = (value: string) => setInputSearch(value);
-
+  // Category / status: write straight to URL, reset to page 1.
   const updateCategory = (category: string) => {
-    navigate({
-      search: (prev) => ({
-        ...prev,
-        category: category !== 'All' ? category : undefined,
-        page: 1,
-      }),
-      replace: true,
-    });
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        category !== 'All' ? next.set('category', category) : next.delete('category');
+        next.set('page', '1');
+        return next;
+      },
+      { replace: true },
+    );
   };
 
   const updateStatus = (status: InventoryStatus | 'All') => {
-    navigate({
-      search: (prev) => ({
-        ...prev,
-        status: status !== 'All' ? status : undefined,
-        page: 1,
-      }),
-      replace: true,
-    });
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        status !== 'All' ? next.set('status', status) : next.delete('status');
+        next.set('page', '1');
+        return next;
+      },
+      { replace: true },
+    );
   };
 
   const applyFilters = (status: InventoryStatus | 'All', category: string) => {
-    navigate({
-      search: (prev) => ({
-        ...prev,
-        status: status !== 'All' ? status : undefined,
-        category: category !== 'All' ? category : undefined,
-        page: 1,
-      }),
-      replace: true,
-    });
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        status !== 'All' ? next.set('status', status) : next.delete('status');
+        category !== 'All' ? next.set('category', category) : next.delete('category');
+        next.set('page', '1');
+        return next;
+      },
+      { replace: true },
+    );
   };
 
+  // Page navigation: push so the back button restores the previous page.
   const goToPage = (page: number) => {
     if (page >= 1 && page <= totalPages) {
-      navigate({ search: (prev) => ({ ...prev, page }) });
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        next.set('page', String(page));
+        return next;
+      });
     }
   };
 
+  // Page-size change: replace (preference change, not navigation).
   const changePageSize = (pageSize: number) => {
-    navigate({
-      search: (prev) => ({ ...prev, pageSize, page: 1 }),
-      replace: true,
-    });
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.set('pageSize', String(pageSize));
+        next.set('page', '1');
+        return next;
+      },
+      { replace: true },
+    );
+  };
+
+  // ── Return same shape as before — no breaking changes ─────────────────────
+  const filters: InventoryFilters = {
+    search: inputSearch,   // local state → input stays snappy
+    category: urlCategory,
+    status: urlStatus,
   };
 
   return {
     items,
-    loading: isLoading,
-    error: error ? (error as Error).message : null,
-    filters: {
-      search: inputSearch,
-      category: urlCategory,
-      status: urlStatus,
-    },
+    loading,
+    error,
+    filters,
     pagination: { page: urlPage, pageSize: urlPageSize, total },
     totalPages,
     pageSizeOptions: PAGE_SIZE_OPTIONS,
@@ -141,6 +193,5 @@ export const useInventory = () => {
     goToPage,
     changePageSize,
     reload,
-    refetch,
   };
 };

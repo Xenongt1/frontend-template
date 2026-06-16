@@ -12,15 +12,30 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UsersRouteImport } from './routes/users'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as InventoryRouteImport } from './routes/inventory'
+import { Route as IamRouteImport } from './routes/iam'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SuppliersIndexRouteImport } from './routes/suppliers.index'
 import { Route as InventoryIndexRouteImport } from './routes/inventory.index'
+import { Route as IamIndexRouteImport } from './routes/iam.index'
 import { Route as SuppliersRegisterRouteImport } from './routes/suppliers.register'
 import { Route as SuppliersIdRouteImport } from './routes/suppliers.$id'
+import { Route as InventoryStockLocationsRouteImport } from './routes/inventory.stock-locations'
+import { Route as InventoryStockRouteImport } from './routes/inventory.stock'
 import { Route as InventoryRegisterRouteImport } from './routes/inventory.register'
+import { Route as InventoryMovementsRouteImport } from './routes/inventory.movements'
 import { Route as InventoryCatalogueRouteImport } from './routes/inventory.catalogue'
+import { Route as IamRolesRouteImport } from './routes/iam.roles'
+import { Route as InventoryStockLocationsIndexRouteImport } from './routes/inventory.stock-locations.index'
+import { Route as IamRolesIndexRouteImport } from './routes/iam.roles.index'
 import { Route as SuppliersIdEditRouteImport } from './routes/suppliers.$id_.edit'
+import { Route as InventoryStockLocationsRegisterRouteImport } from './routes/inventory.stock-locations.register'
+import { Route as InventoryStockLocationsIdRouteImport } from './routes/inventory.stock-locations.$id'
 import { Route as InventoryEditIdRouteImport } from './routes/inventory.edit.$id'
+import { Route as IamRolesNewRouteImport } from './routes/iam.roles.new'
+import { Route as IamRolesIdRouteImport } from './routes/iam.roles.$id'
+import { Route as InventoryStockLocationsIdEditRouteImport } from './routes/inventory.stock-locations.$id_.edit'
+import { Route as IamRolesIdEditRouteImport } from './routes/iam.roles.$id_.edit'
 
 const UsersRoute = UsersRouteImport.update({
   id: '/users',
@@ -35,6 +50,16 @@ const SuppliersRoute = SuppliersRouteImport.update({
 const InventoryRoute = InventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IamRoute = IamRouteImport.update({
+  id: '/iam',
+  path: '/iam',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -52,6 +77,11 @@ const InventoryIndexRoute = InventoryIndexRouteImport.update({
   path: '/',
   getParentRoute: () => InventoryRoute,
 } as any)
+const IamIndexRoute = IamIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => IamRoute,
+} as any)
 const SuppliersRegisterRoute = SuppliersRegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -62,9 +92,24 @@ const SuppliersIdRoute = SuppliersIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => SuppliersRoute,
 } as any)
+const InventoryStockLocationsRoute = InventoryStockLocationsRouteImport.update({
+  id: '/stock-locations',
+  path: '/stock-locations',
+  getParentRoute: () => InventoryRoute,
+} as any)
+const InventoryStockRoute = InventoryStockRouteImport.update({
+  id: '/stock',
+  path: '/stock',
+  getParentRoute: () => InventoryRoute,
+} as any)
 const InventoryRegisterRoute = InventoryRegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => InventoryRoute,
+} as any)
+const InventoryMovementsRoute = InventoryMovementsRouteImport.update({
+  id: '/movements',
+  path: '/movements',
   getParentRoute: () => InventoryRoute,
 } as any)
 const InventoryCatalogueRoute = InventoryCatalogueRouteImport.update({
@@ -72,103 +117,238 @@ const InventoryCatalogueRoute = InventoryCatalogueRouteImport.update({
   path: '/catalogue',
   getParentRoute: () => InventoryRoute,
 } as any)
+const IamRolesRoute = IamRolesRouteImport.update({
+  id: '/roles',
+  path: '/roles',
+  getParentRoute: () => IamRoute,
+} as any)
+const InventoryStockLocationsIndexRoute =
+  InventoryStockLocationsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => InventoryStockLocationsRoute,
+  } as any)
+const IamRolesIndexRoute = IamRolesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => IamRolesRoute,
+} as any)
 const SuppliersIdEditRoute = SuppliersIdEditRouteImport.update({
   id: '/$id_/edit',
   path: '/$id/edit',
   getParentRoute: () => SuppliersRoute,
 } as any)
+const InventoryStockLocationsRegisterRoute =
+  InventoryStockLocationsRegisterRouteImport.update({
+    id: '/register',
+    path: '/register',
+    getParentRoute: () => InventoryStockLocationsRoute,
+  } as any)
+const InventoryStockLocationsIdRoute =
+  InventoryStockLocationsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => InventoryStockLocationsRoute,
+  } as any)
 const InventoryEditIdRoute = InventoryEditIdRouteImport.update({
   id: '/edit/$id',
   path: '/edit/$id',
   getParentRoute: () => InventoryRoute,
 } as any)
+const IamRolesNewRoute = IamRolesNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => IamRolesRoute,
+} as any)
+const IamRolesIdRoute = IamRolesIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => IamRolesRoute,
+} as any)
+const InventoryStockLocationsIdEditRoute =
+  InventoryStockLocationsIdEditRouteImport.update({
+    id: '/$id_/edit',
+    path: '/$id/edit',
+    getParentRoute: () => InventoryStockLocationsRoute,
+  } as any)
+const IamRolesIdEditRoute = IamRolesIdEditRouteImport.update({
+  id: '/$id_/edit',
+  path: '/$id/edit',
+  getParentRoute: () => IamRolesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/iam': typeof IamRouteWithChildren
   '/inventory': typeof InventoryRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
   '/users': typeof UsersRoute
+  '/iam/roles': typeof IamRolesRouteWithChildren
   '/inventory/catalogue': typeof InventoryCatalogueRoute
+  '/inventory/movements': typeof InventoryMovementsRoute
   '/inventory/register': typeof InventoryRegisterRoute
+  '/inventory/stock': typeof InventoryStockRoute
+  '/inventory/stock-locations': typeof InventoryStockLocationsRouteWithChildren
   '/suppliers/$id': typeof SuppliersIdRoute
   '/suppliers/register': typeof SuppliersRegisterRoute
+  '/iam/': typeof IamIndexRoute
   '/inventory/': typeof InventoryIndexRoute
   '/suppliers/': typeof SuppliersIndexRoute
+  '/iam/roles/$id': typeof IamRolesIdRoute
+  '/iam/roles/new': typeof IamRolesNewRoute
   '/inventory/edit/$id': typeof InventoryEditIdRoute
+  '/inventory/stock-locations/$id': typeof InventoryStockLocationsIdRoute
+  '/inventory/stock-locations/register': typeof InventoryStockLocationsRegisterRoute
   '/suppliers/$id/edit': typeof SuppliersIdEditRoute
+  '/iam/roles/': typeof IamRolesIndexRoute
+  '/inventory/stock-locations/': typeof InventoryStockLocationsIndexRoute
+  '/iam/roles/$id/edit': typeof IamRolesIdEditRoute
+  '/inventory/stock-locations/$id/edit': typeof InventoryStockLocationsIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/users': typeof UsersRoute
   '/inventory/catalogue': typeof InventoryCatalogueRoute
+  '/inventory/movements': typeof InventoryMovementsRoute
   '/inventory/register': typeof InventoryRegisterRoute
+  '/inventory/stock': typeof InventoryStockRoute
   '/suppliers/$id': typeof SuppliersIdRoute
   '/suppliers/register': typeof SuppliersRegisterRoute
+  '/iam': typeof IamIndexRoute
   '/inventory': typeof InventoryIndexRoute
   '/suppliers': typeof SuppliersIndexRoute
+  '/iam/roles/$id': typeof IamRolesIdRoute
+  '/iam/roles/new': typeof IamRolesNewRoute
   '/inventory/edit/$id': typeof InventoryEditIdRoute
+  '/inventory/stock-locations/$id': typeof InventoryStockLocationsIdRoute
+  '/inventory/stock-locations/register': typeof InventoryStockLocationsRegisterRoute
   '/suppliers/$id/edit': typeof SuppliersIdEditRoute
+  '/iam/roles': typeof IamRolesIndexRoute
+  '/inventory/stock-locations': typeof InventoryStockLocationsIndexRoute
+  '/iam/roles/$id/edit': typeof IamRolesIdEditRoute
+  '/inventory/stock-locations/$id/edit': typeof InventoryStockLocationsIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/iam': typeof IamRouteWithChildren
   '/inventory': typeof InventoryRouteWithChildren
   '/suppliers': typeof SuppliersRouteWithChildren
   '/users': typeof UsersRoute
+  '/iam/roles': typeof IamRolesRouteWithChildren
   '/inventory/catalogue': typeof InventoryCatalogueRoute
+  '/inventory/movements': typeof InventoryMovementsRoute
   '/inventory/register': typeof InventoryRegisterRoute
+  '/inventory/stock': typeof InventoryStockRoute
+  '/inventory/stock-locations': typeof InventoryStockLocationsRouteWithChildren
   '/suppliers/$id': typeof SuppliersIdRoute
   '/suppliers/register': typeof SuppliersRegisterRoute
+  '/iam/': typeof IamIndexRoute
   '/inventory/': typeof InventoryIndexRoute
   '/suppliers/': typeof SuppliersIndexRoute
+  '/iam/roles/$id': typeof IamRolesIdRoute
+  '/iam/roles/new': typeof IamRolesNewRoute
   '/inventory/edit/$id': typeof InventoryEditIdRoute
+  '/inventory/stock-locations/$id': typeof InventoryStockLocationsIdRoute
+  '/inventory/stock-locations/register': typeof InventoryStockLocationsRegisterRoute
   '/suppliers/$id_/edit': typeof SuppliersIdEditRoute
+  '/iam/roles/': typeof IamRolesIndexRoute
+  '/inventory/stock-locations/': typeof InventoryStockLocationsIndexRoute
+  '/iam/roles/$id_/edit': typeof IamRolesIdEditRoute
+  '/inventory/stock-locations/$id_/edit': typeof InventoryStockLocationsIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/dashboard'
+    | '/iam'
     | '/inventory'
     | '/suppliers'
     | '/users'
+    | '/iam/roles'
     | '/inventory/catalogue'
+    | '/inventory/movements'
     | '/inventory/register'
+    | '/inventory/stock'
+    | '/inventory/stock-locations'
     | '/suppliers/$id'
     | '/suppliers/register'
+    | '/iam/'
     | '/inventory/'
     | '/suppliers/'
+    | '/iam/roles/$id'
+    | '/iam/roles/new'
     | '/inventory/edit/$id'
+    | '/inventory/stock-locations/$id'
+    | '/inventory/stock-locations/register'
     | '/suppliers/$id/edit'
+    | '/iam/roles/'
+    | '/inventory/stock-locations/'
+    | '/iam/roles/$id/edit'
+    | '/inventory/stock-locations/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/dashboard'
     | '/users'
     | '/inventory/catalogue'
+    | '/inventory/movements'
     | '/inventory/register'
+    | '/inventory/stock'
     | '/suppliers/$id'
     | '/suppliers/register'
+    | '/iam'
     | '/inventory'
     | '/suppliers'
+    | '/iam/roles/$id'
+    | '/iam/roles/new'
     | '/inventory/edit/$id'
+    | '/inventory/stock-locations/$id'
+    | '/inventory/stock-locations/register'
     | '/suppliers/$id/edit'
+    | '/iam/roles'
+    | '/inventory/stock-locations'
+    | '/iam/roles/$id/edit'
+    | '/inventory/stock-locations/$id/edit'
   id:
     | '__root__'
     | '/'
+    | '/dashboard'
+    | '/iam'
     | '/inventory'
     | '/suppliers'
     | '/users'
+    | '/iam/roles'
     | '/inventory/catalogue'
+    | '/inventory/movements'
     | '/inventory/register'
+    | '/inventory/stock'
+    | '/inventory/stock-locations'
     | '/suppliers/$id'
     | '/suppliers/register'
+    | '/iam/'
     | '/inventory/'
     | '/suppliers/'
+    | '/iam/roles/$id'
+    | '/iam/roles/new'
     | '/inventory/edit/$id'
+    | '/inventory/stock-locations/$id'
+    | '/inventory/stock-locations/register'
     | '/suppliers/$id_/edit'
+    | '/iam/roles/'
+    | '/inventory/stock-locations/'
+    | '/iam/roles/$id_/edit'
+    | '/inventory/stock-locations/$id_/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRoute
+  IamRoute: typeof IamRouteWithChildren
   InventoryRoute: typeof InventoryRouteWithChildren
   SuppliersRoute: typeof SuppliersRouteWithChildren
   UsersRoute: typeof UsersRoute
@@ -197,6 +377,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InventoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/iam': {
+      id: '/iam'
+      path: '/iam'
+      fullPath: '/iam'
+      preLoaderRoute: typeof IamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -218,6 +412,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InventoryIndexRouteImport
       parentRoute: typeof InventoryRoute
     }
+    '/iam/': {
+      id: '/iam/'
+      path: '/'
+      fullPath: '/iam/'
+      preLoaderRoute: typeof IamIndexRouteImport
+      parentRoute: typeof IamRoute
+    }
     '/suppliers/register': {
       id: '/suppliers/register'
       path: '/register'
@@ -232,11 +433,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuppliersIdRouteImport
       parentRoute: typeof SuppliersRoute
     }
+    '/inventory/stock-locations': {
+      id: '/inventory/stock-locations'
+      path: '/stock-locations'
+      fullPath: '/inventory/stock-locations'
+      preLoaderRoute: typeof InventoryStockLocationsRouteImport
+      parentRoute: typeof InventoryRoute
+    }
+    '/inventory/stock': {
+      id: '/inventory/stock'
+      path: '/stock'
+      fullPath: '/inventory/stock'
+      preLoaderRoute: typeof InventoryStockRouteImport
+      parentRoute: typeof InventoryRoute
+    }
     '/inventory/register': {
       id: '/inventory/register'
       path: '/register'
       fullPath: '/inventory/register'
       preLoaderRoute: typeof InventoryRegisterRouteImport
+      parentRoute: typeof InventoryRoute
+    }
+    '/inventory/movements': {
+      id: '/inventory/movements'
+      path: '/movements'
+      fullPath: '/inventory/movements'
+      preLoaderRoute: typeof InventoryMovementsRouteImport
       parentRoute: typeof InventoryRoute
     }
     '/inventory/catalogue': {
@@ -246,12 +468,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InventoryCatalogueRouteImport
       parentRoute: typeof InventoryRoute
     }
+    '/iam/roles': {
+      id: '/iam/roles'
+      path: '/roles'
+      fullPath: '/iam/roles'
+      preLoaderRoute: typeof IamRolesRouteImport
+      parentRoute: typeof IamRoute
+    }
+    '/inventory/stock-locations/': {
+      id: '/inventory/stock-locations/'
+      path: '/'
+      fullPath: '/inventory/stock-locations/'
+      preLoaderRoute: typeof InventoryStockLocationsIndexRouteImport
+      parentRoute: typeof InventoryStockLocationsRoute
+    }
+    '/iam/roles/': {
+      id: '/iam/roles/'
+      path: '/'
+      fullPath: '/iam/roles/'
+      preLoaderRoute: typeof IamRolesIndexRouteImport
+      parentRoute: typeof IamRolesRoute
+    }
     '/suppliers/$id_/edit': {
       id: '/suppliers/$id_/edit'
       path: '/$id/edit'
       fullPath: '/suppliers/$id/edit'
       preLoaderRoute: typeof SuppliersIdEditRouteImport
       parentRoute: typeof SuppliersRoute
+    }
+    '/inventory/stock-locations/register': {
+      id: '/inventory/stock-locations/register'
+      path: '/register'
+      fullPath: '/inventory/stock-locations/register'
+      preLoaderRoute: typeof InventoryStockLocationsRegisterRouteImport
+      parentRoute: typeof InventoryStockLocationsRoute
+    }
+    '/inventory/stock-locations/$id': {
+      id: '/inventory/stock-locations/$id'
+      path: '/$id'
+      fullPath: '/inventory/stock-locations/$id'
+      preLoaderRoute: typeof InventoryStockLocationsIdRouteImport
+      parentRoute: typeof InventoryStockLocationsRoute
     }
     '/inventory/edit/$id': {
       id: '/inventory/edit/$id'
@@ -260,19 +517,103 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InventoryEditIdRouteImport
       parentRoute: typeof InventoryRoute
     }
+    '/iam/roles/new': {
+      id: '/iam/roles/new'
+      path: '/new'
+      fullPath: '/iam/roles/new'
+      preLoaderRoute: typeof IamRolesNewRouteImport
+      parentRoute: typeof IamRolesRoute
+    }
+    '/iam/roles/$id': {
+      id: '/iam/roles/$id'
+      path: '/$id'
+      fullPath: '/iam/roles/$id'
+      preLoaderRoute: typeof IamRolesIdRouteImport
+      parentRoute: typeof IamRolesRoute
+    }
+    '/inventory/stock-locations/$id_/edit': {
+      id: '/inventory/stock-locations/$id_/edit'
+      path: '/$id/edit'
+      fullPath: '/inventory/stock-locations/$id/edit'
+      preLoaderRoute: typeof InventoryStockLocationsIdEditRouteImport
+      parentRoute: typeof InventoryStockLocationsRoute
+    }
+    '/iam/roles/$id_/edit': {
+      id: '/iam/roles/$id_/edit'
+      path: '/$id/edit'
+      fullPath: '/iam/roles/$id/edit'
+      preLoaderRoute: typeof IamRolesIdEditRouteImport
+      parentRoute: typeof IamRolesRoute
+    }
   }
 }
 
+interface IamRolesRouteChildren {
+  IamRolesIdRoute: typeof IamRolesIdRoute
+  IamRolesNewRoute: typeof IamRolesNewRoute
+  IamRolesIndexRoute: typeof IamRolesIndexRoute
+  IamRolesIdEditRoute: typeof IamRolesIdEditRoute
+}
+
+const IamRolesRouteChildren: IamRolesRouteChildren = {
+  IamRolesIdRoute: IamRolesIdRoute,
+  IamRolesNewRoute: IamRolesNewRoute,
+  IamRolesIndexRoute: IamRolesIndexRoute,
+  IamRolesIdEditRoute: IamRolesIdEditRoute,
+}
+
+const IamRolesRouteWithChildren = IamRolesRoute._addFileChildren(
+  IamRolesRouteChildren,
+)
+
+interface IamRouteChildren {
+  IamRolesRoute: typeof IamRolesRouteWithChildren
+  IamIndexRoute: typeof IamIndexRoute
+}
+
+const IamRouteChildren: IamRouteChildren = {
+  IamRolesRoute: IamRolesRouteWithChildren,
+  IamIndexRoute: IamIndexRoute,
+}
+
+const IamRouteWithChildren = IamRoute._addFileChildren(IamRouteChildren)
+
+interface InventoryStockLocationsRouteChildren {
+  InventoryStockLocationsIdRoute: typeof InventoryStockLocationsIdRoute
+  InventoryStockLocationsRegisterRoute: typeof InventoryStockLocationsRegisterRoute
+  InventoryStockLocationsIndexRoute: typeof InventoryStockLocationsIndexRoute
+  InventoryStockLocationsIdEditRoute: typeof InventoryStockLocationsIdEditRoute
+}
+
+const InventoryStockLocationsRouteChildren: InventoryStockLocationsRouteChildren =
+  {
+    InventoryStockLocationsIdRoute: InventoryStockLocationsIdRoute,
+    InventoryStockLocationsRegisterRoute: InventoryStockLocationsRegisterRoute,
+    InventoryStockLocationsIndexRoute: InventoryStockLocationsIndexRoute,
+    InventoryStockLocationsIdEditRoute: InventoryStockLocationsIdEditRoute,
+  }
+
+const InventoryStockLocationsRouteWithChildren =
+  InventoryStockLocationsRoute._addFileChildren(
+    InventoryStockLocationsRouteChildren,
+  )
+
 interface InventoryRouteChildren {
   InventoryCatalogueRoute: typeof InventoryCatalogueRoute
+  InventoryMovementsRoute: typeof InventoryMovementsRoute
   InventoryRegisterRoute: typeof InventoryRegisterRoute
+  InventoryStockRoute: typeof InventoryStockRoute
+  InventoryStockLocationsRoute: typeof InventoryStockLocationsRouteWithChildren
   InventoryIndexRoute: typeof InventoryIndexRoute
   InventoryEditIdRoute: typeof InventoryEditIdRoute
 }
 
 const InventoryRouteChildren: InventoryRouteChildren = {
   InventoryCatalogueRoute: InventoryCatalogueRoute,
+  InventoryMovementsRoute: InventoryMovementsRoute,
   InventoryRegisterRoute: InventoryRegisterRoute,
+  InventoryStockRoute: InventoryStockRoute,
+  InventoryStockLocationsRoute: InventoryStockLocationsRouteWithChildren,
   InventoryIndexRoute: InventoryIndexRoute,
   InventoryEditIdRoute: InventoryEditIdRoute,
 }
@@ -301,6 +642,8 @@ const SuppliersRouteWithChildren = SuppliersRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRoute,
+  IamRoute: IamRouteWithChildren,
   InventoryRoute: InventoryRouteWithChildren,
   SuppliersRoute: SuppliersRouteWithChildren,
   UsersRoute: UsersRoute,

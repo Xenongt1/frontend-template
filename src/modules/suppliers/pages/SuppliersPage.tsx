@@ -3,7 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Search, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { supplierApi } from '@/core/api/supplier';
+import { supplierApi } from '@/core/api';
 import type { Supplier, SupplierStatus } from '@/core/api';
 import { ConfirmDialog } from '@/shared/components/ui';
 

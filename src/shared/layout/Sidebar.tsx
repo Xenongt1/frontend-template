@@ -1,9 +1,8 @@
-import { useState } from 'react';
-import { Link, useRouterState } from '@tanstack/react-router';
+import React, { useState } from 'react';
+import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
-const navActive = (pathname: string, to: string): boolean =>
-  pathname === to || pathname.startsWith(`${to}/`);
+
 
 const IAMIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -82,12 +81,13 @@ const ChevronIcon = ({ open }: { open: boolean }) => (
   </svg>
 );
 
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
+
 const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(true);
   const [inventoryOpen, setInventoryOpen] = useState(true);
   const [iamOpen, setIamOpen] = useState(true);
   const { t } = useTranslation();
-  const { location: { pathname } } = useRouterState();
 
   return (
     <div style={{
@@ -105,6 +105,7 @@ const Sidebar: React.FC = () => {
       overflow: 'visible',
     }}>
 
+      {/* ── Logo ─────────────────────────────────────────────────────── */}
       {/* ── Collapse button — protrudes from right edge of sidebar ── */}
       <button
         type="button"
@@ -186,27 +187,29 @@ const Sidebar: React.FC = () => {
 
           {/* Dashboard */}
           <Link to="/dashboard" style={{ textDecoration: 'none' }}>
-            <div style={{ padding: 8 }}>
-              <div style={{
-                paddingLeft: collapsed ? 8 : 12,
-                paddingRight: collapsed ? 8 : 12,
-                paddingTop: 8,
-                paddingBottom: 8,
-                borderRadius: 8,
-                background: navActive(pathname, '/dashboard') ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: collapsed ? 'center' : 'flex-start',
-                gap: 8,
-              }}>
-                <DashboardIcon />
-                {!collapsed && (
-                  <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                    {t('nav.dashboard')}
-                  </span>
-                )}
+            {({ isActive }) => (
+              <div style={{ padding: 8 }}>
+                <div style={{
+                  paddingLeft: collapsed ? 8 : 12,
+                  paddingRight: collapsed ? 8 : 12,
+                  paddingTop: 8,
+                  paddingBottom: 8,
+                  borderRadius: 8,
+                  background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: collapsed ? 'center' : 'flex-start',
+                  gap: 8,
+                }}>
+                  <DashboardIcon />
+                  {!collapsed && (
+                    <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
+                      {t('nav.dashboard')}
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </Link>
 
           {/* IAM (expandable) */}
@@ -234,11 +237,12 @@ const Sidebar: React.FC = () => {
             >
               <IAMIcon />
               {!collapsed && (
-                <span className="flex items-center gap-2 flex-1 justify-between">
-                  <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
+                <span className="flex items-center gap-2 flex-1 justify-between" >
+                  <span style={{  color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
                     {t('nav.iam')}
                   </span>
-                  <ChevronIcon open={iamOpen} />
+
+               <ChevronIcon  open={iamOpen} />
                 </span>
               )}
             </button>
@@ -246,31 +250,35 @@ const Sidebar: React.FC = () => {
             {iamOpen && !collapsed && (
               <div style={{ paddingLeft: 8, paddingRight: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <Link to="/users" style={{ textDecoration: 'none' }}>
-                  <div style={{
-                    paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
-                    borderRadius: 8,
-                    background: navActive(pathname, '/users') ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                    display: 'flex', alignItems: 'center', gap: 4,
-                  }}>
-                    <UsersNavIcon />
-                    <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                      {t('nav.users')}
-                    </span>
-                  </div>
+                  {({ isActive }) => (
+                    <div style={{
+                      paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
+                      borderRadius: 8,
+                      background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
+                      display: 'flex', alignItems: 'center', gap: 4,
+                    }}>
+                      <UsersNavIcon />
+                      <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
+                        {t('nav.users')}
+                      </span>
+                    </div>
+                  )}
                 </Link>
 
                 <Link to="/iam/roles" style={{ textDecoration: 'none' }}>
-                  <div style={{
-                    paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
-                    borderRadius: 8,
-                    background: navActive(pathname, '/iam/roles') ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                    display: 'flex', alignItems: 'center', gap: 4,
-                  }}>
-                    <RolesIcon />
-                    <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                      {t('nav.roleManagement')}
-                    </span>
-                  </div>
+                  {({ isActive }) => (
+                    <div style={{
+                      paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
+                      borderRadius: 8,
+                      background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
+                      display: 'flex', alignItems: 'center', gap: 4,
+                    }}>
+                      <RolesIcon />
+                      <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
+                        {t('nav.roleManagement')}
+                      </span>
+                    </div>
+                  )}
                 </Link>
               </div>
             )}
@@ -312,8 +320,8 @@ const Sidebar: React.FC = () => {
             >
               <InventoryIcon />
               {!collapsed && (
-                <span className="flex items-center gap-2 flex-1 justify-between">
-                  <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
+                <span className="flex items-center gap-2 flex-1 justify-between" >
+                  <span style={{  color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
                     {t('nav.inventory')}
                   </span>
                   <ChevronIcon open={inventoryOpen} />
@@ -321,63 +329,72 @@ const Sidebar: React.FC = () => {
               )}
             </button>
 
+            {/* Sub-items */}
             {inventoryOpen && !collapsed && (
               <div style={{ paddingLeft: 8, paddingRight: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
 
                 <Link to="/inventory/catalogue" style={{ textDecoration: 'none' }}>
-                  <div style={{
-                    paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
-                    borderRadius: 8,
-                    background: navActive(pathname, '/inventory/catalogue') ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                    display: 'flex', alignItems: 'center', gap: 8,
-                  }}>
-                    <CatalogueIcon />
-                    <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                      {t('nav.catalogue')}
-                    </span>
-                  </div>
+                  {({ isActive }) => (
+                    <div style={{
+                      paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
+                      borderRadius: 8,
+                      background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
+                      display: 'flex', alignItems: 'center', gap: 8,
+                    }}>
+                      <CatalogueIcon />
+                      <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
+                        {t('nav.catalogue')}
+                      </span>
+                    </div>
+                  )}
                 </Link>
 
                 <Link to="/inventory/stock" style={{ textDecoration: 'none' }}>
-                  <div style={{
-                    paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
-                    borderRadius: 8,
-                    background: pathname === '/inventory/stock' ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                    display: 'flex', alignItems: 'center', gap: 8,
-                  }}>
-                    <StockIcon />
-                    <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                      {t('nav.stock')}
-                    </span>
-                  </div>
+                  {({ isActive }) => (
+                    <div style={{
+                      paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
+                      borderRadius: 8,
+                      background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
+                      display: 'flex', alignItems: 'center', gap: 8,
+                    }}>
+                      <StockIcon />
+                      <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
+                        {t('nav.stock')}
+                      </span>
+                    </div>
+                  )}
                 </Link>
 
                 <Link to="/inventory/stock-locations" style={{ textDecoration: 'none' }}>
-                  <div style={{
-                    paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
-                    borderRadius: 8,
-                    background: navActive(pathname, '/inventory/stock-locations') ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                    display: 'flex', alignItems: 'center', gap: 8,
-                  }}>
-                    <StockLocationsIcon />
-                    <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                      {t('nav.stockLocations')}
-                    </span>
-                  </div>
+                  {({ isActive }) => (
+                    <div style={{
+                      paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
+                      borderRadius: 8,
+                      background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
+                      display: 'flex', alignItems: 'center', gap: 8,
+                    }}>
+                      <StockLocationsIcon />
+                      <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
+                        {t('nav.stockLocations')}
+                      </span>
+                    </div>
+                  )}
                 </Link>
 
                 <Link to="/inventory/movements" style={{ textDecoration: 'none' }}>
-                  <div style={{
-                    paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
-                    borderRadius: 8,
-                    background: navActive(pathname, '/inventory/movements') ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                    display: 'flex', alignItems: 'center', gap: 8,
-                  }}>
-                    <MovementsIcon />
-                    <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                      {t('nav.movements')}
-                    </span>
-                  </div>
+                  {({ isActive }) => (
+                    <div style={{
+                      paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
+                      borderRadius: 8,
+                      background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
+                      display: 'flex', alignItems: 'center', gap: 8,
+                    }}>
+                      <MovementsIcon />
+                      <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
+                        {t('nav.movements')}
+                      </span>
+                    </div>
+                  )}
                 </Link>
 
               </div>
@@ -386,27 +403,29 @@ const Sidebar: React.FC = () => {
 
           {/* Suppliers */}
           <Link to="/suppliers" style={{ textDecoration: 'none' }}>
-            <div style={{ padding: 8 }}>
-              <div style={{
-                paddingLeft: collapsed ? 8 : 12,
-                paddingRight: collapsed ? 8 : 12,
-                paddingTop: 8,
-                paddingBottom: 8,
-                borderRadius: 8,
-                background: navActive(pathname, '/suppliers') ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: collapsed ? 'center' : 'flex-start',
-                gap: 8,
-              }}>
-                <SuppliersIcon />
-                {!collapsed && (
-                  <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                    {t('nav.suppliers')}
-                  </span>
-                )}
+            {({ isActive }) => (
+              <div style={{ padding: 8 }}>
+                <div style={{
+                  paddingLeft: collapsed ? 8 : 12,
+                  paddingRight: collapsed ? 8 : 12,
+                  paddingTop: 8,
+                  paddingBottom: 8,
+                  borderRadius: 8,
+                  background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: collapsed ? 'center' : 'flex-start',
+                  gap: 8,
+                }}>
+                  <SuppliersIcon />
+                  {!collapsed && (
+                    <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
+                      {t('nav.suppliers')}
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </Link>
         </div>
 

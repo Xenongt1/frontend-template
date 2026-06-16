@@ -2,14 +2,25 @@ import React from 'react';
 
 interface PlaceholderPageProps {
   title: string;
-  description?: string;
 }
 
-const PlaceholderPage: React.FC<PlaceholderPageProps> = ({ title, description }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 300, gap: 8 }}>
-    <h2 style={{ margin: 0, fontFamily: 'Inter', fontWeight: 600, fontSize: 20, color: '#041620' }}>{title}</h2>
-    {description && <p style={{ margin: 0, fontFamily: 'Inter', fontSize: 14, color: '#395362' }}>{description}</p>}
-    <p style={{ margin: 0, fontFamily: 'Inter', fontSize: 13, color: '#6B7A85' }}>Coming soon</p>
+const PlaceholderPage: React.FC<PlaceholderPageProps> = ({ title }) => (
+  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 16, overflow: 'hidden' }}>
+    <div style={{
+      color: 'var(--Body-Text-Primary, #08283B)',
+      fontSize: 20,
+      fontFamily: 'Inter',
+      fontWeight: '500',
+      lineHeight: '30px',
+      flexShrink: 0,
+    }}>
+      {title}
+    </div>
+    <div style={{
+      flex: 1,
+      background: 'var(--Background-General-Light, #FDFDFD)',
+      borderRadius: 8,
+    }} />
   </div>
 );
 

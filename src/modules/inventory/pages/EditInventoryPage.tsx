@@ -5,7 +5,6 @@ import { ArrowLeft } from 'lucide-react';
 import { ApiError } from '@/core/api';
 import type { ApiResponse, UnitOfMeasure } from '@/types';
 import { SuccessToast, Skeleton } from '@/shared/components/ui';
-
 import {
   RegistrationStepper,
   BasicInfoStep,
@@ -18,7 +17,7 @@ import { inventoryApi } from '../api/inventoryApi';
 import PageHeader from '@/shared/components/PageHeader';
 
 const EditInventoryPage: React.FC = () => {
-  const { id } = useParams({ strict: false }) as { id: string };
+  const { id } = useParams({ strict: false }) as { id?: string };
   const navigate = useNavigate();
   const { t } = useTranslation();
   const submitRedirectTimer = useRef<number | undefined>(undefined);

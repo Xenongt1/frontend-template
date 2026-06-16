@@ -1,5 +1,5 @@
+export { apiRequest, ApiError, getApiBaseUrl } from '@/core/api/client';
 export { inventoryApi } from './inventory';
+export { storageLocationApi } from './storageLocation';
 export { supplierApi } from './supplier';
-export { ApiError, apiRequest, getApiBaseUrl } from './client';
-export type { Supplier, SupplierStatus, CreateSupplierPayload, UpdateSupplierPayload } from './supplier';
-export type { InventoryFormPayload } from './inventory';
+export type { Supplier, CreateSupplierPayload, UpdateSupplierPayload, ApprovedItem, SupplierStatus } from './supplier';

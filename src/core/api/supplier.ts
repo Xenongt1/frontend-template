@@ -1,4 +1,4 @@
-import { apiRequest } from './client';
+import { apiRequest } from '@/core/api/client';
 import type { ApiResponse } from '@/types';
 
 export type SupplierStatus = 'ACTIVE' | 'SUSPENDED';
@@ -6,14 +6,15 @@ export type SupplierStatus = 'ACTIVE' | 'SUSPENDED';
 export interface ApprovedItem {
   inventoryItemId: string;
   name: string;
+  unitOfMeasureLabel?: string | null;
 }
 
 export interface Supplier {
   id: string;
   fullName: string;
   companyName?: string;
-  phoneNumber: string;
   phoneCountryCode?: string;
+  phoneNumber: string;
   email: string;
   notes?: string;
   status?: SupplierStatus;
@@ -34,57 +35,40 @@ export interface CreateSupplierPayload {
   deliveryUnitIds: string[];
 }
 
-export interface UpdateSupplierPayload {
-  contactPerson: string;
-  companyName?: string;
-  phoneCountryCode: string;
-  phoneNumber: string;
-  email: string;
-  notes?: string;
-  approvedInventoryItemIds: string[];
-}
+export type UpdateSupplierPayload = Partial<CreateSupplierPayload>;
 
-// ── Backend shapes ────────────────────────────────────────────────────────────
-
-interface BackendApprovedItem {
-  inventoryItemId: string;
-  name: string;
-  unitOfMeasureLabel: string | null;
-}
-
-interface BackendSupplier {
+interface RawSupplier {
   id: string;
-  active: boolean;
-  approvedItems: BackendApprovedItem[];
-  companyName?: string;
   contactPerson: string;
-  createdAt?: string;
-  email: string;
-  notes?: string;
+  companyName?: string;
   phoneCountryCode?: string;
   phoneNumber: string;
+  email: string;
+  notes?: string | null;
+  active: boolean;
+  approvedItems: ApprovedItem[];
+  createdAt?: string;
 }
 
-interface PaginatedContent<T> {
+interface PagedResponse<T> {
   content: T[];
   page: { size: number; number: number; totalElements: number; totalPages: number };
 }
 
-function mapSupplier(b: BackendSupplier): Supplier {
-  const items = b.approvedItems ?? [];
+function normalizeSupplier(raw: RawSupplier): Supplier {
   return {
-    id: b.id,
-    fullName: b.contactPerson,
-    companyName: b.companyName,
-    phoneNumber: b.phoneNumber,
-    phoneCountryCode: b.phoneCountryCode,
-    email: b.email,
-    notes: b.notes,
-    status: b.active ? 'ACTIVE' : 'SUSPENDED',
-    approvedItems: items.map(i => ({ inventoryItemId: i.inventoryItemId, name: i.name })),
-    approvedInventoryItemIds: items.map(i => i.inventoryItemId),
+    id: raw.id,
+    fullName: raw.contactPerson,
+    companyName: raw.companyName,
+    phoneCountryCode: raw.phoneCountryCode,
+    phoneNumber: raw.phoneNumber,
+    email: raw.email,
+    notes: raw.notes ?? undefined,
+    status: raw.active ? 'ACTIVE' : 'SUSPENDED',
+    approvedItems: raw.approvedItems ?? [],
+    approvedInventoryItemIds: (raw.approvedItems ?? []).map(i => i.inventoryItemId),
     deliveryUnitIds: [],
-    createdAt: b.createdAt,
+    createdAt: raw.createdAt,
   };
 }
 
@@ -96,32 +80,11 @@ function toRequestError(err: unknown): Error {
 export const supplierApi = {
   async createSupplier(payload: CreateSupplierPayload): Promise<ApiResponse<Supplier>> {
     try {
-      const created = await apiRequest<BackendSupplier>('/api/procurement/suppliers', {
+      const raw = await apiRequest<RawSupplier>('/api/procurement/suppliers', {
         method: 'POST',
         body: JSON.stringify(payload),
       });
-      return { success: true, data: mapSupplier(created) };
-    } catch (err) {
-      throw toRequestError(err);
-    }
-  },
-
-  async updateSupplier(id: string, payload: UpdateSupplierPayload): Promise<ApiResponse<Supplier>> {
-    try {
-      const updated = await apiRequest<BackendSupplier>(`/api/procurement/suppliers/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(payload),
-      });
-      return { success: true, data: mapSupplier(updated) };
-    } catch (err) {
-      throw toRequestError(err);
-    }
-  },
-
-  async getSupplierById(id: string): Promise<ApiResponse<Supplier>> {
-    try {
-      const supplier = await apiRequest<BackendSupplier>(`/api/procurement/suppliers/${id}`);
-      return { success: true, data: mapSupplier(supplier) };
+      return { success: true, data: normalizeSupplier(raw) };
     } catch (err) {
       throw toRequestError(err);
     }
@@ -129,10 +92,9 @@ export const supplierApi = {
 
   async getSuppliers(): Promise<ApiResponse<Supplier[]>> {
     try {
-      const page = await apiRequest<PaginatedContent<BackendSupplier>>(
-        '/api/procurement/suppliers',
-      );
-      return { success: true, data: page.content.map(mapSupplier) };
+      const raw = await apiRequest<PagedResponse<RawSupplier>>('/api/procurement/suppliers');
+      const content = Array.isArray(raw) ? raw : (raw.content ?? []);
+      return { success: true, data: content.map(normalizeSupplier) };
     } catch (err) {
       throw toRequestError(err);
     }
@@ -140,11 +102,10 @@ export const supplierApi = {
 
   async suspendSupplier(id: string): Promise<ApiResponse<Supplier>> {
     try {
-      const updated = await apiRequest<BackendSupplier>(
-        `/api/procurement/suppliers/${id}/status`,
-        { method: 'PATCH', body: JSON.stringify({ active: false }) },
-      );
-      return { success: true, data: mapSupplier(updated) };
+      const raw = await apiRequest<RawSupplier>(`/api/procurement/suppliers/${id}/suspend`, {
+        method: 'PATCH',
+      });
+      return { success: true, data: normalizeSupplier(raw) };
     } catch (err) {
       throw toRequestError(err);
     }
@@ -152,11 +113,31 @@ export const supplierApi = {
 
   async activateSupplier(id: string): Promise<ApiResponse<Supplier>> {
     try {
-      const updated = await apiRequest<BackendSupplier>(
-        `/api/procurement/suppliers/${id}/status`,
-        { method: 'PATCH', body: JSON.stringify({ active: true }) },
-      );
-      return { success: true, data: mapSupplier(updated) };
+      const raw = await apiRequest<RawSupplier>(`/api/procurement/suppliers/${id}/activate`, {
+        method: 'PATCH',
+      });
+      return { success: true, data: normalizeSupplier(raw) };
+    } catch (err) {
+      throw toRequestError(err);
+    }
+  },
+
+  async getSupplierById(id: string): Promise<ApiResponse<Supplier>> {
+    try {
+      const raw = await apiRequest<RawSupplier>(`/api/procurement/suppliers/${id}`);
+      return { success: true, data: normalizeSupplier(raw) };
+    } catch (err) {
+      throw toRequestError(err);
+    }
+  },
+
+  async updateSupplier(id: string, payload: UpdateSupplierPayload): Promise<ApiResponse<Supplier>> {
+    try {
+      const raw = await apiRequest<RawSupplier>(`/api/procurement/suppliers/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      });
+      return { success: true, data: normalizeSupplier(raw) };
     } catch (err) {
       throw toRequestError(err);
     }
