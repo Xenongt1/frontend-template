@@ -11,9 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UsersRouteImport } from './routes/users'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
+import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as IamRouteImport } from './routes/iam'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as CompleteProfileRouteImport } from './routes/complete-profile'
+import { Route as AcceptInviteRouteImport } from './routes/accept-invite'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SuppliersIndexRouteImport } from './routes/suppliers.index'
 import { Route as InventoryIndexRouteImport } from './routes/inventory.index'
@@ -48,6 +51,11 @@ const SuppliersRoute = SuppliersRouteImport.update({
   path: '/suppliers',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignInRoute = SignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InventoryRoute = InventoryRouteImport.update({
   id: '/inventory',
   path: '/inventory',
@@ -61,6 +69,16 @@ const IamRoute = IamRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompleteProfileRoute = CompleteProfileRouteImport.update({
+  id: '/complete-profile',
+  path: '/complete-profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcceptInviteRoute = AcceptInviteRouteImport.update({
+  id: '/accept-invite',
+  path: '/accept-invite',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -185,9 +203,12 @@ const IamRolesIdEditRoute = IamRolesIdEditRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accept-invite': typeof AcceptInviteRoute
+  '/complete-profile': typeof CompleteProfileRoute
   '/dashboard': typeof DashboardRoute
   '/iam': typeof IamRouteWithChildren
   '/inventory': typeof InventoryRouteWithChildren
+  '/sign-in': typeof SignInRoute
   '/suppliers': typeof SuppliersRouteWithChildren
   '/users': typeof UsersRouteWithChildren
   '/iam/roles': typeof IamRolesRouteWithChildren
@@ -215,7 +236,10 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/accept-invite': typeof AcceptInviteRoute
+  '/complete-profile': typeof CompleteProfileRoute
   '/dashboard': typeof DashboardRoute
+  '/sign-in': typeof SignInRoute
   '/users': typeof UsersRouteWithChildren
   '/inventory/catalogue': typeof InventoryCatalogueRoute
   '/inventory/movements': typeof InventoryMovementsRoute
@@ -241,9 +265,12 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/accept-invite': typeof AcceptInviteRoute
+  '/complete-profile': typeof CompleteProfileRoute
   '/dashboard': typeof DashboardRoute
   '/iam': typeof IamRouteWithChildren
   '/inventory': typeof InventoryRouteWithChildren
+  '/sign-in': typeof SignInRoute
   '/suppliers': typeof SuppliersRouteWithChildren
   '/users': typeof UsersRouteWithChildren
   '/iam/roles': typeof IamRolesRouteWithChildren
@@ -273,9 +300,12 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/accept-invite'
+    | '/complete-profile'
     | '/dashboard'
     | '/iam'
     | '/inventory'
+    | '/sign-in'
     | '/suppliers'
     | '/users'
     | '/iam/roles'
@@ -303,7 +333,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/accept-invite'
+    | '/complete-profile'
     | '/dashboard'
+    | '/sign-in'
     | '/users'
     | '/inventory/catalogue'
     | '/inventory/movements'
@@ -328,9 +361,12 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/accept-invite'
+    | '/complete-profile'
     | '/dashboard'
     | '/iam'
     | '/inventory'
+    | '/sign-in'
     | '/suppliers'
     | '/users'
     | '/iam/roles'
@@ -359,9 +395,12 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcceptInviteRoute: typeof AcceptInviteRoute
+  CompleteProfileRoute: typeof CompleteProfileRoute
   DashboardRoute: typeof DashboardRoute
   IamRoute: typeof IamRouteWithChildren
   InventoryRoute: typeof InventoryRouteWithChildren
+  SignInRoute: typeof SignInRoute
   SuppliersRoute: typeof SuppliersRouteWithChildren
   UsersRoute: typeof UsersRouteWithChildren
 }
@@ -380,6 +419,13 @@ declare module '@tanstack/react-router' {
       path: '/suppliers'
       fullPath: '/suppliers'
       preLoaderRoute: typeof SuppliersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inventory': {
@@ -401,6 +447,20 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/complete-profile': {
+      id: '/complete-profile'
+      path: '/complete-profile'
+      fullPath: '/complete-profile'
+      preLoaderRoute: typeof CompleteProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/accept-invite': {
+      id: '/accept-invite'
+      path: '/accept-invite'
+      fullPath: '/accept-invite'
+      preLoaderRoute: typeof AcceptInviteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -671,9 +731,12 @@ const UsersRouteWithChildren = UsersRoute._addFileChildren(UsersRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcceptInviteRoute: AcceptInviteRoute,
+  CompleteProfileRoute: CompleteProfileRoute,
   DashboardRoute: DashboardRoute,
   IamRoute: IamRouteWithChildren,
   InventoryRoute: InventoryRouteWithChildren,
+  SignInRoute: SignInRoute,
   SuppliersRoute: SuppliersRouteWithChildren,
   UsersRoute: UsersRouteWithChildren,
 }
