@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import i18n from '@/core/i18n';
+import i18n from '@/i18n';
 import type { InventoryItem } from '@/types';
 import type {
   AttributeItem,

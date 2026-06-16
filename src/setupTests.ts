@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom';
-import '@/core/i18n';
+import '@/i18n';
 import { TextDecoder, TextEncoder } from 'util';
 Object.assign(global, { TextDecoder, TextEncoder });
 
