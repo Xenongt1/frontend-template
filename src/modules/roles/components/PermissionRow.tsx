@@ -68,30 +68,13 @@ const PermissionInfoTooltip: React.FC<{ title: string; description: string }> = 
         >
           <span
             aria-hidden="true"
-            className="block"
-            style={{
-              width: 0,
-              height: 0,
-              marginLeft: 4,
-              borderLeft: '8px solid transparent',
-              borderRight: '8px solid transparent',
-              borderBottom: '8px solid #08283B',
-            }}
+            className="block w-0 h-0 ml-1 border-l-8 border-l-transparent border-r-8 border-r-transparent border-b-8 border-b-brand-navy"
           />
-          <div
-            className="rounded-md px-3 py-2.5 shadow-[0_4px_6px_-1px_rgba(0,0,0,0.10),0_2px_4px_-2px_rgba(0,0,0,0.05)]"
-            style={{ background: '#08283B' }}
-          >
-            <div
-              className="text-[14px] font-medium leading-[18px] text-canvas-50 mb-1.5"
-              style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
-            >
+          <div className="rounded-md px-3 py-2.5 bg-brand-navy shadow-[0_4px_6px_-1px_rgba(0,0,0,0.10),0_2px_4px_-2px_rgba(0,0,0,0.05)]">
+            <div className="text-[14px] font-medium leading-[18px] text-canvas-50 mb-1.5 break-words [overflow-wrap:anywhere]">
               {title}
             </div>
-            <div
-              className="text-[12px] font-normal leading-[16px] text-[#B2BCC2]"
-              style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
-            >
+            <div className="text-[12px] font-normal leading-[16px] text-[#B2BCC2] break-words [overflow-wrap:anywhere]">
               {description}
             </div>
           </div>

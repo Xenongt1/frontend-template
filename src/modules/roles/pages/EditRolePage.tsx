@@ -3,7 +3,13 @@ import { useNavigate, useParams } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import { Skeleton, SuccessToast } from '@/shared/components/ui';
-import RoleForm, { type RoleFormValues, type RoleFormErrors, buildRoleWritePayload } from '../components/RoleForm';
+import {
+  RoleBasicInfoCard,
+  RolePermissionsCard,
+  buildRoleWritePayload,
+  type RoleFormValues,
+  type RoleFormErrors,
+} from '../components/RoleForm';
 import AssignedMembersSidebar from '../components/AssignedMembersSidebar';
 import { listRoles, updateRole } from '../api/rolesApi';
 import { useRoleDetail } from '../hooks/useRoleDetail';
@@ -123,26 +129,28 @@ const EditRolePage: React.FC = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4 items-start">
-        <div className="min-w-0">
-          {loading ? (
-            <div className="flex flex-col gap-4">
-              <Skeleton variant="block" className="h-32 w-full" />
-              <Skeleton variant="block" className="h-40 w-full" />
-              <Skeleton variant="block" className="h-40 w-full" />
-            </div>
-          ) : (
-            <RoleForm values={values} errors={errors} onChange={setValues} />
-          )}
-        </div>
-        <div className="min-w-0">
-          {loading ? (
+      {loading ? (
+        <>
+          <Skeleton variant="block" className="h-32 w-full" />
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4 items-start">
+            <Skeleton variant="block" className="h-96 w-full" />
             <Skeleton variant="block" className="h-64 w-full" />
-          ) : (
-            <AssignedMembersSidebar members={data?.members ?? []} />
-          )}
-        </div>
-      </div>
+          </div>
+        </>
+      ) : (
+        <>
+          {/* Row 1 — Role Name + Description, full width */}
+          <RoleBasicInfoCard values={values} errors={errors} onChange={setValues} />
+
+          {/* Row 2 — Permissions (left) + Assigned Members (right) */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4 items-start">
+            <RolePermissionsCard values={values} onChange={setValues} />
+            <div className="min-w-0">
+              <AssignedMembersSidebar members={data?.members ?? []} />
+            </div>
+          </div>
+        </>
+      )}
 
       {showSuccess && (
         <SuccessToast

@@ -49,7 +49,7 @@ const RolesPagination: React.FC<Props> = ({
   const pageNumbers = getPageNumbers(page, totalPages);
 
   return (
-    <div className="flex items-center justify-between px-4 py-4 gap-3 flex-wrap" style={{ minHeight: 69 }}>
+    <div className="flex items-center justify-between px-4 py-4 gap-3 flex-wrap min-h-[69px]">
       <div className="text-[14px] text-navy-600">
         <Trans
           i18nKey="roles.list.pagination.showing"

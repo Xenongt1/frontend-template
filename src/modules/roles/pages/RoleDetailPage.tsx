@@ -46,8 +46,8 @@ const RoleDetailPage: React.FC = () => {
         </div>
       )}
 
-      {/* Role identity card */}
-      <div className="bg-canvas-50 rounded-md px-6 py-3.5 flex flex-col gap-4">
+      {/* Role identity card — full-width row */}
+      <div className="bg-canvas-50 rounded-lg border border-stroke-light px-[21px] py-[18px] flex flex-col gap-4">
         {loading && (
           <>
             <Skeleton variant="text" className="w-32 h-5" />
@@ -56,7 +56,7 @@ const RoleDetailPage: React.FC = () => {
         )}
         {!loading && data && (
           <>
-            <div className="pb-3 border-b border-canvas-300">
+            <div className="pb-3 border-b border-stroke-light">
               <span className="text-[18px] font-medium leading-[27px] text-[#041620]">
                 {data.name}
               </span>
@@ -71,8 +71,8 @@ const RoleDetailPage: React.FC = () => {
       {/* Two-column body */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4 items-start">
         {/* Granted Permissions card */}
-        <div className="bg-canvas-50 rounded-lg border border-canvas-300 px-5 py-4 flex flex-col gap-4 min-w-0">
-          <div className="pb-2.5 border-b border-canvas-300">
+        <div className="bg-canvas-50 rounded-lg border border-stroke-light px-[21px] py-[18px] flex flex-col gap-4 min-w-0">
+          <div className="py-2 border-b border-stroke-light">
             <h2 className="m-0 text-[18px] font-semibold leading-7 text-[#041620]">
               {t('roles.form.grantedPermissions')}
             </h2>

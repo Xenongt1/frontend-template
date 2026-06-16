@@ -66,8 +66,12 @@ const RolesListPage: React.FC = () => {
               aria-label={t('roles.list.searchPlaceholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-10 py-2 bg-[#ECECEB] border border-[#B2BCC2] rounded-lg text-[14px] text-navy-900 outline-none box-border placeholder:text-[#395362] focus:border-navy-600 transition-colors"
-              style={{ paddingRight: searchInput ? 36 : 16 }}
+              className={[
+                'w-full pl-10 py-2 bg-[#ECECEB] border border-[#B2BCC2] rounded-lg',
+                'text-[14px] text-navy-900 outline-none box-border',
+                'placeholder:text-[#395362] focus:border-navy-600 transition-colors',
+                searchInput ? 'pr-9' : 'pr-4',
+              ].join(' ')}
             />
             {searchInput && (
               <button

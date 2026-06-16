@@ -20,7 +20,7 @@ interface AssignedUsersAvatarsProps {
 }
 
 const INITIALS_BG = 'bg-[#C3C3C2]';
-const OVERFLOW_BG = '#222220';
+const OVERFLOW_BG_CLASS = 'bg-[#222220]';
 
 /**
  * Avatar group matching the design (32px circles, 1.5px white separator,
@@ -65,8 +65,7 @@ const AssignedUsersAvatars: React.FC<AssignedUsersAvatarsProps> = ({
       })}
       {overflow > 0 && (
         <span
-          className="inline-flex items-center justify-center w-8 h-8 rounded-full border-[1.5px] border-canvas-50 -ml-2 text-[12px] font-medium text-canvas-50"
-          style={{ background: OVERFLOW_BG }}
+          className={`inline-flex items-center justify-center w-8 h-8 rounded-full border-[1.5px] border-canvas-50 -ml-2 text-[12px] font-medium text-canvas-50 ${OVERFLOW_BG_CLASS}`}
         >
           +{overflow}
         </span>

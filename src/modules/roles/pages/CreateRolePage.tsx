@@ -3,7 +3,13 @@ import { useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import { SuccessToast } from '@/shared/components/ui';
-import RoleForm, { type RoleFormValues, type RoleFormErrors, buildRoleWritePayload } from '../components/RoleForm';
+import {
+  RoleBasicInfoCard,
+  RolePermissionsCard,
+  buildRoleWritePayload,
+  type RoleFormValues,
+  type RoleFormErrors,
+} from '../components/RoleForm';
 import AssignedMembersSidebar from '../components/AssignedMembersSidebar';
 import { createRole, listRoles } from '../api/rolesApi';
 
@@ -88,10 +94,12 @@ const CreateRolePage: React.FC = () => {
         </div>
       )}
 
+      {/* Row 1 — Role Name + Description, full width */}
+      <RoleBasicInfoCard values={values} errors={errors} onChange={setValues} />
+
+      {/* Row 2 — Permissions (left) + Assigned Members (right) */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-4 items-start">
-        <div className="min-w-0">
-          <RoleForm values={values} errors={errors} onChange={setValues} />
-        </div>
+        <RolePermissionsCard values={values} onChange={setValues} />
         <div className="min-w-0">
           <AssignedMembersSidebar members={[]} />
         </div>
