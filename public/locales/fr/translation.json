@@ -1,4 +1,6 @@
 {
+  "welcome": "Bienvenue sur ChainPilot",
+  "description": "Une plateforme d'inventaire et d'opérations pour l'atelier.",
   "nav": {
     "mainMenu": "Menu principal",
     "dashboard": "Tableau de bord",

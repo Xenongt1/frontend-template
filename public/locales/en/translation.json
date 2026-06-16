@@ -1,4 +1,6 @@
 {
+  "welcome": "Welcome to ChainPilot",
+  "description": "A factory-floor inventory and operations platform.",
   "nav": {
     "mainMenu": "Main Menu",
     "dashboard": "Dashboard",
