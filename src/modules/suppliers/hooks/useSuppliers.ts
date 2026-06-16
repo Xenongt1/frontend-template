@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useRouterState } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
-import { supplierApi } from '@/core/api';
+import { supplierApi, inventoryApi } from '@/core/api';
 import type { SupplierStatus } from '@/core/api';
 
 export const PAGE_SIZE_OPTIONS = [10, 20, 50];
@@ -78,27 +78,31 @@ export const useSuppliers = () => {
       }),
   });
 
-  // ── Materials options query (unfiltered, for the dropdown) ─────────────────
-  // Fetches with a large page to collect all unique approved items.
-  const { data: materialsData } = useQuery({
-    queryKey: ['suppliers-materials-options'],
-    queryFn: () => supplierApi.getSuppliers({ pageSize: 1000 }),
-    staleTime: 5 * 60 * 1000,
+  // ── Materials dropdown search (debounced → inventory API) ─────────────────
+  const [materialSearchInput, setMaterialSearchInput] = useState('');
+  const [debouncedMaterialSearch, setDebouncedMaterialSearch] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedMaterialSearch(materialSearchInput.trim()), 300);
+    return () => clearTimeout(timer);
+  }, [materialSearchInput]);
+
+  const { data: inventoryData, isFetching: materialsLoading } = useQuery({
+    queryKey: ['inventory-items-for-supplier-filter', debouncedMaterialSearch],
+    queryFn: () =>
+      inventoryApi.getItems({
+        page:     1,
+        pageSize: 50,
+        search:   debouncedMaterialSearch || undefined,
+      }),
+    staleTime: 60 * 1000,
   });
 
-  const allMaterials = useMemo(() => {
-    const seen = new Set<string>();
-    const items: { id: string; name: string }[] = [];
-    (materialsData?.data?.suppliers ?? []).forEach(s => {
-      s.approvedItems.forEach(item => {
-        if (!seen.has(item.inventoryItemId)) {
-          seen.add(item.inventoryItemId);
-          items.push({ id: item.inventoryItemId, name: item.name });
-        }
-      });
-    });
-    return items.sort((a, b) => a.name.localeCompare(b.name));
-  }, [materialsData]);
+  const allMaterials = useMemo(
+    () =>
+      (inventoryData?.items ?? []).map(item => ({ id: item.id, name: item.displayName })),
+    [inventoryData],
+  );
 
   const suppliers  = data?.data?.suppliers ?? [];
   const total      = data?.data?.total ?? 0;
@@ -180,6 +184,9 @@ export const useSuppliers = () => {
     clearFilters,
     goToPage,
     changePageSize,
+    materialSearchInput,
+    setMaterialSearchInput,
+    materialsLoading,
     reload: () => refetch(),
   };
 };

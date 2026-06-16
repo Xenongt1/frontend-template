@@ -89,6 +89,7 @@ const SuppliersPage: React.FC = () => {
     allMaterials, filters, pagination, totalPages, pageSizeOptions,
     updateSearch, updateStatus, toggleMaterial, clearFilters,
     goToPage, changePageSize, reload,
+    materialSearchInput, setMaterialSearchInput, materialsLoading,
   } = useSuppliers();
 
   // ── Action mutations ──────────────────────────────────────────────────────
@@ -114,7 +115,6 @@ const SuppliersPage: React.FC = () => {
   // ── Dropdown state ────────────────────────────────────────────────────────
   const [statusOpen,   setStatusOpen]   = useState(false);
   const [materialOpen, setMaterialOpen] = useState(false);
-  const [materialSearch, setMaterialSearch] = useState('');
 
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [menuPos,    setMenuPos]    = useState<{ top: number; left: number } | null>(null);
@@ -160,9 +160,6 @@ const SuppliersPage: React.FC = () => {
 
   const hasFilters = filters.status !== '' || filters.materials.length > 0;
 
-  const visibleMaterials = materialSearch.trim()
-    ? allMaterials.filter(m => m.name.toLowerCase().includes(materialSearch.toLowerCase()))
-    : allMaterials;
 
   const { page, pageSize } = pagination;
   const rangeStart = total === 0 ? 0 : (page - 1) * pageSize + 1;
@@ -275,8 +272,8 @@ const SuppliersPage: React.FC = () => {
                       <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-text-placeholder pointer-events-none" />
                       <input
                         type="text"
-                        value={materialSearch}
-                        onChange={e => setMaterialSearch(e.target.value)}
+                        value={materialSearchInput}
+                        onChange={e => setMaterialSearchInput(e.target.value)}
                         placeholder={t('suppliers.list.searchMaterial')}
                         className="w-full pl-8 pr-3 py-1.5 bg-surface-overlay border border-stroke-medium rounded-md text-[13px] text-text-primary placeholder:text-text-placeholder outline-none focus:border-stroke-focus"
                         onClick={e => e.stopPropagation()}
@@ -284,10 +281,12 @@ const SuppliersPage: React.FC = () => {
                     </div>
                   </div>
                   <div className="max-h-48 overflow-y-auto">
-                    {visibleMaterials.length === 0 ? (
+                    {materialsLoading ? (
+                      <p className="px-3 py-2 text-[13px] text-navy-400">{t('common.loading')}</p>
+                    ) : allMaterials.length === 0 ? (
                       <p className="px-3 py-2 text-[13px] text-navy-400">{t('suppliers.list.noMaterials')}</p>
                     ) : (
-                      visibleMaterials.map(m => (
+                      allMaterials.map(m => (
                         <label key={m.id} className="flex items-center gap-2.5 px-3 py-2 cursor-pointer hover:bg-canvas-100 transition-colors">
                           <input
                             type="checkbox"
