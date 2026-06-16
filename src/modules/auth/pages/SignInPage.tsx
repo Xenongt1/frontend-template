@@ -117,7 +117,7 @@ export default function SignInPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-[#08283B] text-[#FDFDFD] text-sm font-medium leading-[1.5] py-[10px] px-5 rounded-lg hover:bg-[#041620] active:bg-[#041620] transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full bg-[#08283B] text-[#FDFDFD] text-sm font-medium leading-[1.5] py-[10px] px-5 rounded-lg hover:bg-[#08283B] active:bg-[#08283B] transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {isLoading ? 'Signing in…' : 'Sign in'}
         </button>

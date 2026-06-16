@@ -50,7 +50,7 @@ function BrandingPanel() {
 
 export default function AuthLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="flex h-full w-full overflow-hidden">
+    <div className="flex min-h-screen w-full overflow-hidden">
       <BrandingPanel />
       <div className="flex-1 bg-[#FDFDFD] flex items-center justify-center overflow-y-auto">
         <div className="w-full max-w-[441px] px-8 py-14 lg:px-0 lg:py-0">

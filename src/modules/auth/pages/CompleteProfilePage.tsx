@@ -92,7 +92,7 @@ export default function CompleteProfilePage() {
 
         <button
           type="submit"
-          className="w-full bg-[#08283B] text-[#FDFDFD] text-sm font-medium leading-[1.5] py-[10px] px-5 rounded-lg hover:bg-[#041620] active:bg-[#041620] transition-colors cursor-pointer"
+          className="w-full bg-[#08283B] text-[#FDFDFD] text-sm font-medium leading-[1.5] py-[10px] px-5 rounded-lg hover:bg-[#08283B] active:bg-[#08283B] transition-colors cursor-pointer"
         >
           Continue to login
         </button>
