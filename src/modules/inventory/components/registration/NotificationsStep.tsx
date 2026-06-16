@@ -47,7 +47,7 @@ export const NotificationsStep: React.FC<NotificationsStepProps> = ({
   const { t } = useTranslation();
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(12px, 2vh, 20px)' }}>
+    <div className="flex flex-col gap-[clamp(12px,2vh,20px)]">
       <NotificationCard
         ariaLabelledBy="expiry-alert-heading"
         title={t('inventory.notifications.expiryTitle')}

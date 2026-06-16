@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus, Trash2, X } from 'lucide-react';
 import { FormField, Input, Select } from '@/shared/components/ui';
+import Button from '@/shared/components/ui/Button';
 import type { AttributeItem, AttributeType, IntakeField, IntakeFieldDraft } from './types';
 
 interface PropertiesStepProps {
@@ -37,68 +38,20 @@ interface PropertiesStepProps {
   onRemoveTag: (tag: string) => void;
 }
 
-const cardStyle: React.CSSProperties = {
-  background: '#FDFDFD',
-  border: '1px solid #E6EAEB',
-  borderRadius: 10,
-  padding: 'clamp(12px, 2vh, 24px)',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 'clamp(10px, 1.6vh, 18px)',
-};
-
-const sectionHeaderStyle: React.CSSProperties = {
-  borderBottom: '1px solid #E6EAEB',
-  paddingBottom: 12,
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'flex-start',
-  gap: 16,
-};
-
-const headingStyle: React.CSSProperties = {
-  margin: 0,
-  fontSize: 18,
-  fontWeight: 600,
-  fontFamily: "'Inter', system-ui, sans-serif",
-  color: '#041620',
-  lineHeight: '28px',
-};
-
-const descStyle: React.CSSProperties = {
-  margin: '4px 0 0 0',
-  fontSize: 14,
-  fontWeight: 400,
-  fontFamily: "'Inter', system-ui, sans-serif",
-  color: '#08283B',
-  lineHeight: '20px',
-};
-
-const addedLabelStyle: React.CSSProperties = {
-  fontSize: 14,
-  fontWeight: 400,
-  fontFamily: "'Inter', system-ui, sans-serif",
-  color: '#08283B',
-  lineHeight: '20px',
-};
+// Repeated card/header shape across the three sections. Extract once.
+const cardClass =
+  'bg-canvas-50 border border-stroke-light rounded-[10px] ' +
+  'p-[clamp(12px,2vh,24px)] flex flex-col gap-[clamp(10px,1.6vh,18px)]';
+const sectionHeaderClass =
+  'border-b border-stroke-light pb-3 flex justify-between items-start gap-4';
+const headingClass =
+  'm-0 font-inter text-lg font-semibold leading-7 text-brand-navy-dark';
+const descClass =
+  'mt-1 mb-0 font-inter text-sm font-normal leading-5 text-text-primary';
+const addedLabelClass = 'font-inter text-sm font-normal leading-5 text-text-primary';
 
 const TypeBadge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <span
-    style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      padding: '2px 10px',
-      borderRadius: 6,
-      border: '1px solid #E6EAEB',
-      background: '#FDFDFD',
-      color: '#08283B',
-      fontSize: 12,
-      fontWeight: 500,
-      fontFamily: "'Inter', system-ui, sans-serif",
-      lineHeight: '18px',
-      whiteSpace: 'nowrap',
-    }}
-  >
+  <span className="inline-flex items-center px-2.5 py-0.5 rounded-md border border-stroke-light bg-canvas-50 text-text-primary font-inter text-xs font-medium leading-[18px] whitespace-nowrap">
     {children}
   </span>
 );
@@ -106,22 +59,7 @@ const TypeBadge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 const RequiredBadge: React.FC = () => {
   const { t } = useTranslation();
   return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        padding: '2px 10px',
-        borderRadius: 6,
-        border: '1px solid #FDE8E8',
-        background: '#FDF2F2',
-        color: '#9B1C1C',
-        fontSize: 12,
-        fontWeight: 500,
-        fontFamily: "'Inter', system-ui, sans-serif",
-        lineHeight: '18px',
-        whiteSpace: 'nowrap',
-      }}
-    >
+    <span className="inline-flex items-center px-2.5 py-0.5 rounded-md border border-[#FDE8E8] bg-[#FDF2F2] text-[#9B1C1C] font-inter text-xs font-medium leading-[18px] whitespace-nowrap">
       {t('common.required')}
     </span>
   );
@@ -170,21 +108,20 @@ export const PropertiesStep: React.FC<PropertiesStepProps> = ({
   else attrInputPlaceholder = t('inventory.attributes.valuePlaceholder');
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(12px, 2vh, 20px)' }}>
+    <div className="flex flex-col gap-[clamp(12px,2vh,20px)]">
       {/* ── Inventory Item Properties ── */}
-      <section aria-labelledby="inv-props-heading" style={cardStyle}>
-        <div style={sectionHeaderStyle}>
+      <section aria-labelledby="inv-props-heading" className={cardClass}>
+        <div className={sectionHeaderClass}>
           <div>
-            <h2 id="inv-props-heading" style={headingStyle}>
+            <h2 id="inv-props-heading" className={headingClass}>
               {t('inventory.properties.title')}
             </h2>
-            <p style={descStyle}>{t('inventory.properties.description')}</p>
+            <p className={descClass}>{t('inventory.properties.description')}</p>
           </div>
           <button
             type="button"
             onClick={onOpenAttributeForm}
-            className="btn-outline"
-            style={{ padding: '8px 14px', flexShrink: 0 }}
+            className="btn-outline px-3.5 py-2 shrink-0"
           >
             <Plus size={16} aria-hidden="true" />
             {t('inventory.properties.addButton')}
@@ -192,41 +129,20 @@ export const PropertiesStep: React.FC<PropertiesStepProps> = ({
         </div>
 
         {attributes.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <span style={addedLabelStyle}>{t('inventory.properties.addedLabel')}</span>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          <div className="flex flex-col gap-2">
+            <span className={addedLabelClass}>{t('inventory.properties.addedLabel')}</span>
+            <div className="flex flex-wrap gap-2">
               {attributes.map((attr) => (
                 <span
                   key={attr.id}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    padding: '4px 10px 4px 12px',
-                    borderRadius: 6,
-                    border: '1px solid #DEF7EC',
-                    background: '#F3FAF7',
-                    color: '#00684A',
-                    fontSize: 13,
-                    fontWeight: 500,
-                    fontFamily: "'Inter', system-ui, sans-serif",
-                    lineHeight: '18px',
-                  }}
+                  className="inline-flex items-center gap-1.5 pl-3 pr-2.5 py-1 rounded-md border border-[#DEF7EC] bg-[#F3FAF7] text-[#00684A] font-inter text-[13px] font-medium leading-[18px]"
                 >
                   {attr.label}: {attr.value}
                   <button
                     type="button"
                     aria-label={t('inventory.attributes.remove', { name: `${attr.label} ${attr.value}` })}
                     onClick={() => onRemoveAttribute(attr.id)}
-                    style={{
-                      border: 'none',
-                      background: 'transparent',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      padding: 0,
-                      cursor: 'pointer',
-                      color: '#00684A',
-                    }}
+                    className="border-none bg-transparent inline-flex items-center p-0 cursor-pointer text-[#00684A]"
                   >
                     <X size={14} aria-hidden="true" />
                   </button>
@@ -237,22 +153,8 @@ export const PropertiesStep: React.FC<PropertiesStepProps> = ({
         )}
 
         {isAttributeFormOpen && (
-          <div
-            style={{
-              padding: 16,
-              borderRadius: 8,
-              border: '1px solid #E6EAEB',
-              background: '#FDFDFD',
-            }}
-          >
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto',
-                gap: 16,
-                alignItems: 'flex-end',
-              }}
-            >
+          <div className="p-4 rounded-lg border border-stroke-light bg-canvas-50">
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] gap-4 items-end">
               <FormField id="attr-type" label={t('inventory.properties.propertyTypeLabel')}>
                 <Select
                   id="attr-type"
@@ -300,34 +202,32 @@ export const PropertiesStep: React.FC<PropertiesStepProps> = ({
                 )}
               </FormField>
 
-              <button
-                type="button"
+              <Button
+                variant="primary"
                 onClick={onAddAttribute}
-                className="btn-primary"
-                style={{ padding: '10px 18px', height: 42, whiteSpace: 'nowrap' }}
+                leftIcon={<Plus size={16} aria-hidden="true" />}
+                className="h-[42px]"
               >
-                <Plus size={16} aria-hidden="true" />
                 {t('inventory.attributes.add')}
-              </button>
+              </Button>
             </div>
           </div>
         )}
       </section>
 
       {/* ── Stock Level Properties ── */}
-      <section aria-labelledby="stock-props-heading" style={cardStyle}>
-        <div style={sectionHeaderStyle}>
+      <section aria-labelledby="stock-props-heading" className={cardClass}>
+        <div className={sectionHeaderClass}>
           <div>
-            <h2 id="stock-props-heading" style={headingStyle}>
+            <h2 id="stock-props-heading" className={headingClass}>
               {t('inventory.properties.stockLevelTitle')}
             </h2>
-            <p style={descStyle}>{t('inventory.properties.stockLevelDescription')}</p>
+            <p className={descClass}>{t('inventory.properties.stockLevelDescription')}</p>
           </div>
           <button
             type="button"
             onClick={onOpenIntakeFieldForm}
-            className="btn-outline"
-            style={{ padding: '8px 14px', flexShrink: 0 }}
+            className="btn-outline px-3.5 py-2 shrink-0"
           >
             <Plus size={16} aria-hidden="true" />
             {t('inventory.properties.addStockButton')}
@@ -335,38 +235,16 @@ export const PropertiesStep: React.FC<PropertiesStepProps> = ({
         </div>
 
         {intakeFields.length > 0 && (
-          <div
-            style={{
-              borderRadius: 6,
-              border: '1px solid #E6EAEB',
-              overflow: 'hidden',
-            }}
-          >
+          <div className="rounded-md border border-stroke-light overflow-hidden">
             {intakeFields.map((field) => (
               <div
                 key={field.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 12,
-                  padding: '12px 16px',
-                  borderBottom: '1px solid #E6EAEB',
-                  background: '#FDFDFD',
-                }}
+                className="flex items-center justify-between gap-3 px-4 py-3 border-b border-stroke-light bg-canvas-50 last:border-b-0"
               >
-                <span
-                  style={{
-                    fontSize: 14,
-                    fontWeight: 500,
-                    fontFamily: "'Inter', system-ui, sans-serif",
-                    color: '#08283B',
-                    flex: 1,
-                  }}
-                >
+                <span className="font-inter text-sm font-medium text-text-primary flex-1">
                   {field.label}
                 </span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div className="flex items-center gap-2">
                   <TypeBadge>
                     {field.type === 'number'
                       ? t('inventory.properties.typeNumber')
@@ -377,8 +255,7 @@ export const PropertiesStep: React.FC<PropertiesStepProps> = ({
                     type="button"
                     aria-label={t('inventory.properties.removeField')}
                     onClick={() => onRemoveIntakeField(field.id)}
-                    className="btn-danger"
-                    style={{ width: 34, height: 34, flexShrink: 0 }}
+                    className="btn-danger w-[34px] h-[34px] shrink-0"
                   >
                     <Trash2 size={16} color="#FDFDFD" />
                   </button>
@@ -389,23 +266,8 @@ export const PropertiesStep: React.FC<PropertiesStepProps> = ({
         )}
 
         {isIntakeFieldFormOpen && (
-          <div
-            style={{
-              padding: 16,
-              borderRadius: 8,
-              border: '1px solid #E6EAEB',
-              background: '#FDFDFD',
-            }}
-          >
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr) auto auto',
-                gap: 16,
-                alignItems: 'end',
-              }}
-            >
-              {/* Property Name */}
+          <div className="p-4 rounded-lg border border-stroke-light bg-canvas-50">
+            <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto_auto] gap-4 items-end">
               <FormField
                 id="intake-field-name"
                 label={t('inventory.properties.fieldNameLabel')}
@@ -421,7 +283,6 @@ export const PropertiesStep: React.FC<PropertiesStepProps> = ({
                 />
               </FormField>
 
-              {/* Property Type */}
               <FormField id="intake-field-type" label={t('inventory.properties.propertyTypeLabel')}>
                 <Select
                   id="intake-field-type"
@@ -436,78 +297,53 @@ export const PropertiesStep: React.FC<PropertiesStepProps> = ({
               </FormField>
 
               {/* Required field checkbox */}
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, paddingBottom: 2 }}>
+              <div className="flex items-start gap-2.5 pb-0.5">
                 <input
                   type="checkbox"
                   id="intake-required"
                   checked={intakeFieldDraft.required}
                   onChange={onIntakeFieldDraftRequiredToggle}
-                  style={{
-                    width: 16,
-                    height: 16,
-                    marginTop: 2,
-                    cursor: 'pointer',
-                    accentColor: '#08283B',
-                    flexShrink: 0,
-                  }}
+                  className="w-4 h-4 mt-0.5 cursor-pointer accent-brand-navy shrink-0"
                 />
                 <div>
                   <label
                     htmlFor="intake-required"
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 600,
-                      fontFamily: "'Inter', system-ui, sans-serif",
-                      color: '#08283B',
-                      cursor: 'pointer',
-                      display: 'block',
-                    }}
+                    className="font-inter text-sm font-semibold text-text-primary cursor-pointer block"
                   >
                     {t('inventory.properties.requiredFieldLabel')}
                   </label>
-                  <p
-                    style={{
-                      margin: '2px 0 0 0',
-                      fontSize: 12,
-                      fontFamily: "'Inter', system-ui, sans-serif",
-                      color: '#5A6F7C',
-                      lineHeight: '16px',
-                    }}
-                  >
+                  <p className="mt-0.5 mb-0 font-inter text-xs leading-4 text-text-tertiary">
                     {t('inventory.properties.requiredFieldDesc')}
                   </p>
                 </div>
               </div>
 
-              {/* Add button */}
-              <button
-                type="button"
+              <Button
+                variant="primary"
                 onClick={onAddIntakeFieldFromDraft}
-                className="btn-primary"
-                style={{ padding: '10px 18px', height: 42, whiteSpace: 'nowrap' }}
+                leftIcon={<Plus size={16} aria-hidden="true" />}
+                className="h-[42px]"
               >
-                <Plus size={16} aria-hidden="true" />
                 {t('inventory.attributes.add')}
-              </button>
+              </Button>
             </div>
           </div>
         )}
       </section>
 
       {/* ── Tags ── */}
-      <section aria-labelledby="tags-heading" style={cardStyle}>
-        <div style={sectionHeaderStyle}>
+      <section aria-labelledby="tags-heading" className={cardClass}>
+        <div className={sectionHeaderClass}>
           <div>
-            <h2 id="tags-heading" style={headingStyle}>
+            <h2 id="tags-heading" className={headingClass}>
               {t('inventory.properties.tagsTitle')}
             </h2>
-            <p style={descStyle}>{t('inventory.properties.tagsDescription')}</p>
+            <p className={descClass}>{t('inventory.properties.tagsDescription')}</p>
           </div>
           <button
             type="button"
             onClick={onOpenTagForm}
-            className="btn-outline"
-            style={{ padding: '8px 14px', flexShrink: 0 }}
+            className="btn-outline px-3.5 py-2 shrink-0"
           >
             <Plus size={16} aria-hidden="true" />
             {t('inventory.properties.addTagButton')}
@@ -515,41 +351,20 @@ export const PropertiesStep: React.FC<PropertiesStepProps> = ({
         </div>
 
         {tags.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <span style={addedLabelStyle}>{t('inventory.properties.tagsAddedLabel')}</span>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          <div className="flex flex-col gap-2">
+            <span className={addedLabelClass}>{t('inventory.properties.tagsAddedLabel')}</span>
+            <div className="flex flex-wrap gap-2">
               {tags.map((tag) => (
                 <span
                   key={tag}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    padding: '2px 12px',
-                    borderRadius: 6,
-                    border: '1px solid #FDE8E8',
-                    background: '#FDF2F2',
-                    color: '#9B1C1C',
-                    fontSize: 13,
-                    fontWeight: 500,
-                    fontFamily: "'Inter', system-ui, sans-serif",
-                    lineHeight: '18px',
-                  }}
+                  className="inline-flex items-center gap-1 px-3 py-0.5 rounded-md border border-[#FDE8E8] bg-[#FDF2F2] text-[#9B1C1C] font-inter text-[13px] font-medium leading-[18px]"
                 >
                   {tag}
                   <button
                     type="button"
                     aria-label={t('inventory.properties.removeTag', { name: tag })}
                     onClick={() => onRemoveTag(tag)}
-                    style={{
-                      border: 'none',
-                      background: 'transparent',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      padding: 0,
-                      cursor: 'pointer',
-                      color: '#9B1C1C',
-                    }}
+                    className="border-none bg-transparent inline-flex items-center p-0 cursor-pointer text-[#9B1C1C]"
                   >
                     <X size={14} aria-hidden="true" />
                   </button>
@@ -560,17 +375,8 @@ export const PropertiesStep: React.FC<PropertiesStepProps> = ({
         )}
 
         {isTagFormOpen && (
-          <div
-            style={{
-              padding: 16,
-              borderRadius: 6,
-              background: '#F7F7F7',
-              display: 'flex',
-              gap: 12,
-              alignItems: 'flex-end',
-            }}
-          >
-            <div style={{ flex: 1 }}>
+          <div className="p-4 rounded-md bg-surface-page flex gap-3 items-end">
+            <div className="flex-1">
               <FormField id="tag-input" label={t('inventory.properties.tagsTitle')} required>
                 <Input
                   id="tag-input"
@@ -586,15 +392,14 @@ export const PropertiesStep: React.FC<PropertiesStepProps> = ({
                 />
               </FormField>
             </div>
-            <button
-              type="button"
+            <Button
+              variant="primary"
               onClick={onAddTag}
-              className="btn-primary"
-              style={{ padding: '8px 16px', height: 40 }}
+              leftIcon={<Plus size={16} aria-hidden="true" />}
+              className="h-10"
             >
-              <Plus size={16} aria-hidden="true" />
               {t('inventory.attributes.add')}
-            </button>
+            </Button>
           </div>
         )}
       </section>

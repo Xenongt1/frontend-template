@@ -5,31 +5,8 @@ interface EmptySectionPanelProps {
 }
 
 export const EmptySectionPanel: React.FC<EmptySectionPanelProps> = ({ children }) => (
-  <div
-    style={{
-      alignSelf: 'stretch',
-      width: '100%',
-      paddingTop: 21,
-      paddingBottom: 21,
-      boxSizing: 'border-box',
-      borderRadius: 6,
-      border: '1px solid #E6EAEB',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    }}
-  >
-    <p
-      style={{
-        margin: 0,
-        color: '#5A6F7C',
-        fontSize: 14,
-        fontFamily: "'Inter', system-ui, sans-serif",
-        fontWeight: 500,
-        lineHeight: '21px',
-        textAlign: 'center',
-      }}
-    >
+  <div className="self-stretch w-full py-[21px] box-border rounded-md border border-stroke-light flex items-center justify-center">
+    <p className="m-0 font-inter text-sm font-medium leading-[21px] text-center text-text-tertiary">
       {children}
     </p>
   </div>

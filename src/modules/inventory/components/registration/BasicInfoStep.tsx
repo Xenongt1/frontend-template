@@ -24,44 +24,18 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
     <form
       aria-label={t('inventory.basicInfo.ariaLabel')}
       onSubmit={(e) => e.preventDefault()}
-      style={{
-        background: '#FDFDFD',
-        border: '1px solid #E6EAEB',
-        borderRadius: 10,
-        padding: 'clamp(12px, 2vh, 24px)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 'clamp(8px, 1.5vh, 16px)',
-      }}
+      className="bg-canvas-50 border border-stroke-light rounded-[10px] p-[clamp(12px,2vh,24px)] flex flex-col gap-[clamp(8px,1.5vh,16px)]"
     >
-      <div style={{ borderBottom: '1px solid #E6EAEB', paddingBottom: 10 }}>
-        <h2
-          style={{
-            margin: 0,
-            fontSize: 18,
-            fontWeight: 600,
-            fontFamily: "'Inter', system-ui, sans-serif",
-            color: '#041620',
-            lineHeight: '28px',
-          }}
-        >
+      <div className="border-b border-stroke-light pb-2.5">
+        <h2 className="m-0 font-inter text-lg font-semibold leading-7 text-brand-navy-dark">
           {t('inventory.basicInfo.title')}
         </h2>
-        <p
-          style={{
-            margin: '4px 0 0 0',
-            fontSize: 14,
-            fontWeight: 400,
-            fontFamily: "'Inter', system-ui, sans-serif",
-            color: '#08283B',
-            lineHeight: '20px',
-          }}
-        >
+        <p className="mt-1 mb-0 font-inter text-sm font-normal leading-5 text-text-primary">
           {t('inventory.basicInfo.description')}
         </p>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(8px, 1.5vh, 16px)' }}>
+      <div className="flex flex-col gap-[clamp(8px,1.5vh,16px)]">
         {/* Name */}
         <FormField id="item-name" label={t('inventory.basicInfo.nameLabel')} required error={errors.name}>
           <Input
@@ -73,7 +47,7 @@ export const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
           />
         </FormField>
 
-        <div style={{ display: 'flex', gap: 16 }}>
+        <div className="flex gap-4">
           {/* Stock Unit (quantity) */}
           <FormField id="item-stockunit" label={t('inventory.basicInfo.stockUnitLabel')} required error={errors.stockUnit}>
             <Input

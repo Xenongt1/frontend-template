@@ -16,15 +16,11 @@ interface RegistrationDropdownProps {
   error?: string;
 }
 
-export const dropdownItemTextStyle: React.CSSProperties = {
-  color: '#08283B',
-  fontSize: 14,
-  fontFamily: "'Inter', system-ui, sans-serif",
-  fontWeight: 500,
-  lineHeight: '21px',
-  textAlign: 'justify',
-  wordBreak: 'break-word',
-};
+// Shared text styling for items rendered inside this dropdown's listbox.
+// Exported so other places that visually echo a dropdown item (e.g. the
+// edit/deactivate links in GradeExpiryStep) can stay in lockstep.
+export const dropdownItemTextClass =
+  'font-inter text-sm font-medium leading-[21px] text-text-primary text-justify break-words';
 
 export const RegistrationDropdown: React.FC<RegistrationDropdownProps> = ({
   id,
@@ -39,10 +35,10 @@ export const RegistrationDropdown: React.FC<RegistrationDropdownProps> = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const selectedOption = options.find((option) => option.value === value);
 
-  function resolveBorder(): string {
-    if (open) return '1.5px solid #1A7FC1';
-    if (error) return '1px solid #C81E1E';
-    return '1px solid #D0D5DD';
+  function resolveBorderClass(): string {
+    if (open) return 'border-[1.5px] border-stroke-focus';
+    if (error) return 'border border-[#C81E1E]';
+    return 'border border-stroke-input';
   }
 
   useEffect(() => {
@@ -57,41 +53,26 @@ export const RegistrationDropdown: React.FC<RegistrationDropdownProps> = ({
   }, []);
 
   return (
-    <div ref={wrapperRef} style={{ position: 'relative', width: '100%' }}>
+    <div ref={wrapperRef} className="relative w-full">
       <button
         id={id}
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        style={{
-          width: '100%',
-          padding: '10px 36px 10px 14px',
-          borderRadius: 8,
-          border: resolveBorder(),
-          background: '#F9FAFB',
-          boxSizing: 'border-box',
-          outline: 'none',
-          boxShadow: open ? '0 0 0 3px rgba(26,127,193,0.12)' : 'none',
-          transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 12,
-        }}
+        className={[
+          'w-full pl-3.5 pr-9 py-2.5 rounded-lg box-border outline-none cursor-pointer',
+          'flex items-center justify-between gap-3',
+          'bg-surface-input transition-[border-color,box-shadow] duration-150',
+          resolveBorderClass(),
+          open ? 'shadow-[0_0_0_3px_rgba(26,127,193,0.12)]' : 'shadow-none',
+        ].join(' ')}
       >
         <span
-          style={{
-            color: selectedOption ? '#08283B' : '#9CA3AF',
-            fontSize: 14,
-            fontFamily: "'Inter', system-ui, sans-serif",
-            fontWeight: 400,
-            lineHeight: '20px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
+          className={[
+            'font-inter text-sm font-normal leading-5 overflow-hidden text-ellipsis whitespace-nowrap',
+            selectedOption ? 'text-text-primary' : 'text-text-placeholder',
+          ].join(' ')}
         >
           {selectedOption?.label ?? placeholder ?? t('common.select')}
         </span>
@@ -99,7 +80,7 @@ export const RegistrationDropdown: React.FC<RegistrationDropdownProps> = ({
           size={16}
           aria-hidden="true"
           color="#5A6F7C"
-          style={{ flexShrink: 0 }}
+          className="shrink-0"
         />
       </button>
 
@@ -107,19 +88,9 @@ export const RegistrationDropdown: React.FC<RegistrationDropdownProps> = ({
         <div
           role="listbox"
           aria-labelledby={id}
-          style={{
-            position: 'absolute',
-            zIndex: 20,
-            top: 'calc(100% + 6px)',
-            left: 0,
-            width: '100%',
-            background: '#FDFDFD',
-            borderRadius: 8,
-            border: '1px solid #E6EAEB',
-            overflow: 'hidden',
-          }}
+          className="absolute z-20 left-0 top-[calc(100%+6px)] w-full bg-canvas-50 rounded-lg border border-stroke-light overflow-hidden"
         >
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="flex flex-col">
             {placeholder ? (
               <button
                 type="button"
@@ -129,15 +100,12 @@ export const RegistrationDropdown: React.FC<RegistrationDropdownProps> = ({
                   onChange('');
                   setOpen(false);
                 }}
-                style={{
-                  padding: '8px 16px',
-                  border: 'none',
-                  background: value === '' ? '#F7F7F7' : '#FDFDFD',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
+                className={[
+                  'px-4 py-2 border-none cursor-pointer text-left transition-colors duration-150',
+                  value === '' ? 'bg-canvas-100' : 'bg-canvas-50 hover:bg-canvas-100',
+                ].join(' ')}
               >
-                <span style={dropdownItemTextStyle}>{placeholder}</span>
+                <span className={dropdownItemTextClass}>{placeholder}</span>
               </button>
             ) : null}
             {options.map((option, index) => (
@@ -150,17 +118,13 @@ export const RegistrationDropdown: React.FC<RegistrationDropdownProps> = ({
                   onChange(option.value);
                   setOpen(false);
                 }}
-                style={{
-                  padding: '8px 16px',
-                  border: 'none',
-                  borderTop:
-                    index > 0 || placeholder ? '1px solid #E6EAEB' : 'none',
-                  background: option.value === value ? '#F7F7F7' : '#FDFDFD',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
+                className={[
+                  'px-4 py-2 border-none cursor-pointer text-left transition-colors duration-150',
+                  index > 0 || placeholder ? 'border-t border-stroke-light' : '',
+                  option.value === value ? 'bg-canvas-100' : 'bg-canvas-50 hover:bg-canvas-100',
+                ].join(' ')}
               >
-                <span style={dropdownItemTextStyle}>{option.label}</span>
+                <span className={dropdownItemTextClass}>{option.label}</span>
               </button>
             ))}
           </div>

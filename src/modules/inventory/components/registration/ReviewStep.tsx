@@ -18,150 +18,46 @@ interface ReviewStepProps {
 }
 
 const InfoItem: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-    <span
-      style={{
-        fontSize: 12,
-        fontWeight: 500,
-        fontFamily: "'Inter', system-ui, sans-serif",
-        color: '#5A6F7C',
-      }}
-    >
-      {label}
-    </span>
-    <span
-      style={{
-        fontSize: 14,
-        fontWeight: 500,
-        fontFamily: "'Inter', system-ui, sans-serif",
-        color: '#08283B',
-      }}
-    >
-      {value}
-    </span>
+  <div className="flex flex-col gap-1">
+    <span className="font-inter text-xs font-medium text-text-tertiary">{label}</span>
+    <span className="font-inter text-sm font-medium text-text-primary">{value}</span>
   </div>
 );
 
 const getOptionLabel = (value: string, options: { label: string; value: string }[]) =>
   options.find((option) => option.value === value)?.label ?? '—';
 
-const reviewPanelStyle: React.CSSProperties = {
-  padding: '12px 16px',
-  background: '#F7F7F7',
-  borderRadius: 8,
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-  gap: 8,
-};
-
-const reviewPanelContentStyle: React.CSSProperties = {
-  alignSelf: 'stretch',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'flex-start',
-  gap: 16,
-};
-
-const reviewPanelHeaderStyle: React.CSSProperties = {
-  alignSelf: 'stretch',
-  paddingBottom: 14,
-  borderBottom: '1px solid #E6EAEB',
-  display: 'flex',
-  alignItems: 'center',
-};
-
-const reviewHeadingStyle: React.CSSProperties = {
-  margin: 0,
-  flex: 1,
-  color: '#041620',
-  fontSize: 18,
-  fontFamily: "'Inter', system-ui, sans-serif",
-  fontWeight: 600,
-  lineHeight: '28px',
-};
-
-const reviewCardTextStyle: React.CSSProperties = {
-  color: '#08283B',
-  fontSize: 14,
-  fontFamily: "'Inter', system-ui, sans-serif",
-  fontWeight: 500,
-  lineHeight: '21px',
-  wordBreak: 'break-word',
-};
-
 const ReviewPanel: React.FC<{ title: string; children: React.ReactNode }> = ({
   title,
   children,
 }) => (
-  <div style={reviewPanelStyle}>
-    <div style={reviewPanelContentStyle}>
-      <div style={reviewPanelHeaderStyle}>
-        <h3 style={reviewHeadingStyle}>{title}</h3>
+  <div className="px-4 py-3 bg-surface-page rounded-lg flex flex-col items-start gap-2">
+    <div className="self-stretch flex flex-col items-start gap-4">
+      <div className="self-stretch pb-3.5 border-b border-stroke-light flex items-center">
+        <h3 className="m-0 flex-1 text-brand-navy-dark font-inter text-lg font-semibold leading-7">
+          {title}
+        </h3>
       </div>
       {children}
     </div>
   </div>
 );
 
+// Badge variants — three palettes used across the file.
 const GreenBadge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <span
-    style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      padding: '2px 12px',
-      background: '#F3FAF7',
-      borderRadius: 6,
-      border: '1px solid #DEF7EC',
-      color: '#03543F',
-      fontSize: 14,
-      fontFamily: "'Inter', system-ui, sans-serif",
-      fontWeight: 600,
-      lineHeight: '21px',
-      textAlign: 'center',
-    }}
-  >
+  <span className="inline-flex items-center px-3 py-0.5 rounded-md border border-[#DEF7EC] bg-[#F3FAF7] text-[#03543F] font-inter text-sm font-semibold leading-[21px] text-center">
     {children}
   </span>
 );
 
 const TagBadge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <span
-    style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      padding: '2px 12px',
-      background: '#FDF2F2',
-      borderRadius: 6,
-      border: '1px solid #FDE8E8',
-      color: '#9B1C1C',
-      fontSize: 14,
-      fontFamily: "'Inter', system-ui, sans-serif",
-      fontWeight: 500,
-      lineHeight: '21px',
-    }}
-  >
+  <span className="inline-flex items-center px-3 py-0.5 rounded-md border border-[#FDE8E8] bg-[#FDF2F2] text-[#9B1C1C] font-inter text-sm font-medium leading-[21px]">
     {children}
   </span>
 );
 
 const TypeBadge: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <span
-    style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      padding: '2px 10px',
-      borderRadius: 6,
-      border: '1px solid #E6EAEB',
-      background: '#FDFDFD',
-      color: '#08283B',
-      fontSize: 12,
-      fontWeight: 500,
-      fontFamily: "'Inter', system-ui, sans-serif",
-      lineHeight: '18px',
-      whiteSpace: 'nowrap',
-    }}
-  >
+  <span className="inline-flex items-center px-2.5 py-0.5 rounded-md border border-stroke-light bg-canvas-50 text-text-primary font-inter text-xs font-medium leading-[18px] whitespace-nowrap">
     {children}
   </span>
 );
@@ -170,22 +66,13 @@ const RequiredBadge: React.FC<{ required: boolean }> = ({ required }) => {
   const { t } = useTranslation();
   return (
     <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2px 10px',
-        background: required ? '#FDF2F2' : '#FFF9E6',
-        borderRadius: 6,
-        border: required ? '1px solid #FDE8E8' : '1px solid #FFEBB0',
-        color: required ? '#9B1C1C' : '#8C6900',
-        fontSize: 12,
-        fontFamily: "'Inter', system-ui, sans-serif",
-        fontWeight: 500,
-        lineHeight: '18px',
-        textAlign: 'center',
-        whiteSpace: 'nowrap',
-      }}
+      className={[
+        'inline-flex items-center justify-center px-2.5 py-0.5 rounded-md',
+        'font-inter text-xs font-medium leading-[18px] text-center whitespace-nowrap border',
+        required
+          ? 'bg-[#FDF2F2] border-[#FDE8E8] text-[#9B1C1C]'
+          : 'bg-[#FFF9E6] border-[#FFEBB0] text-[#8C6900]',
+      ].join(' ')}
     >
       {required ? t('common.required') : t('common.optional')}
     </span>
@@ -196,19 +83,13 @@ const EnabledBadge: React.FC<{ enabled: boolean }> = ({ enabled }) => {
   const { t } = useTranslation();
   return (
     <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        padding: '2px 10px',
-        borderRadius: 6,
-        fontSize: 12,
-        fontWeight: 500,
-        fontFamily: "'Inter', system-ui, sans-serif",
-        lineHeight: '18px',
-        background: enabled ? '#F3FAF7' : '#F3F4F6',
-        border: `1px solid ${enabled ? '#84E1BC' : '#D1D5DB'}`,
-        color: enabled ? '#03543F' : '#6B7280',
-      }}
+      className={[
+        'inline-flex items-center px-2.5 py-0.5 rounded-md',
+        'font-inter text-xs font-medium leading-[18px] border',
+        enabled
+          ? 'bg-[#F3FAF7] border-[#84E1BC] text-[#03543F]'
+          : 'bg-[#F3F4F6] border-[#D1D5DB] text-[#6B7280]',
+      ].join(' ')}
     >
       {enabled ? t('common.true') : t('common.false')}
     </span>
@@ -220,21 +101,21 @@ const NotificationReviewCard: React.FC<{ title: string; enabled: boolean; value:
   enabled,
   value,
 }) => (
-  <div style={{ borderRadius: 8, border: '1px solid #E6EAEB', padding: 12 }}>
-    <h4 style={{ margin: 0, fontSize: 13, fontWeight: 600, fontFamily: "'Inter', system-ui, sans-serif", color: '#041620' }}>
+  <div className="rounded-lg border border-stroke-light p-3">
+    <h4 className="m-0 font-inter text-[13px] font-semibold text-brand-navy-dark">
       {title}
     </h4>
-    <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 12, color: '#5A6F7C', fontFamily: "'Inter', system-ui, sans-serif" }}>Enabled:</span>
+    <div className="mt-2 flex flex-col gap-1.5">
+      <div className="flex items-center gap-2">
+        <span className="font-inter text-xs text-text-tertiary">Enabled:</span>
         <EnabledBadge enabled={enabled} />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontSize: 12, color: '#5A6F7C', fontFamily: "'Inter', system-ui, sans-serif" }}>Value:</span>
+      <div className="flex items-center gap-2">
+        <span className="font-inter text-xs text-text-tertiary">Value:</span>
         {value !== '—' ? (
           <GreenBadge>{value}</GreenBadge>
         ) : (
-          <span style={{ fontSize: 13, color: '#5A6F7C', fontFamily: "'Inter', system-ui, sans-serif" }}>—</span>
+          <span className="font-inter text-[13px] text-text-tertiary">—</span>
         )}
       </div>
     </div>
@@ -265,92 +146,34 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
   return (
     <section
       aria-label={t('inventory.review.ariaLabel')}
-      style={{
-        background: '#FDFDFD',
-        border: '1px solid #E6EAEB',
-        borderRadius: 10,
-        padding: 'clamp(12px, 2vh, 24px)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 16,
-      }}
+      className="bg-canvas-50 border border-stroke-light rounded-[10px] p-[clamp(12px,2vh,24px)] flex flex-col gap-4"
     >
-      <div style={{ borderBottom: '1px solid #E6EAEB', paddingBottom: 10 }}>
-        <h2
-          style={{
-            margin: 0,
-            fontSize: 18,
-            fontWeight: 600,
-            fontFamily: "'Inter', system-ui, sans-serif",
-            color: '#041620',
-            lineHeight: '28px',
-          }}
-        >
+      <div className="border-b border-stroke-light pb-2.5">
+        <h2 className="m-0 font-inter text-lg font-semibold leading-7 text-brand-navy-dark">
           {t('inventory.review.title')}
         </h2>
-        <p
-          style={{
-            margin: '4px 0 0 0',
-            fontSize: 14,
-            fontWeight: 400,
-            fontFamily: "'Inter', system-ui, sans-serif",
-            color: '#08283B',
-            lineHeight: '20px',
-          }}
-        >
+        <p className="mt-1 mb-0 font-inter text-sm font-normal leading-5 text-text-primary">
           {t('inventory.review.description')}
         </p>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <div className="flex flex-col gap-[18px]">
         {/* Basic Information */}
         <div>
-          <h3
-            style={{
-              margin: 0,
-              fontSize: 16,
-              fontWeight: 600,
-              fontFamily: "'Inter', system-ui, sans-serif",
-              color: '#041620',
-            }}
-          >
+          <h3 className="m-0 font-inter text-base font-semibold text-brand-navy-dark">
             {t('inventory.review.basicInformation')}
           </h3>
-          <div
-            style={{
-              marginTop: 12,
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-              gap: 12,
-            }}
-          >
+          <div className="mt-3 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3">
             <InfoItem label={t('inventory.review.nameLabel')} value={basicInfo.name || '—'} />
             <InfoItem label={t('inventory.review.stockUnitLabel')} value={basicInfo.stockUnit || '—'} />
             <InfoItem label={t('inventory.review.categoryLabel')} value={categoryLabel} />
             <InfoItem label={t('inventory.review.uomLabel')} value={uomLabel} />
           </div>
-          <div style={{ marginTop: 12 }}>
-            <span
-              style={{
-                fontSize: 12,
-                fontWeight: 500,
-                fontFamily: "'Inter', system-ui, sans-serif",
-                color: '#5A6F7C',
-              }}
-            >
+          <div className="mt-3">
+            <span className="font-inter text-xs font-medium text-text-tertiary">
               {t('inventory.review.descriptionLabel')}
             </span>
-            <div
-              style={{
-                marginTop: 6,
-                padding: 12,
-                background: '#ECECEB',
-                borderRadius: 8,
-                fontSize: 14,
-                fontFamily: "'Inter', system-ui, sans-serif",
-                color: '#395362',
-              }}
-            >
+            <div className="mt-1.5 p-3 bg-canvas-200 rounded-lg font-inter text-sm text-text-secondary">
               {basicInfo.description || '—'}
             </div>
           </div>
@@ -358,41 +181,20 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
 
         {/* Attributes */}
         {attributes.length === 0 ? (
-          <div style={{ borderRadius: 8, border: '1px solid #E6EAEB', padding: 12 }}>
-            <h4
-              style={{
-                margin: 0,
-                fontSize: 14,
-                fontWeight: 600,
-                fontFamily: "'Inter', system-ui, sans-serif",
-                color: '#041620',
-              }}
-            >
+          <div className="rounded-lg border border-stroke-light p-3">
+            <h4 className="m-0 font-inter text-sm font-semibold text-brand-navy-dark">
               {t('inventory.review.attributes')}
             </h4>
-            <p style={{ margin: '8px 0 0 0', fontSize: 13, fontFamily: "'Inter', system-ui, sans-serif", color: '#5A6F7C' }}>
-              —
-            </p>
+            <p className="mt-2 mb-0 font-inter text-[13px] text-text-tertiary">—</p>
           </div>
         ) : (
           <ReviewPanel title={t('inventory.review.attributes')}>
-            <div style={{ alignSelf: 'stretch', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <div className="self-stretch flex items-center gap-2.5 flex-wrap">
               {attributes.map((attribute) => (
                 <GreenBadge key={attribute.id}>
                   {attribute.label}: {attribute.value}
                   {attribute.type && (
-                    <span
-                      style={{
-                        marginLeft: 6,
-                        fontSize: 11,
-                        fontWeight: 500,
-                        padding: '1px 6px',
-                        borderRadius: 4,
-                        background: '#D1FAE5',
-                        color: '#065F46',
-                        textTransform: 'capitalize',
-                      }}
-                    >
+                    <span className="ml-1.5 px-1.5 py-px text-[11px] font-medium rounded bg-[#D1FAE5] text-[#065F46] capitalize">
                       {attribute.type}
                     </span>
                   )}
@@ -405,41 +207,26 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         {/* Stock Level Properties (intake fields) */}
         {visibleIntakeFields.length === 0 ? (
           <div>
-            <h3
-              style={{
-                margin: 0,
-                fontSize: 16,
-                fontWeight: 600,
-                fontFamily: "'Inter', system-ui, sans-serif",
-                color: '#041620',
-              }}
-            >
+            <h3 className="m-0 font-inter text-base font-semibold text-brand-navy-dark">
               {t('inventory.review.intakeFields')}
             </h3>
-            <div style={{ marginTop: 12 }}>
-              <span style={{ fontSize: 13, fontFamily: "'Inter', system-ui, sans-serif", color: '#5A6F7C' }}>
+            <div className="mt-3">
+              <span className="font-inter text-[13px] text-text-tertiary">
                 {t('inventory.review.noIntakeFields')}
               </span>
             </div>
           </div>
         ) : (
           <ReviewPanel title={t('inventory.review.intakeFields')}>
-            <div style={{ alignSelf: 'stretch', display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <div className="self-stretch flex items-center gap-2.5 flex-wrap">
               {visibleIntakeFields.map((field) => (
                 <div
                   key={field.id}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    padding: '10px 16px',
-                    background: '#FDFDFD',
-                    borderRadius: 12,
-                    border: '1px solid #B2BCC2',
-                    minHeight: 42,
-                  }}
+                  className="inline-flex items-center gap-2.5 px-4 py-2.5 bg-canvas-50 rounded-xl border border-stroke-medium min-h-[42px]"
                 >
-                  <span style={reviewCardTextStyle}>{field.label}</span>
+                  <span className="font-inter text-sm font-medium leading-[21px] text-text-primary break-words">
+                    {field.label}
+                  </span>
                   <TypeBadge>
                     {field.type === 'number'
                       ? t('inventory.properties.typeNumber')
@@ -455,7 +242,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
         {/* Tags */}
         {tags.length > 0 && (
           <ReviewPanel title={t('inventory.review.tagsLabel')}>
-            <div style={{ alignSelf: 'stretch', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <div className="self-stretch flex items-center gap-2 flex-wrap">
               {tags.map((tag) => (
                 <TagBadge key={tag}>{tag}</TagBadge>
               ))}
@@ -465,25 +252,10 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
 
         {/* Notifications */}
         <div>
-          <h3
-            style={{
-              margin: 0,
-              fontSize: 16,
-              fontWeight: 600,
-              fontFamily: "'Inter', system-ui, sans-serif",
-              color: '#041620',
-              marginBottom: 12,
-            }}
-          >
+          <h3 className="m-0 mb-3 font-inter text-base font-semibold text-brand-navy-dark">
             {t('inventory.review.notifications')}
           </h3>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-              gap: 12,
-            }}
-          >
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
             <NotificationReviewCard
               title={t('inventory.notifications.expiryTitle')}
               enabled={enableExpiryAlert}

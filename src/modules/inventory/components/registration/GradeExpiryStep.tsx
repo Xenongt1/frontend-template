@@ -2,9 +2,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { MoreVertical, Plus, Trash2 } from 'lucide-react';
 import { FormField, Input } from '@/shared/components/ui';
+import Button from '@/shared/components/ui/Button';
 import type { GradeDraft, GradeItem, IntakeField } from './types';
 import { EmptySectionPanel } from './EmptySectionPanel';
-import { dropdownItemTextStyle } from './RegistrationDropdown';
+import { dropdownItemTextClass } from './RegistrationDropdown';
 
 interface GradeExpiryStepProps {
   gradeDraft: GradeDraft;
@@ -24,53 +25,35 @@ interface GradeExpiryStepProps {
   onRemoveIntakeField: (id: string) => void;
 }
 
+// Section card shape is reused by both Grades and Intake Fields below.
+const sectionCardClass =
+  'bg-canvas-50 border border-stroke-light rounded-[10px] ' +
+  'p-[clamp(12px,2vh,24px)] flex flex-col gap-4';
+
+// Dropdown menu item shape (mirrors the row-action menus elsewhere).
+const menuItemClass =
+  'w-full px-4 py-2 bg-canvas-50 border-none cursor-pointer text-left ' +
+  'transition-colors duration-150 hover:bg-canvas-100';
+
 const SectionHeader: React.FC<{
   title: string;
   description: string;
   actionLabel: string;
   onAction: () => void;
 }> = ({ title, description, actionLabel, onAction }) => (
-  <header
-    style={{
-      borderBottom: '1px solid #E6EAEB',
-      paddingBottom: 10,
-      display: 'flex',
-      alignItems: 'center',
-      gap: 12,
-      flexWrap: 'wrap',
-    }}
-  >
-    <div style={{ flex: 1 }}>
-      <h2
-        style={{
-          margin: 0,
-          fontSize: 18,
-          fontWeight: 600,
-          fontFamily: "'Inter', system-ui, sans-serif",
-          color: '#041620',
-          lineHeight: '28px',
-        }}
-      >
+  <header className="border-b border-stroke-light pb-2.5 flex items-center gap-3 flex-wrap">
+    <div className="flex-1">
+      <h2 className="m-0 font-inter text-lg font-semibold leading-7 text-brand-navy-dark">
         {title}
       </h2>
-      <p
-        style={{
-          margin: '4px 0 0 0',
-          fontSize: 14,
-          fontWeight: 400,
-          fontFamily: "'Inter', system-ui, sans-serif",
-          color: '#08283B',
-          lineHeight: '20px',
-        }}
-      >
+      <p className="mt-1 mb-0 font-inter text-sm font-normal leading-5 text-text-primary">
         {description}
       </p>
     </div>
     <button
       type="button"
       onClick={onAction}
-      className="btn-outline"
-      style={{ padding: '8px 14px' }}
+      className="btn-outline px-3.5 py-2"
     >
       <Plus size={16} aria-hidden="true" />
       {actionLabel}
@@ -84,57 +67,31 @@ const RequirementToggle: React.FC<{ required: boolean; onToggle: () => void }> =
 }) => {
   const { t } = useTranslation();
   return (
-  <button
-    type="button"
-    aria-pressed={required}
-    aria-label={required ? t('inventory.grades.toggleOptional') : t('inventory.grades.toggleRequired')}
-    onClick={onToggle}
-    style={{
-      border: 'none',
-      background: 'transparent',
-      padding: 0,
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: 8,
-      cursor: 'pointer',
-    }}
-  >
-    <span
-      aria-hidden="true"
-      style={{
-        width: 40,
-        height: 20,
-        borderRadius: 999,
-        background: required ? '#08283B' : '#ECECEB',
-        position: 'relative',
-        display: 'inline-block',
-        transition: 'background 0.15s ease',
-      }}
+    <button
+      type="button"
+      aria-pressed={required}
+      aria-label={required ? t('inventory.grades.toggleOptional') : t('inventory.grades.toggleRequired')}
+      onClick={onToggle}
+      className="border-none bg-transparent p-0 inline-flex items-center gap-2 cursor-pointer"
     >
       <span
-        style={{
-          width: 16,
-          height: 16,
-          borderRadius: 999,
-          background: '#FDFDFD',
-          position: 'absolute',
-          top: 2,
-          left: required ? 22 : 2,
-          transition: 'left 0.15s ease',
-        }}
-      />
-    </span>
-    <span
-      style={{
-        fontSize: 14,
-        fontWeight: 500,
-        fontFamily: "'Inter', system-ui, sans-serif",
-        color: '#08283B',
-      }}
-    >
-      {required ? t('common.required') : t('common.optional')}
-    </span>
-  </button>
+        aria-hidden="true"
+        className={[
+          'w-10 h-5 rounded-full relative inline-block transition-colors duration-150',
+          required ? 'bg-brand-navy' : 'bg-canvas-200',
+        ].join(' ')}
+      >
+        <span
+          className={[
+            'absolute w-4 h-4 rounded-full bg-canvas-50 top-0.5 transition-[left] duration-150',
+            required ? 'left-[22px]' : 'left-0.5',
+          ].join(' ')}
+        />
+      </span>
+      <span className="font-inter text-sm font-medium text-text-primary">
+        {required ? t('common.required') : t('common.optional')}
+      </span>
+    </button>
   );
 };
 
@@ -147,32 +104,33 @@ const IntakeFieldRow: React.FC<{
 }> = ({ field, error, onLabelChange, onToggleRequired, onRemove }) => {
   const { t } = useTranslation();
   return (
-  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14, flexWrap: 'wrap' }}>
-    <div style={{ flex: 1, minWidth: 200 }}>
-      <FormField id={field.id} label={t('inventory.intakeFields.fieldLabel')} error={error}>
-        <Input
-          id={field.id}
-          placeholder={t('inventory.intakeFields.fieldPlaceholder')}
-          value={field.label}
-          onChange={(event) => onLabelChange(event.target.value)}
-          aria-invalid={!!error}
-          style={{ background: '#F0F2F4', border: error ? '1px solid #C81E1E' : '1px solid #E6EAEB' }}
-        />
-      </FormField>
+    <div className="flex items-end gap-3.5 flex-wrap">
+      <div className="flex-1 min-w-[200px]">
+        <FormField id={field.id} label={t('inventory.intakeFields.fieldLabel')} error={error}>
+          <Input
+            id={field.id}
+            placeholder={t('inventory.intakeFields.fieldPlaceholder')}
+            value={field.label}
+            onChange={(event) => onLabelChange(event.target.value)}
+            aria-invalid={!!error}
+            className={error
+              ? 'bg-[#F0F2F4] border border-[#C81E1E]'
+              : 'bg-[#F0F2F4] border border-stroke-light'}
+          />
+        </FormField>
+      </div>
+      <div className="flex items-center gap-3.5">
+        <RequirementToggle required={field.required} onToggle={onToggleRequired} />
+        <button
+          type="button"
+          aria-label={t('inventory.intakeFields.removeAriaLabel')}
+          onClick={onRemove}
+          className="btn-danger w-[34px] h-[34px]"
+        >
+          <Trash2 size={16} color="#FDFDFD" />
+        </button>
+      </div>
     </div>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-      <RequirementToggle required={field.required} onToggle={onToggleRequired} />
-      <button
-        type="button"
-        aria-label={t('inventory.intakeFields.removeAriaLabel')}
-        onClick={onRemove}
-        className="btn-danger"
-        style={{ width: 34, height: 34 }}
-      >
-        <Trash2 size={16} color="#FDFDFD" />
-      </button>
-    </div>
-  </div>
   );
 };
 
@@ -198,26 +156,12 @@ export const GradeExpiryStep: React.FC<GradeExpiryStepProps> = ({
   const [openGradeActionId, setOpenGradeActionId] = React.useState<string | null>(null);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 24,
-      }}
-    >
+    <div className="flex flex-col gap-6">
       {/* ── Quality Grades section ── */}
       <form
         aria-label={t('inventory.grades.ariaLabel')}
         onSubmit={(e) => e.preventDefault()}
-        style={{
-          background: '#FDFDFD',
-          border: '1px solid #E6EAEB',
-          borderRadius: 10,
-          padding: 'clamp(12px, 2vh, 24px)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 16,
-        }}
+        className={sectionCardClass}
       >
         <SectionHeader
           title={t('inventory.grades.title')}
@@ -227,23 +171,9 @@ export const GradeExpiryStep: React.FC<GradeExpiryStepProps> = ({
         />
 
         {isGradeFormOpen ? (
-          <div style={{ borderRadius: 6, border: '1px solid #E6EAEB' }}>
-            <div
-              style={{
-                padding: 16,
-                background: '#F7F7F7',
-                borderRadius: 6,
-              }}
-            >
-              <div
-                style={{
-                  width: '100%',
-                  display: 'grid',
-                  gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr) 96px',
-                  gap: 16,
-                  alignItems: 'flex-start',
-                }}
-              >
+          <div className="rounded-md border border-stroke-light">
+            <div className="p-4 bg-surface-page rounded-md">
+              <div className="w-full grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_96px] gap-4 items-start">
                 <FormField id="grade-name" label={t('inventory.grades.nameLabel')} required error={errors.gradeDraftName}>
                   <Input
                     id="grade-name"
@@ -262,71 +192,34 @@ export const GradeExpiryStep: React.FC<GradeExpiryStepProps> = ({
                     aria-invalid={!!errors.gradeDraftRank}
                   />
                 </FormField>
-                <button
-                  type="button"
+                <Button
+                  variant="primary"
+                  size="sm"
                   onClick={onAddGrade}
-                  className="btn-primary"
-                  style={{
-                    width: 96,
-                    height: 40,
-                    padding: '8px 12px',
-                    marginTop: 22,
-                  }}
+                  leftIcon={<Plus size={16} aria-hidden="true" />}
+                  className="w-24 h-10 mt-[22px]"
                 >
-                  <Plus size={16} aria-hidden="true" />
                   {editingGradeId ? t('common.save') : t('inventory.attributes.add')}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
         ) : null}
 
-        <div
-          style={{
-            borderRadius: 6,
-            border: grades.length > 0 ? '1px solid #E6EAEB' : 'none',
-          }}
-        >
+        <div className={grades.length > 0 ? 'rounded-md border border-stroke-light' : ''}>
           {grades.length === 0 && !isGradeFormOpen && (
             <EmptySectionPanel>
               {t('inventory.grades.empty')}
             </EmptySectionPanel>
           )}
           {grades.length > 0 && (
-            <div
-              style={{
-                padding: 16,
-                background: '#F7F7F7',
-                borderRadius: 6,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 16,
-              }}
-            >
+            <div className="p-4 bg-surface-page rounded-md flex flex-col gap-4">
               {grades.map((grade) => (
                 <div
                   key={grade.id}
-                  style={{
-                    padding: 16,
-                    borderRadius: 8,
-                    border: '1px solid #B2BCC2',
-                    background: '#FDFDFD',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: 14,
-                    position: 'relative',
-                  }}
+                  className="p-4 rounded-lg border border-stroke-medium bg-canvas-50 flex items-center justify-between gap-3.5 relative"
                 >
-                  <div
-                    style={{
-                      color: '#08283B',
-                      fontSize: 14,
-                      fontWeight: 500,
-                      fontFamily: "'Inter', system-ui, sans-serif",
-                      lineHeight: '21px',
-                    }}
-                  >
+                  <div className="text-text-primary font-inter text-sm font-medium leading-[21px]">
                     {formatGradeLabel(grade)}
                   </div>
                   <button
@@ -339,34 +232,14 @@ export const GradeExpiryStep: React.FC<GradeExpiryStepProps> = ({
                         current === grade.id ? null : grade.id
                       )
                     }
-                    style={{
-                      width: 34,
-                      height: 34,
-                      border: 'none',
-                      background: 'transparent',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      color: '#08283B',
-                      cursor: 'pointer',
-                    }}
+                    className="w-[34px] h-[34px] border-none bg-transparent inline-flex items-center justify-center text-text-primary cursor-pointer rounded transition-colors duration-150 hover:bg-canvas-200"
                   >
                     <MoreVertical size={24} aria-hidden="true" />
                   </button>
                   {openGradeActionId === grade.id ? (
                     <div
                       role="menu"
-                      style={{
-                        position: 'absolute',
-                        zIndex: 20,
-                        right: 16,
-                        top: 50,
-                        minWidth: 160,
-                        background: '#FDFDFD',
-                        borderRadius: 8,
-                        border: '1px solid #E6EAEB',
-                        overflow: 'hidden',
-                      }}
+                      className="absolute z-20 right-4 top-[50px] min-w-[160px] bg-canvas-50 rounded-lg border border-stroke-light overflow-hidden"
                     >
                       <button
                         type="button"
@@ -375,16 +248,9 @@ export const GradeExpiryStep: React.FC<GradeExpiryStepProps> = ({
                           onEditGrade(grade.id);
                           setOpenGradeActionId(null);
                         }}
-                        style={{
-                          width: '100%',
-                          padding: '8px 16px',
-                          border: 'none',
-                          background: '#FDFDFD',
-                          cursor: 'pointer',
-                          textAlign: 'left',
-                        }}
+                        className={menuItemClass}
                       >
-                        <span style={dropdownItemTextStyle}>{t('inventory.grades.edit')}</span>
+                        <span className={dropdownItemTextClass}>{t('inventory.grades.edit')}</span>
                       </button>
                       <button
                         type="button"
@@ -393,17 +259,9 @@ export const GradeExpiryStep: React.FC<GradeExpiryStepProps> = ({
                           onRemoveGrade(grade.id);
                           setOpenGradeActionId(null);
                         }}
-                        style={{
-                          width: '100%',
-                          padding: '8px 16px',
-                          border: 'none',
-                          borderTop: '1px solid #E6EAEB',
-                          background: '#FDFDFD',
-                          cursor: 'pointer',
-                          textAlign: 'left',
-                        }}
+                        className={`${menuItemClass} border-t border-stroke-light`}
                       >
-                        <span style={dropdownItemTextStyle}>{t('inventory.grades.deactivate')}</span>
+                        <span className={dropdownItemTextClass}>{t('inventory.grades.deactivate')}</span>
                       </button>
                     </div>
                   ) : null}
@@ -418,15 +276,7 @@ export const GradeExpiryStep: React.FC<GradeExpiryStepProps> = ({
       <form
         aria-label={t('inventory.intakeFields.ariaLabel')}
         onSubmit={(e) => e.preventDefault()}
-        style={{
-          background: '#FDFDFD',
-          border: '1px solid #E6EAEB',
-          borderRadius: 10,
-          padding: 'clamp(12px, 2vh, 24px)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 16,
-        }}
+        className={sectionCardClass}
       >
         <SectionHeader
           title={t('inventory.intakeFields.title')}
@@ -440,15 +290,8 @@ export const GradeExpiryStep: React.FC<GradeExpiryStepProps> = ({
             {t('inventory.intakeFields.empty')}
           </EmptySectionPanel>
         ) : (
-          <div style={{ borderRadius: 6, border: '1px solid #E6EAEB' }}>
-            <div
-              style={{
-                padding: 16,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 16,
-              }}
-            >
+          <div className="rounded-md border border-stroke-light">
+            <div className="p-4 flex flex-col gap-4">
               {intakeFields.map((field, index) => (
                 <IntakeFieldRow
                   key={field.id}

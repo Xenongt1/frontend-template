@@ -15,64 +15,22 @@ export const ExpiryNotificationSection: React.FC<ExpiryNotificationSectionProps>
   return (
     <section
       aria-labelledby="expiry-notification-heading"
-      style={{
-        background: '#FDFDFD',
-        border: '1px solid #E6EAEB',
-        borderRadius: 10,
-        padding: 'clamp(12px, 2vh, 24px)',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 'clamp(10px, 1.6vh, 18px)',
-      }}
+      className="bg-canvas-50 border border-stroke-light rounded-[10px] p-[clamp(12px,2vh,24px)] flex flex-col gap-[clamp(10px,1.6vh,18px)]"
     >
-      <div style={{ borderBottom: '1px solid #E6EAEB', paddingBottom: 12 }}>
+      <div className="border-b border-stroke-light pb-3">
         <h2
           id="expiry-notification-heading"
-          style={{
-            margin: 0,
-            fontSize: 18,
-            fontWeight: 600,
-            fontFamily: "'Inter', system-ui, sans-serif",
-            color: '#041620',
-            lineHeight: '28px',
-          }}
+          className="m-0 font-inter text-lg font-semibold leading-7 text-brand-navy-dark"
         >
           {t('inventory.expiryNotification.title')}
         </h2>
-        <p
-          style={{
-            margin: '4px 0 0 0',
-            fontSize: 14,
-            fontWeight: 400,
-            fontFamily: "'Inter', system-ui, sans-serif",
-            color: '#08283B',
-            lineHeight: '20px',
-          }}
-        >
+        <p className="mt-1 mb-0 font-inter text-sm font-normal leading-5 text-text-primary">
           {t('inventory.expiryNotification.description')}
         </p>
       </div>
 
-      <div
-        style={{
-          background: '#F7F8F8',
-          borderRadius: 6,
-          padding: 16,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 12,
-        }}
-      >
-        <h3
-          style={{
-            margin: 0,
-            fontSize: 16,
-            fontWeight: 600,
-            fontFamily: "'Inter', system-ui, sans-serif",
-            color: '#08283B',
-            lineHeight: '24px',
-          }}
-        >
+      <div className="bg-[#F7F8F8] rounded-md p-4 flex flex-col gap-3">
+        <h3 className="m-0 font-inter text-base font-semibold leading-6 text-text-primary">
           {t('inventory.expiryNotification.subheading')}
         </h3>
 
