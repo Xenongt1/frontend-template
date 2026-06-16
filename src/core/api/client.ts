@@ -46,6 +46,17 @@ export async function apiRequest<T>(
 
   try {
     const response = await axios.request<T>(config);
+
+    // Some paths on the testing ALB have no backend wired behind them, so the
+    // load balancer falls through to serving the FE's index.html with a 200
+    // status. Without this guard, downstream code crashes later on
+    // `response.data.map` etc. — surface a real gateway error instead.
+    const rawContentType = response.headers['content-type'];
+    const contentType = typeof rawContentType === 'string' ? rawContentType : '';
+    if (typeof response.data === 'string' || !contentType.toLowerCase().includes('application/json')) {
+      throw new ApiError('Bad Gateway: backend returned a non-JSON response', 502);
+    }
+
     return response.data;
   } catch (err) {
     if (axios.isAxiosError(err)) {
