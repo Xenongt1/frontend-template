@@ -24,6 +24,19 @@ export interface Supplier {
   createdAt?: string;
 }
 
+export interface SupplierQueryParams {
+  search?: string;
+  status?: SupplierStatus;
+  materialIds?: string[];
+  page?: number;      // 1-based (converted to 0-based for Spring backend)
+  pageSize?: number;
+}
+
+export interface SupplierListResponse {
+  suppliers: Supplier[];
+  total: number;
+}
+
 export interface CreateSupplierPayload {
   contactPerson: string;
   companyName?: string;
@@ -77,7 +90,34 @@ function toRequestError(err: unknown): Error {
   return new Error('Request failed');
 }
 
+function buildQuery(params?: SupplierQueryParams): string {
+  if (!params) return '';
+  const qs = new URLSearchParams();
+  if (params.search)              qs.set('search', params.search);
+  if (params.status)              qs.set('status', params.status);
+  if (params.materialIds?.length) params.materialIds.forEach(id => qs.append('materialIds', id));
+  if (params.page != null)        qs.set('page', String(params.page - 1)); // Spring uses 0-based pages
+  if (params.pageSize != null)    qs.set('size', String(params.pageSize));
+  const str = qs.toString();
+  return str ? `?${str}` : '';
+}
+
 export const supplierApi = {
+  async getSuppliers(params?: SupplierQueryParams): Promise<ApiResponse<SupplierListResponse>> {
+    try {
+      const raw = await apiRequest<PagedResponse<RawSupplier>>(
+        `/api/procurement/suppliers${buildQuery(params)}`,
+      );
+      const content = Array.isArray(raw) ? raw : (raw.content ?? []);
+      const total = Array.isArray(raw)
+        ? content.length
+        : (raw.page?.totalElements ?? content.length);
+      return { success: true, data: { suppliers: content.map(normalizeSupplier), total } };
+    } catch (err) {
+      throw toRequestError(err);
+    }
+  },
+
   async createSupplier(payload: CreateSupplierPayload): Promise<ApiResponse<Supplier>> {
     try {
       const raw = await apiRequest<RawSupplier>('/api/procurement/suppliers', {
@@ -85,16 +125,6 @@ export const supplierApi = {
         body: JSON.stringify(payload),
       });
       return { success: true, data: normalizeSupplier(raw) };
-    } catch (err) {
-      throw toRequestError(err);
-    }
-  },
-
-  async getSuppliers(): Promise<ApiResponse<Supplier[]>> {
-    try {
-      const raw = await apiRequest<PagedResponse<RawSupplier>>('/api/procurement/suppliers');
-      const content = Array.isArray(raw) ? raw : (raw.content ?? []);
-      return { success: true, data: content.map(normalizeSupplier) };
     } catch (err) {
       throw toRequestError(err);
     }
@@ -114,7 +144,7 @@ export const supplierApi = {
 
   async activateSupplier(id: string): Promise<ApiResponse<Supplier>> {
     try {
-      const raw = await apiRequest<RawSupplier>(`/api/procurement/suppliers/${id}/status `, {
+      const raw = await apiRequest<RawSupplier>(`/api/procurement/suppliers/${id}/status`, {
         method: 'PATCH',
         body: JSON.stringify({ active: true }),
       });
