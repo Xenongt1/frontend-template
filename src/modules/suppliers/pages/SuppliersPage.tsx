@@ -125,6 +125,7 @@ const SuppliersPage: React.FC = () => {
   });
 
   const [suspendTarget, setSuspendTarget] = useState<Supplier | null>(null);
+  const [activateTarget, setActivateTarget] = useState<Supplier | null>(null);
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<SupplierStatus | ''>('');
@@ -194,7 +195,7 @@ const SuppliersPage: React.FC = () => {
   const handleToggleSuspension = (s: Supplier) => {
     closeMenu();
     if (s.status === 'SUSPENDED') {
-      activateMutation.mutate(s.id);
+      setActivateTarget(s);
     } else {
       setSuspendTarget(s);
     }
@@ -292,16 +293,16 @@ const SuppliersPage: React.FC = () => {
             <thead>
               <tr>
                 <th className={`${thClass} min-w-[160px]`}>
-                  <span className="inline-flex items-center gap-1.5"><SortIcon /> {t('suppliers.list.colCompanyName')}</span>
+                  <span className="inline-flex items-center gap-1.5"> {t('suppliers.list.colCompanyName')} <SortIcon /></span>
                 </th>
                 <th className={`${thClass} min-w-[130px]`}>
-                  <span className="inline-flex items-center gap-1.5"><SortIcon /> {t('suppliers.list.colStatus')}</span>
+                  <span className="inline-flex items-center gap-1.5"> {t('suppliers.list.colStatus')} <SortIcon /></span>
                 </th>
                 <th className={`${thClass} min-w-[220px]`}>
-                  <span className="inline-flex items-center gap-1.5"><SortIcon /> {t('suppliers.list.colSupplierName')}</span>
+                  <span className="inline-flex items-center gap-1.5"> {t('suppliers.list.colSupplierName')} <SortIcon /></span>
                 </th>
                 <th className={`${thClass} min-w-[220px]`}>
-                  <span className="inline-flex items-center gap-1.5"><SortIcon /> {t('suppliers.list.colApprovedMaterials')}</span>
+                  <span className="inline-flex items-center gap-1.5"> {t('suppliers.list.colApprovedMaterials')} <SortIcon /></span>
                 </th>
                 <th className={`${thClass} w-20 text-center`}>{t('suppliers.list.colActions')}</th>
               </tr>
@@ -505,6 +506,23 @@ const SuppliersPage: React.FC = () => {
           }
         }}
         onCancel={() => setSuspendTarget(null)}
+      />
+
+      <ConfirmDialog
+        open={activateTarget !== null}
+        title={t('suppliers.activate.title')}
+        description={t('suppliers.activate.description')}
+        confirmLabel={t('suppliers.activate.confirm')}
+        cancelLabel={t('suppliers.activate.cancel')}
+        loading={activateMutation.isPending}
+        onConfirm={() => {
+          if (activateTarget) {
+            activateMutation.mutate(activateTarget.id, {
+              onSuccess: () => setActivateTarget(null),
+            });
+          }
+        }}
+        onCancel={() => setActivateTarget(null)}
       />
     </div>
   );

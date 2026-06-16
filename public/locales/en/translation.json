@@ -104,7 +104,8 @@
     "suspended": "Suspended"
   },
   "pagination": {
-    "rowsPerPage": "Rows per page:",
+    "rowsPerPage": "Rows per page",
+    "showing": "Showing {{start}}-{{end}} of {{count}} approvals",
     "totalItems_one": "of {{count}} item",
     "totalItems_other": "of {{count}} items",
     "previousPage": "Previous page",
@@ -256,6 +257,12 @@
       "title": "Suspend Supplier",
       "description": "Suspending this supplier will prevent it from appearing in active selections",
       "confirm": "Suspend",
+      "cancel": "Cancel"
+    },
+    "activate": {
+      "title": "Activate Supplier",
+      "description": "Activating this supplier will make them available again in active selections.",
+      "confirm": "Activate",
       "cancel": "Cancel"
     },
     "detail": {

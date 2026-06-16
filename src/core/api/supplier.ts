@@ -102,8 +102,9 @@ export const supplierApi = {
 
   async suspendSupplier(id: string): Promise<ApiResponse<Supplier>> {
     try {
-      const raw = await apiRequest<RawSupplier>(`/api/procurement/suppliers/${id}/suspend`, {
+      const raw = await apiRequest<RawSupplier>(`/api/procurement/suppliers/${id}/status`, {
         method: 'PATCH',
+        body: JSON.stringify({ active: false }),
       });
       return { success: true, data: normalizeSupplier(raw) };
     } catch (err) {
@@ -113,8 +114,9 @@ export const supplierApi = {
 
   async activateSupplier(id: string): Promise<ApiResponse<Supplier>> {
     try {
-      const raw = await apiRequest<RawSupplier>(`/api/procurement/suppliers/${id}/activate`, {
+      const raw = await apiRequest<RawSupplier>(`/api/procurement/suppliers/${id}/status `, {
         method: 'PATCH',
+        body: JSON.stringify({ active: true }),
       });
       return { success: true, data: normalizeSupplier(raw) };
     } catch (err) {
@@ -134,7 +136,7 @@ export const supplierApi = {
   async updateSupplier(id: string, payload: UpdateSupplierPayload): Promise<ApiResponse<Supplier>> {
     try {
       const raw = await apiRequest<RawSupplier>(`/api/procurement/suppliers/${id}`, {
-        method: 'PATCH',
+        method: 'PUT',
         body: JSON.stringify(payload),
       });
       return { success: true, data: normalizeSupplier(raw) };

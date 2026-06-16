@@ -104,7 +104,8 @@
     "suspended": "Suspendu"
   },
   "pagination": {
-    "rowsPerPage": "Lignes par page :",
+    "rowsPerPage": "Lignes par page",
+    "showing": "Affichage {{start}}-{{end}} sur {{count}} articles",
     "totalItems_one": "sur {{count}} article",
     "totalItems_other": "sur {{count}} articles",
     "previousPage": "Page précédente",
@@ -256,6 +257,12 @@
       "title": "Suspendre le fournisseur",
       "description": "La suspension de ce fournisseur l'empêchera d'apparaître dans les sélections actives",
       "confirm": "Suspendre",
+      "cancel": "Annuler"
+    },
+    "activate": {
+      "title": "Activer le fournisseur",
+      "description": "L'activation de ce fournisseur le rendra à nouveau disponible dans les sélections actives.",
+      "confirm": "Activer",
       "cancel": "Annuler"
     },
     "detail": {

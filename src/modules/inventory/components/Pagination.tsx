@@ -47,11 +47,18 @@ const Pagination: React.FC<Props> = ({
   const { t } = useTranslation();
   const pageNumbers = getPageNumbers(page, totalPages);
 
+  const start = total === 0 ? 0 : (page - 1) * pageSize + 1;
+  const end = Math.min(page * pageSize, total);
+
   return (
     <div className="flex items-center justify-between px-5 py-3 border-t border-canvas-300 gap-3 flex-wrap">
-      {/* Left: page size selector */}
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <span className="text-[13px] text-navy-600 whitespace-nowrap">{t('pagination.rowsPerPage')}</span>
+      {/* Left: showing range */}
+      <span className="text-[13px] text-navy-600 whitespace-nowrap flex-shrink-0">
+        {t('pagination.showing', { start, end, count: total })}
+      </span>
+
+      {/* Right: page size selector + navigation */}
+      <div className="flex items-center gap-2 flex-wrap">
         <select
           value={pageSize}
           onChange={(e) => onPageSizeChange(Number(e.target.value))}
@@ -60,52 +67,51 @@ const Pagination: React.FC<Props> = ({
         >
           {pageSizeOptions.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
-        <span className="text-[13px] text-navy-500 whitespace-nowrap">{t('pagination.totalItems', { count: total })}</span>
-      </div>
+        <span className="text-[13px] text-navy-600 whitespace-nowrap">{t('pagination.rowsPerPage')}</span>
 
-      {/* Right: navigation */}
-      <div className="flex items-center gap-1">
-        <button
-          onClick={() => onPageChange(page - 1)}
-          disabled={disabled || page === 1}
-          className="inline-flex items-center justify-center w-8 h-8 border border-canvas-300 rounded-md bg-canvas-50 text-navy-600 transition-colors flex-shrink-0 hover:bg-canvas-100 hover:border-navy-300 disabled:opacity-40 disabled:cursor-not-allowed"
-          aria-label={t('pagination.previousPage')}
-        >
-          <ChevronLeft />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => onPageChange(page - 1)}
+            disabled={disabled || page === 1}
+            className="inline-flex items-center justify-center w-8 h-8 border border-canvas-300 rounded-md bg-canvas-50 text-navy-600 transition-colors flex-shrink-0 hover:bg-canvas-100 hover:border-navy-300 disabled:opacity-40 disabled:cursor-not-allowed"
+            aria-label={t('pagination.previousPage')}
+          >
+            <ChevronLeft />
+          </button>
 
-        {pageNumbers.map((p) =>
-          isEllipsis(p) ? (
-            <span
-              key={p}
-              className="inline-flex items-center justify-center min-w-8 h-8 px-1 text-[13px] text-navy-300 cursor-default flex-shrink-0"
-            >
-              …
-            </span>
-          ) : (
-            <button
-              key={p}
-              onClick={() => onPageChange(p)}
-              disabled={disabled}
-              className={`inline-flex items-center justify-center min-w-8 h-8 px-1 rounded-md text-[13px] flex-shrink-0 transition-colors border disabled:opacity-40 disabled:cursor-not-allowed ${
-                p === page
-                  ? 'bg-navy-300 text-navy-900 font-semibold border-navy-300'
-                  : 'bg-transparent text-navy-600 font-normal border-transparent hover:bg-canvas-200'
-              }`}
-            >
-              {p}
-            </button>
-          )
-        )}
+          {pageNumbers.map((p) =>
+            isEllipsis(p) ? (
+              <span
+                key={p}
+                className="inline-flex items-center justify-center min-w-8 h-8 px-1 text-[13px] text-navy-300 cursor-default flex-shrink-0"
+              >
+                …
+              </span>
+            ) : (
+              <button
+                key={p}
+                onClick={() => onPageChange(p)}
+                disabled={disabled}
+                className={`inline-flex items-center justify-center min-w-8 h-8 px-1 rounded-md text-[13px] flex-shrink-0 transition-colors border disabled:opacity-40 disabled:cursor-not-allowed ${
+                  p === page
+                    ? 'bg-navy-300 text-navy-900 font-semibold border-navy-300'
+                    : 'bg-transparent text-navy-600 font-normal border-transparent hover:bg-canvas-200'
+                }`}
+              >
+                {p}
+              </button>
+            )
+          )}
 
-        <button
-          onClick={() => onPageChange(page + 1)}
-          disabled={disabled || page === totalPages}
-          className="inline-flex items-center justify-center w-8 h-8 border border-canvas-300 rounded-md bg-canvas-50 text-navy-600 transition-colors flex-shrink-0 hover:bg-canvas-100 hover:border-navy-300 disabled:opacity-40 disabled:cursor-not-allowed"
-          aria-label={t('pagination.nextPage')}
-        >
-          <ChevronRight />
-        </button>
+          <button
+            onClick={() => onPageChange(page + 1)}
+            disabled={disabled || page === totalPages}
+            className="inline-flex items-center justify-center w-8 h-8 border border-canvas-300 rounded-md bg-canvas-50 text-navy-600 transition-colors flex-shrink-0 hover:bg-canvas-100 hover:border-navy-300 disabled:opacity-40 disabled:cursor-not-allowed"
+            aria-label={t('pagination.nextPage')}
+          >
+            <ChevronRight />
+          </button>
+        </div>
       </div>
     </div>
   );

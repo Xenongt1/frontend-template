@@ -108,7 +108,8 @@
     "suspended": "معلق"
   },
   "pagination": {
-    "rowsPerPage": "صفوف لكل صفحة:",
+    "rowsPerPage": "صفوف لكل صفحة",
+    "showing": "عرض {{start}}-{{end}} من {{count}} عنصر",
     "totalItems_zero": "من أصل {{count}} صنف",
     "totalItems_one": "من أصل صنف واحد",
     "totalItems_two": "من أصل صنفين",
@@ -264,6 +265,12 @@
       "title": "تعليق المورد",
       "description": "تعليق هذا المورد سيمنعه من الظهور في التحديدات النشطة",
       "confirm": "تعليق",
+      "cancel": "إلغاء"
+    },
+    "activate": {
+      "title": "تفعيل المورد",
+      "description": "تفعيل هذا المورد سيجعله متاحًا مجددًا في التحديدات النشطة.",
+      "confirm": "تفعيل",
       "cancel": "إلغاء"
     },
     "detail": {

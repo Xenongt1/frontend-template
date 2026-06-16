@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { InventoryItem } from '../types';
 import StatusBadge from './StatusBadge';
+import CategoryBadge from './CategoryBadge';
 import InventoryTableSkeleton from './InventoryTableSkeleton';
 
 interface Props {
@@ -137,17 +138,21 @@ const InventoryTable: React.FC<Props> = ({
       <table className="w-full border-collapse min-w-[600px]">
         <thead>
           <tr>
-            <th className={`${thClass} min-w-[110px]`}>{t('table.columns.sku')}</th>
+            <th className={`${thClass} min-w-[110px]`}>
+              <span className="inline-flex items-center gap-1"> {t('table.columns.sku')} <SortIcon /></span>
+            </th>
             <th className={`${thClass} min-w-[200px]`}>
-              <span className="inline-flex items-center gap-1"><SortIcon /> {t('table.columns.name')}</span>
+              <span className="inline-flex items-center gap-1"> {t('table.columns.name')} <SortIcon /></span>
             </th>
             <th className={`${thClass} min-w-[160px] hide-on-mobile`}>
-              <span className="inline-flex items-center gap-1"><SortIcon /> {t('table.columns.category')}</span>
+              {t('table.columns.category')}
             </th>
             <th className={`${thClass} min-w-[140px] hide-on-mobile`}>
-              <span className="inline-flex items-center gap-1"><SortIcon /> {t('table.columns.unit')}</span>
+              <span className="inline-flex items-center gap-1"> {t('table.columns.unit')} <SortIcon /></span>
             </th>
-            <th className={`${thClass} min-w-[160px]`}>{t('table.columns.status')}</th>
+            <th className={`${thClass} min-w-[160px]`}>
+              <span className="inline-flex items-center gap-1"> {t('table.columns.status')} <SortIcon /></span>
+            </th>
             <th className={`${thClass} w-20 text-center`}>{t('table.columns.actions')}</th>
           </tr>
         </thead>
@@ -176,8 +181,8 @@ const InventoryTable: React.FC<Props> = ({
               >
                 <td className={`${tdClass} font-mono !text-[13px] text-navy-600`}>{item.sku}</td>
                 <td className={`${tdClass} font-medium`}>{item.displayName}</td>
-                <td className={`${tdClass} text-navy-600 hide-on-mobile`}>{item.category.replace(/_/g, ' ')}</td>
-                <td className={`${tdClass} text-navy-600 hide-on-mobile`}>{item.baseUnitOfMeasure}</td>
+                <td className={`${tdClass} hide-on-mobile`}><CategoryBadge category={item.category} /></td>
+                <td className={`${tdClass} text-navy-600 hide-on-mobile`}>{item.uomLabel}</td>
                 <td className={tdClass}><StatusBadge status={item.status} /></td>
                 <td className={`${tdClass} text-center relative`}>
                   <button
