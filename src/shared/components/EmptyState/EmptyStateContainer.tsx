@@ -8,19 +8,7 @@ const EmptyStateContainer: React.FC<EmptyStateContainerProps> = ({ children }) =
   return (
     <section
       aria-label="Empty state"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flex: 1,
-        minHeight: 0,
-        alignSelf: 'stretch',
-        gap: 'clamp(12px, 2vh, 24px)',
-        padding: 'clamp(16px, 3vh, 48px) clamp(16px, 4vw, 80px)',
-        background: 'var(--Background-General-Light, #FDFDFD)',
-        borderRadius: '8px',
-      }}
+      className="flex flex-col items-center justify-center flex-1 min-h-0 self-stretch bg-canvas-50 rounded-lg gap-[clamp(12px,2vh,24px)] px-[clamp(16px,4vw,80px)] py-[clamp(16px,3vh,48px)]"
     >
       {children}
     </section>

@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 
-
-
 const IAMIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="#08283B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -75,10 +73,72 @@ const StockLocationsIcon = () => (
 const ChevronIcon = ({ open }: { open: boolean }) => (
   <svg
     width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg"
-    style={{ transform: open ? 'rotate(0deg)' : 'rotate(180deg)', transition: 'transform 0.2s ease', flexShrink: 0 }}
+    className={`shrink-0 transition-transform duration-200 ${open ? '' : 'rotate-180'}`}
   >
     <path d="M13 7L7 1L1 7" stroke="#08283B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
+);
+
+// ─── Reusable nav item (single-level entries) ─────────────────────────────────
+
+interface NavItemProps {
+  to: string;
+  icon: React.ReactNode;
+  label: string;
+  collapsed: boolean;
+}
+
+const NavItem: React.FC<NavItemProps> = ({ to, icon, label, collapsed }) => (
+  <Link to={to} className="no-underline">
+    {({ isActive }) => (
+      <div className="p-2">
+        <div
+          className={[
+            'flex items-center rounded-lg gap-2 py-2 transition-colors duration-150',
+            collapsed ? 'px-2 justify-center' : 'px-3 justify-start',
+            isActive
+              ? 'bg-[#CDE6FC]'
+              : 'bg-transparent hover:bg-stroke-light',
+          ].join(' ')}
+        >
+          {icon}
+          {!collapsed && (
+            <span className="text-text-primary text-base font-normal leading-6 font-inter">
+              {label}
+            </span>
+          )}
+        </div>
+      </div>
+    )}
+  </Link>
+);
+
+// ─── Reusable nav item for entries nested inside a section ────────────────────
+
+interface SubNavItemProps {
+  to: string;
+  icon: React.ReactNode;
+  label: string;
+}
+
+const SubNavItem: React.FC<SubNavItemProps> = ({ to, icon, label }) => (
+  <Link to={to} className="no-underline">
+    {({ isActive }) => (
+      <div
+        className={[
+          'flex items-center gap-2 py-2 px-3 rounded-lg transition-colors duration-150',
+          isActive
+            ? 'bg-[#CDE6FC]'
+            : 'bg-transparent hover:bg-stroke-light',
+        ].join(' ')}
+      >
+        {icon}
+        <span className="text-text-primary text-base font-normal leading-6 font-inter">
+          {label}
+        </span>
+      </div>
+    )}
+  </Link>
 );
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
@@ -90,67 +150,45 @@ const Sidebar: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <div style={{
-      width: collapsed ? 76 : 300,
-      height: '100%',
-      padding: 12,
-      background: 'var(--Background-General-Light, #FDFDFD)',
-      borderRight: '1px var(--Stroke-Default-Light, #E6EAEB) solid',
-      flexShrink: 0,
-      display: 'flex',
-      flexDirection: 'column',
-      boxSizing: 'border-box',
-      position: 'relative',
-      transition: 'width 0.2s ease',
-      overflow: 'visible',
-    }}>
-
-      {/* ── Logo ─────────────────────────────────────────────────────── */}
+    <div
+      className={[
+        'h-full p-3 bg-surface-card border-r border-stroke-light',
+        'shrink-0 flex flex-col box-border relative overflow-visible',
+        'transition-[width] duration-200',
+        collapsed ? 'w-[76px]' : 'w-[300px]',
+      ].join(' ')}
+    >
       {/* ── Collapse button — protrudes from right edge of sidebar ── */}
       <button
         type="button"
-        onClick={() => setCollapsed(prev => !prev)}
+        onClick={() => setCollapsed((prev) => !prev)}
         aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        style={{
-          position: 'absolute',
-          left: collapsed ? 76 : 300,
-          top: 31,
-          padding: 4,
-          background: 'var(--Buttons-Filled-Dark-Blue-Default, #08283B)',
-          border: 'none',
-          borderTopRightRadius: 8,
-          borderBottomRightRadius: 8,
-          display: 'inline-flex',
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-          cursor: 'pointer',
-          zIndex: 10,
-          transition: 'left 0.2s ease',
-        }}
+        className={[
+          'absolute top-[31px] p-1 bg-brand-navy border-none',
+          'rounded-r-lg inline-flex items-center justify-start z-10',
+          'cursor-pointer transition-[left,opacity] duration-200',
+          'hover:opacity-90',
+          collapsed ? 'left-[76px]' : 'left-[300px]',
+        ].join(' ')}
       >
-        <div style={{ width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="w-4 h-4 flex items-center justify-center">
           <svg
             width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg"
-            style={{ transform: collapsed ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}
+            className={`transition-transform duration-200 ${collapsed ? 'rotate-180' : ''}`}
           >
-            <path d="M4.75 8.75L0.75 4.75L4.75 0.75" stroke="var(--Buttons-Filled-Dark-Blue-Icon, #FDFDFD)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M4.75 8.75L0.75 4.75L4.75 0.75" stroke="#FDFDFD" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
       </button>
 
       {/* ── Logo ─────────────────────────────────────────────────────── */}
-      <div style={{
-        paddingTop: 24,
-        paddingBottom: 20,
-        paddingLeft: 8,
-        paddingRight: 8,
-        borderBottom: '1px var(--Stroke-Default-Light, #E6EAEB) solid',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: collapsed ? 'center' : 'flex-start',
-        gap: 10,
-        flexShrink: 0,
-      }}>
+      <div
+        className={[
+          'pt-6 pb-5 px-2 border-b border-stroke-light',
+          'flex items-center gap-2.5 shrink-0',
+          collapsed ? 'justify-center' : 'justify-start',
+        ].join(' ')}
+      >
         <svg width="20" height="23" viewBox="0 0 20 23" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path fillRule="evenodd" clipRule="evenodd" d="M8.50229 0.400699C8.95783 0.138189 9.47437 0 10.0002 0C10.526 0 11.0425 0.138189 11.498 0.400699L11.5002 0.401924L18.4963 4.39971L18.5002 4.40192C18.9558 4.66497 19.3342 5.0432 19.5975 5.49867C19.8608 5.95414 19.9996 6.47084 20.0002 6.99692V14.999C19.9996 15.5251 19.8608 16.0418 19.5975 16.4972C19.3342 16.9527 18.9558 17.3309 18.5002 17.594L18.4963 17.5962L11.5002 21.594L11.4982 21.5951C11.0427 21.8577 10.526 21.9959 10.0002 21.9959C9.4743 21.9959 8.95768 21.8577 8.50209 21.5951L8.50016 21.594L1.50403 17.5962L1.50017 17.594C1.04456 17.3309 0.666136 16.9527 0.402858 16.4972C0.13958 16.0418 0.000705689 15.5251 0.000166062 14.999V6.99692C0.000705689 6.47084 0.13958 5.95414 0.402858 5.49867C0.666136 5.0432 1.04456 4.66497 1.50017 4.40192L1.50403 4.39971L8.50229 0.400699ZM10.0002 2C9.82463 2 9.65218 2.04621 9.50016 2.13397L9.4963 2.13619L2.49858 6.13489C2.34742 6.22254 2.22185 6.34826 2.1344 6.49956C2.04671 6.65126 2.00042 6.82333 2.00017 6.99854V14.9974C2.00042 15.1726 2.04671 15.3446 2.1344 15.4963C2.22184 15.6476 2.34738 15.7733 2.49851 15.861L2.50017 15.8619L9.4963 19.8597L9.50016 19.8619C9.65219 19.9497 9.82463 19.9959 10.0002 19.9959C10.1757 19.9959 10.3481 19.9497 10.5002 19.8619L10.504 19.8597L17.5002 15.8619L17.5018 15.861C17.6529 15.7733 17.7785 15.6476 17.8659 15.4963C17.9537 15.3445 18 15.1723 18.0002 14.9969V6.99898C18 6.82361 17.9537 6.65138 17.8659 6.49956C17.7785 6.34825 17.6529 6.22252 17.5017 6.13488L17.5002 6.13398L10.504 2.13619L10.5002 2.13397C10.3481 2.04621 10.1757 2 10.0002 2Z" fill="#08283B"/>
           <path fillRule="evenodd" clipRule="evenodd" d="M4.6343 2.7077C4.9106 2.2295 5.52224 2.06582 6.00044 2.34211L10.0002 4.65306L13.9999 2.34211C14.4781 2.06582 15.0897 2.2295 15.366 2.7077C15.6423 3.18591 15.4786 3.79755 15.0004 4.07384L10.5004 6.67384C10.1909 6.85269 9.80943 6.85269 9.49989 6.67384L4.99989 4.07384C4.52169 3.79755 4.35801 3.18591 4.6343 2.7077Z" fill="#08283B"/>
@@ -160,168 +198,87 @@ const Sidebar: React.FC = () => {
           <path fillRule="evenodd" clipRule="evenodd" d="M10.0002 9.99793C10.5525 9.99793 11.0002 10.4456 11.0002 10.9979V21.0779C11.0002 21.6302 10.5525 22.0779 10.0002 22.0779C9.44788 22.0779 9.00017 21.6302 9.00017 21.0779V10.9979C9.00017 10.4456 9.44788 9.99793 10.0002 9.99793Z" fill="#08283B"/>
         </svg>
         {!collapsed && (
-          <div style={{
-            color: 'var(--Logo-Dark-Blue, #08283B)',
-            fontSize: 16,
-            fontFamily: 'Inter',
-            fontWeight: 600,
-            lineHeight: '24px',
-          }}>
+          <div className="text-brand-navy text-base font-semibold leading-6 font-inter">
             Chain Pilot
           </div>
         )}
       </div>
 
       {/* ── Nav sections ─────────────────────────────────────────────── */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 13, paddingTop: 16, overflowY: 'auto' }}>
+      <div className="flex-1 flex flex-col gap-[13px] pt-4 overflow-y-auto">
 
         {/* Main Menu */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div className="flex flex-col">
           {!collapsed && (
-            <div style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 1, paddingBottom: 1 }}>
-              <span style={{ color: 'var(--Body-Text-Tertiary, #5A6F7C)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
+            <div className="px-5 py-px">
+              <span className="text-text-tertiary text-base font-normal leading-6 font-inter">
                 {t('nav.mainMenu')}
               </span>
             </div>
           )}
 
-          {/* Dashboard */}
-          <Link to="/dashboard" style={{ textDecoration: 'none' }}>
-            {({ isActive }) => (
-              <div style={{ padding: 8 }}>
-                <div style={{
-                  paddingLeft: collapsed ? 8 : 12,
-                  paddingRight: collapsed ? 8 : 12,
-                  paddingTop: 8,
-                  paddingBottom: 8,
-                  borderRadius: 8,
-                  background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: collapsed ? 'center' : 'flex-start',
-                  gap: 8,
-                }}>
-                  <DashboardIcon />
-                  {!collapsed && (
-                    <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                      {t('nav.dashboard')}
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
-          </Link>
+          <NavItem to="/dashboard" icon={<DashboardIcon />} label={t('nav.dashboard')} collapsed={collapsed} />
 
           {/* IAM (expandable) */}
-          <div style={{ padding: 8, display: 'flex', flexDirection: 'column' }}>
+          <div className="p-2 flex flex-col">
             <button
               type="button"
-              onClick={() => setIamOpen(prev => !prev)}
+              onClick={() => setIamOpen((prev) => !prev)}
               aria-expanded={iamOpen}
-              style={{
-                paddingLeft: collapsed ? 8 : 12,
-                paddingRight: collapsed ? 8 : 12,
-                paddingTop: 8,
-                paddingBottom: 8,
-                borderRadius: 4,
-                border: 'none',
-                background: 'transparent',
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: collapsed ? 'center' : 'flex-start',
-                textAlign: 'left',
-                gap: 8,
-                cursor: 'pointer',
-              }}
+              className={[
+                'py-2 rounded-lg border-none bg-transparent w-full',
+                'flex items-center text-left gap-2 cursor-pointer',
+                'transition-colors duration-150 hover:bg-stroke-light',
+                collapsed ? 'px-2 justify-center' : 'px-3 justify-start',
+              ].join(' ')}
             >
               <IAMIcon />
               {!collapsed && (
-                <span className="flex items-center gap-2 flex-1 justify-between" >
-                  <span style={{  color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
+                <span className="flex items-center gap-2 flex-1 justify-between">
+                  <span className="text-text-primary text-base font-normal leading-6 font-inter">
                     {t('nav.iam')}
                   </span>
-
-               <ChevronIcon  open={iamOpen} />
+                  <ChevronIcon open={iamOpen} />
                 </span>
               )}
             </button>
 
             {iamOpen && !collapsed && (
-              <div style={{ paddingLeft: 8, paddingRight: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <Link to="/users" style={{ textDecoration: 'none' }}>
-                  {({ isActive }) => (
-                    <div style={{
-                      paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
-                      borderRadius: 8,
-                      background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                      display: 'flex', alignItems: 'center', gap: 4,
-                    }}>
-                      <UsersNavIcon />
-                      <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                        {t('nav.users')}
-                      </span>
-                    </div>
-                  )}
-                </Link>
-
-                <Link to="/iam/roles" style={{ textDecoration: 'none' }}>
-                  {({ isActive }) => (
-                    <div style={{
-                      paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
-                      borderRadius: 8,
-                      background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                      display: 'flex', alignItems: 'center', gap: 4,
-                    }}>
-                      <RolesIcon />
-                      <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                        {t('nav.roleManagement')}
-                      </span>
-                    </div>
-                  )}
-                </Link>
+              <div className="px-2 flex flex-col gap-1">
+                <SubNavItem to="/users" icon={<UsersNavIcon />} label={t('nav.users')} />
+                <SubNavItem to="/iam/roles" icon={<RolesIcon />} label={t('nav.roleManagement')} />
               </div>
             )}
           </div>
         </div>
 
         {/* Operations */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div className="flex flex-col">
           {!collapsed && (
-            <div style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 1, paddingBottom: 1 }}>
-              <span style={{ color: 'var(--Body-Text-Tertiary, #5A6F7C)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
+            <div className="px-5 py-px">
+              <span className="text-text-tertiary text-base font-normal leading-6 font-inter">
                 {t('nav.operations')}
               </span>
             </div>
           )}
 
           {/* Inventory (expandable) */}
-          <div style={{ padding: 8, display: 'flex', flexDirection: 'column' }}>
+          <div className="p-2 flex flex-col">
             <button
               type="button"
-              onClick={() => setInventoryOpen(prev => !prev)}
+              onClick={() => setInventoryOpen((prev) => !prev)}
               aria-expanded={inventoryOpen}
-              style={{
-                paddingLeft: collapsed ? 8 : 12,
-                paddingRight: collapsed ? 8 : 12,
-                paddingTop: 8,
-                paddingBottom: 8,
-                borderRadius: 4,
-                border: 'none',
-                background: 'transparent',
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: collapsed ? 'center' : 'flex-start',
-                textAlign: 'left',
-                gap: 8,
-                cursor: 'pointer',
-              }}
+              className={[
+                'py-2 rounded-lg border-none bg-transparent w-full',
+                'flex items-center text-left gap-2 cursor-pointer',
+                'transition-colors duration-150 hover:bg-stroke-light',
+                collapsed ? 'px-2 justify-center' : 'px-3 justify-start',
+              ].join(' ')}
             >
               <InventoryIcon />
               {!collapsed && (
-                <span className="flex items-center gap-2 flex-1 justify-between" >
-                  <span style={{  color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
+                <span className="flex items-center gap-2 flex-1 justify-between">
+                  <span className="text-text-primary text-base font-normal leading-6 font-inter">
                     {t('nav.inventory')}
                   </span>
                   <ChevronIcon open={inventoryOpen} />
@@ -329,143 +286,46 @@ const Sidebar: React.FC = () => {
               )}
             </button>
 
-            {/* Sub-items */}
             {inventoryOpen && !collapsed && (
-              <div style={{ paddingLeft: 8, paddingRight: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
-
-                <Link to="/inventory/catalogue" style={{ textDecoration: 'none' }}>
-                  {({ isActive }) => (
-                    <div style={{
-                      paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
-                      borderRadius: 8,
-                      background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                      display: 'flex', alignItems: 'center', gap: 8,
-                    }}>
-                      <CatalogueIcon />
-                      <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                        {t('nav.catalogue')}
-                      </span>
-                    </div>
-                  )}
-                </Link>
-
-                <Link to="/inventory/stock" style={{ textDecoration: 'none' }}>
-                  {({ isActive }) => (
-                    <div style={{
-                      paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
-                      borderRadius: 8,
-                      background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                      display: 'flex', alignItems: 'center', gap: 8,
-                    }}>
-                      <StockIcon />
-                      <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                        {t('nav.stock')}
-                      </span>
-                    </div>
-                  )}
-                </Link>
-
-                <Link to="/inventory/stock-locations" style={{ textDecoration: 'none' }}>
-                  {({ isActive }) => (
-                    <div style={{
-                      paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
-                      borderRadius: 8,
-                      background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                      display: 'flex', alignItems: 'center', gap: 8,
-                    }}>
-                      <StockLocationsIcon />
-                      <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                        {t('nav.stockLocations')}
-                      </span>
-                    </div>
-                  )}
-                </Link>
-
-                <Link to="/inventory/movements" style={{ textDecoration: 'none' }}>
-                  {({ isActive }) => (
-                    <div style={{
-                      paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 8,
-                      borderRadius: 8,
-                      background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                      display: 'flex', alignItems: 'center', gap: 8,
-                    }}>
-                      <MovementsIcon />
-                      <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                        {t('nav.movements')}
-                      </span>
-                    </div>
-                  )}
-                </Link>
-
+              <div className="px-2 flex flex-col gap-1">
+                <SubNavItem to="/inventory/catalogue"       icon={<CatalogueIcon />}       label={t('nav.catalogue')} />
+                <SubNavItem to="/inventory/stock"           icon={<StockIcon />}           label={t('nav.stock')} />
+                <SubNavItem to="/inventory/stock-locations" icon={<StockLocationsIcon />} label={t('nav.stockLocations')} />
+                <SubNavItem to="/inventory/movements"       icon={<MovementsIcon />}       label={t('nav.movements')} />
               </div>
             )}
           </div>
 
-          {/* Suppliers */}
-          <Link to="/suppliers" style={{ textDecoration: 'none' }}>
-            {({ isActive }) => (
-              <div style={{ padding: 8 }}>
-                <div style={{
-                  paddingLeft: collapsed ? 8 : 12,
-                  paddingRight: collapsed ? 8 : 12,
-                  paddingTop: 8,
-                  paddingBottom: 8,
-                  borderRadius: 8,
-                  background: isActive ? 'var(--Background-Sidepanel-Active, #CDE6FC)' : 'transparent',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: collapsed ? 'center' : 'flex-start',
-                  gap: 8,
-                }}>
-                  <SuppliersIcon />
-                  {!collapsed && (
-                    <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
-                      {t('nav.suppliers')}
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
-          </Link>
+          <NavItem to="/suppliers" icon={<SuppliersIcon />} label={t('nav.suppliers')} collapsed={collapsed} />
         </div>
 
       </div>
 
       {/* ── User footer ───────────────────────────────────────────────── */}
-      <div style={{
-        paddingTop: 12,
-        paddingBottom: 12,
-        borderTop: '1px var(--Stroke-Default-Light, #E6EAEB) solid',
-        flexShrink: 0,
-      }}>
-        <div style={{
-          paddingLeft: collapsed ? 8 : 16,
-          paddingRight: collapsed ? 8 : 16,
-          paddingTop: 8,
-          paddingBottom: 8,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: collapsed ? 'center' : 'flex-start',
-          gap: 10,
-        }}>
+      <div className="py-3 border-t border-stroke-light shrink-0">
+        <div
+          className={[
+            'py-2 flex items-center gap-2.5',
+            collapsed ? 'px-2 justify-center' : 'px-4 justify-start',
+          ].join(' ')}
+        >
           <img
-            style={{ width: 32, height: 32, borderRadius: 100, flexShrink: 0 }}
+            className="w-8 h-8 rounded-full shrink-0"
             src="https://placehold.co/32x32"
             alt={t('nav.userAvatarAlt')}
           />
           {!collapsed && (
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <span style={{ color: 'var(--Body-Text-Primary, #08283B)', fontSize: 16, fontFamily: 'Inter', fontWeight: 400, lineHeight: '24px' }}>
+            <div className="flex flex-col">
+              <span className="text-text-primary text-base font-normal leading-6 font-inter">
                 Ruth Gingo
               </span>
-              <span style={{ color: 'var(--Header-Text-Secondary, #395362)', fontSize: 14, fontFamily: 'Inter', fontWeight: 400, lineHeight: '21px' }}>
+              <span className="text-text-secondary text-sm font-normal leading-[21px] font-inter">
                 ruth.gingo@amalitech.com
               </span>
             </div>
           )}
         </div>
       </div>
-
     </div>
   );
 };

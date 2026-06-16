@@ -8,41 +8,21 @@ interface EmptyStateIconProps {
 
 const EmptyStateIcon: React.FC<EmptyStateIconProps> = ({ icon, size = 120 }) => {
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexShrink: 0,
-      }}
-    >
+    <div className="flex justify-center items-center shrink-0">
       {icon ? (
+        // Size is a runtime prop — keep inline so callers can vary it.
         <div
-          style={{
-            width: `${size}px`,
-            height: `${size}px`,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
+          style={{ width: size, height: size }}
+          className="flex items-center justify-center"
         >
           {icon}
         </div>
       ) : (
-        <div
-          style={{
-            width: '100%',
-            maxWidth: '300px',
-            maxHeight: 'min(221px, 30vh)',
-            aspectRatio: '300 / 221',
-            flexShrink: 1,
-            minHeight: 0,
-          }}
-        >
+        <div className="w-full max-w-[300px] max-h-[min(221px,30vh)] aspect-[300/221] shrink min-h-0">
           <NoInventoryIllustration
             aria-label="No inventory items illustration"
             data-testid="no-inventory-illustration"
-            style={{ width: '100%', height: '100%', display: 'block' }}
+            className="w-full h-full block"
           />
         </div>
       )}

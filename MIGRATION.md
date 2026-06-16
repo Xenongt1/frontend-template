@@ -167,8 +167,12 @@ exist here. Skipped; will be removed entirely in Step 7 cleanup.
 Audit develop's `src/shared/components/ui/{Input,Select,Textarea,FormField,Toast,SuccessToast}/`
 versus the new repo. Where the new repo uses shadcn, **keep shadcn** and
 update callsites if needed. Where the new repo has no equivalent, copy
-develop's Tailwind-migrated version. Skip develop's hand-rolled `Button`
-in favor of shadcn.
+develop's Tailwind-migrated version. Note: develop's hand-rolled `Button`
+ended up ported in Step 5a — shadcn's `default` variant pulls
+`--primary: oklch(0.205…)` rather than ChainPilot's brand navy, so
+swapping callsites would have been a bigger change than just porting
+the component. Both live side-by-side now (`src/shared/components/ui/Button` for ChainPilot,
+`src/components/ui/button.tsx` for any shadcn-native composition).
 
 ### Step 5 — Inline-styles → Tailwind sweep  (≈ 2–3 h)
 
@@ -218,7 +222,7 @@ When a develop change touches a file, decide using this table:
 | `src/core/config/*` | `src/core/config/*` | Port directly |
 | `src/core/i18n/*` | use `src/i18n.ts` | Adapt; HttpBackend, not bundled JSON |
 | `src/shared/layout/*` | `src/shared/layout/*` | Port directly |
-| `src/shared/components/ui/Button/*` | `src/components/ui/button.tsx` | Use shadcn; only port new variants if missing |
+| `src/shared/components/ui/Button/*` | `src/shared/components/ui/Button/*` | **Port develop's** (reversed from earlier call). Shadcn's `default` uses oklch-neutral `--primary`, not brand-navy; matching ChainPilot would require either overriding `--primary` globally or rewriting every Button callsite. Cheaper to port develop's hand-rolled component and let shadcn's `src/components/ui/button.tsx` live alongside for any shadcn-native composition needs. |
 | `src/shared/components/ui/{Input,Select,Textarea,…}/*` | same path | Port if no shadcn equivalent is already wired |
 | `src/modules/inventory/*` | `src/modules/inventory/*` | Port directly |
 | `src/modules/roles/*` | `src/modules/roles/*` | Port directly |
