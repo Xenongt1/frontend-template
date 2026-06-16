@@ -10,52 +10,28 @@ interface SuccessToastProps {
 const SuccessToast: React.FC<SuccessToastProps> = ({ message, onClose }) => {
   const { t } = useTranslation();
   return (
-  <output
-    aria-live="polite"
-    style={{
-      width: 'min(420px, calc(100vw - 48px))',
-      padding: 16,
-      background: '#FDFDFD',
-      boxShadow: '0px 1px 2px -1px rgba(0, 0, 0, 0.10), 0px 1px 3px rgba(0, 0, 0, 0.10)',
-      borderRadius: 6,
-      display: 'inline-flex',
-      justifyContent: 'flex-start',
-      alignItems: 'center',
-      gap: 10,
-      position: 'fixed',
-      right: 24,
-      top: 88,
-      zIndex: 50,
-      boxSizing: 'border-box',
-    }}
-  >
-    <div
-      style={{
-        padding: 8,
-        background: '#08283B',
-        borderRadius: 8,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
+    <output
+      aria-live="polite"
+      className="fixed top-[88px] right-6 z-50 w-[min(420px,calc(100vw-48px))] p-4 bg-canvas-50 rounded-md inline-flex items-center gap-2.5 box-border shadow-[0_1px_2px_-1px_rgba(0,0,0,0.10),0_1px_3px_rgba(0,0,0,0.10)]"
     >
-      <Check size={16} color="#FDFDFD" strokeWidth={2} aria-hidden="true" />
-    </div>
-
-    <div style={{ flex: '1 1 0', display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: 12, minWidth: 0 }}>
-      <div style={{ flex: '1 1 0', color: '#08283B', fontSize: 14, fontFamily: "'Inter', system-ui, sans-serif", fontWeight: 400, lineHeight: '21px', wordBreak: 'break-word' }}>
-        {message}
+      <div className="p-2 bg-brand-navy rounded-lg flex items-center justify-center">
+        <Check size={16} color="#FDFDFD" strokeWidth={2} aria-hidden="true" />
       </div>
-      <button
-        type="button"
-        aria-label={t('dialog.dismissNotification')}
-        onClick={onClose}
-        style={{ width: 20, height: 20, border: 'none', background: 'transparent', color: '#08283B', padding: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
-      >
-        <X size={20} strokeWidth={2} aria-hidden="true" />
-      </button>
-    </div>
-  </output>
+
+      <div className="flex-1 flex items-center gap-3 min-w-0">
+        <div className="flex-1 font-inter text-sm font-normal leading-[21px] text-text-primary break-words">
+          {message}
+        </div>
+        <button
+          type="button"
+          aria-label={t('dialog.dismissNotification')}
+          onClick={onClose}
+          className="w-5 h-5 border-none bg-transparent text-text-primary p-0 inline-flex items-center justify-center cursor-pointer shrink-0"
+        >
+          <X size={20} strokeWidth={2} aria-hidden="true" />
+        </button>
+      </div>
+    </output>
   );
 };
 

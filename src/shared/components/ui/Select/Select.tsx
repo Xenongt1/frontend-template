@@ -1,44 +1,36 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   options: { label: string; value: string }[];
   placeholder?: string;
 }
 
-export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ options, placeholder, style, onFocus, onBlur, ...props }, ref) => {
-    const [focused, setFocused] = useState(false);
+// Focus + placeholder/selected text colour move to CSS classes — same
+// shape as the migrated <Input>. The value-driven colour swap stays
+// (placeholder grey when no value chosen, primary text when a value is
+// set) because <option disabled> doesn't propagate text colour reliably.
+const baseClass = [
+  'w-full pl-3.5 pr-9 py-2.5 rounded-lg outline-none box-border cursor-pointer',
+  'bg-surface-input border border-stroke-input appearance-none',
+  'font-inter text-sm leading-5',
+  'transition-[border-color,box-shadow] duration-150',
+  'focus:border-[1.5px] focus:border-stroke-focus',
+  'focus:shadow-[0_0_0_3px_rgba(26,127,193,0.12)]',
+].join(' ');
 
+export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
+  ({ options, placeholder, className, value, ...props }, ref) => {
+    const isPlaceholder = value === '' || value === undefined;
     return (
-      <div style={{ position: 'relative', width: '100%' }}>
+      <div className="relative w-full">
         <select
           ref={ref}
-          onFocus={(e) => {
-            setFocused(true);
-            onFocus?.(e);
-          }}
-          onBlur={(e) => {
-            setFocused(false);
-            onBlur?.(e);
-          }}
-          style={{
-            width: '100%',
-            padding: '10px 36px 10px 14px',
-            borderRadius: 8,
-            border: focused ? '1.5px solid #1A7FC1' : '1px solid #D0D5DD',
-            background: '#F9FAFB',
-            fontSize: 14,
-            fontFamily: "'Inter', system-ui, sans-serif",
-            color: props.value === '' || props.value === undefined ? '#9CA3AF' : '#08283B',
-            boxSizing: 'border-box',
-            outline: 'none',
-            appearance: 'none' as const,
-            boxShadow: focused ? '0 0 0 3px rgba(26,127,193,0.12)' : 'none',
-            transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
-            lineHeight: '20px',
-            cursor: 'pointer',
-            ...style,
-          }}
+          value={value}
+          className={[
+            baseClass,
+            isPlaceholder ? 'text-text-placeholder' : 'text-text-primary',
+            className ?? '',
+          ].join(' ')}
           {...props}
         >
           {placeholder && (
@@ -58,15 +50,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 16 16"
           fill="none"
-          style={{
-            position: 'absolute',
-            right: 12,
-            top: '50%',
-            transform: 'translateY(-50%)',
-            width: 16,
-            height: 16,
-            pointerEvents: 'none',
-          }}
+          className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
         >
           <path
             d="M4 6l4 4 4-4"

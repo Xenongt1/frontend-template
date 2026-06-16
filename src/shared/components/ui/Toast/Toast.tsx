@@ -27,17 +27,18 @@ export const Toast: React.FC<ToastProps> = ({
   if (!open) return null;
 
   const isError = variant === 'error';
-  const iconBg = isError ? '#9B1C1C' : '#08283B';
 
   return (
     <div
       role={isError ? 'alert' : 'status'} // NOSONAR — ARIA live region for transient notifications
       aria-live={isError ? 'assertive' : 'polite'}
-      className="fixed top-[88px] right-6 z-[400] w-[min(420px,calc(100vw-48px))] p-4 bg-[#FDFDFD] rounded-md shadow-[0_1px_2px_-1px_rgba(0,0,0,0.10),0_1px_3px_rgba(0,0,0,0.10)] inline-flex items-center gap-[10px] box-border"
+      className="fixed top-[88px] right-6 z-[400] w-[min(420px,calc(100vw-48px))] p-4 bg-canvas-50 rounded-md shadow-[0_1px_2px_-1px_rgba(0,0,0,0.10),0_1px_3px_rgba(0,0,0,0.10)] inline-flex items-center gap-2.5 box-border"
     >
       <div
-        className="p-2 rounded-lg flex items-center justify-center flex-shrink-0"
-        style={{ background: iconBg }}
+        className={[
+          'p-2 rounded-lg flex items-center justify-center shrink-0',
+          isError ? 'bg-[#9B1C1C]' : 'bg-brand-navy',
+        ].join(' ')}
       >
         {isError ? (
           <AlertCircle size={16} color="#FDFDFD" strokeWidth={2} aria-hidden="true" />

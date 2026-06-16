@@ -154,11 +154,13 @@ not a console crash.
 Independent of develop. Add `welcome` + `description` top-level keys to
 `public/locales/{en,fr,ar}/translation.json` (es already has them).
 
-### Step 3 — Config auto-bootstrap in dev  (≈ 20 min)
+### Step 3 — Config auto-bootstrap in dev  (~~≈ 20 min~~ — N/A in new repo)
 
-Port `bfcfb78`: when running in dev, never show `ConfigSetupForm`; just
-fall through with sensible defaults. Touches `src/core/config/` and
-whatever wraps it in the provider chain.
+`bfcfb78` only touches `src/app/providers.tsx`, which is dead code in
+the new repo (zero imports from outside `src/app/`; `main.tsx` mounts
+TanStack `RouterProvider` directly without going through `<Providers>`).
+The setup form is never rendered, so the bug `bfcfb78` fixed doesn't
+exist here. Skipped; will be removed entirely in Step 7 cleanup.
 
 ### Step 4 — UI primitive parity  (≈ 1 h)
 

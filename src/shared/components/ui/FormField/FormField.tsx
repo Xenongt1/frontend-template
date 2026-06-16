@@ -19,27 +19,27 @@ export const FormField: React.FC<FormFieldProps> = ({
   error,
   children,
 }) => (
-  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flex: '1 0 0', minWidth: 0 }}>
+  <div className="flex flex-col gap-1.5 flex-[1_0_0] min-w-0">
     <label
       htmlFor={id}
-      style={{ margin: 0, fontSize: 14, fontWeight: 500, fontFamily: "'Inter', system-ui, sans-serif", color: '#08283B', lineHeight: 1.5 }}
+      className="m-0 font-inter text-sm font-medium leading-[1.5] text-text-primary"
     >
       {label}
-      {hint && <span style={{ color: '#5A6F7C', fontWeight: 400 }}> {hint}</span>}
+      {hint && <span className="text-text-tertiary font-normal"> {hint}</span>}
       {required && (
         <>
-          <span style={{ color: '#C81E1E' }} aria-hidden="true">*</span>
+          <span className="text-[#C81E1E]" aria-hidden="true">*</span>
           <span className="sr-only">(required)</span>
         </>
       )}
-      {optional && <span style={{ color: '#5A6F7C', fontWeight: 400 }}> (optional)</span>}
+      {optional && <span className="text-text-tertiary font-normal"> (optional)</span>}
     </label>
     {children}
     {error && (
       <p
         role="alert"
         id={`${id}-error`}
-        style={{ margin: 0, fontSize: 12, color: '#C81E1E', fontFamily: "'Inter', system-ui, sans-serif", lineHeight: 1.4 }}
+        className="m-0 font-inter text-xs leading-[1.4] text-[#C81E1E]"
       >
         {error}
       </p>
