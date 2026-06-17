@@ -18,6 +18,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CompleteProfileRouteImport } from './routes/complete-profile'
 import { Route as AcceptInviteRouteImport } from './routes/accept-invite'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UsersIndexRouteImport } from './routes/users.index'
 import { Route as SuppliersIndexRouteImport } from './routes/suppliers.index'
 import { Route as InventoryIndexRouteImport } from './routes/inventory.index'
 import { Route as IamIndexRouteImport } from './routes/iam.index'
@@ -85,6 +86,11 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const UsersIndexRoute = UsersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => UsersRoute,
 } as any)
 const SuppliersIndexRoute = SuppliersIndexRouteImport.update({
   id: '/',
@@ -223,6 +229,7 @@ export interface FileRoutesByFullPath {
   '/iam/': typeof IamIndexRoute
   '/inventory/': typeof InventoryIndexRoute
   '/suppliers/': typeof SuppliersIndexRoute
+  '/users/': typeof UsersIndexRoute
   '/iam/roles/$id': typeof IamRolesIdRoute
   '/iam/roles/new': typeof IamRolesNewRoute
   '/inventory/edit/$id': typeof InventoryEditIdRoute
@@ -240,7 +247,6 @@ export interface FileRoutesByTo {
   '/complete-profile': typeof CompleteProfileRoute
   '/dashboard': typeof DashboardRoute
   '/sign-in': typeof SignInRoute
-  '/users': typeof UsersRouteWithChildren
   '/inventory/catalogue': typeof InventoryCatalogueRoute
   '/inventory/movements': typeof InventoryMovementsRoute
   '/inventory/register': typeof InventoryRegisterRoute
@@ -251,6 +257,7 @@ export interface FileRoutesByTo {
   '/iam': typeof IamIndexRoute
   '/inventory': typeof InventoryIndexRoute
   '/suppliers': typeof SuppliersIndexRoute
+  '/users': typeof UsersIndexRoute
   '/iam/roles/$id': typeof IamRolesIdRoute
   '/iam/roles/new': typeof IamRolesNewRoute
   '/inventory/edit/$id': typeof InventoryEditIdRoute
@@ -285,6 +292,7 @@ export interface FileRoutesById {
   '/iam/': typeof IamIndexRoute
   '/inventory/': typeof InventoryIndexRoute
   '/suppliers/': typeof SuppliersIndexRoute
+  '/users/': typeof UsersIndexRoute
   '/iam/roles/$id': typeof IamRolesIdRoute
   '/iam/roles/new': typeof IamRolesNewRoute
   '/inventory/edit/$id': typeof InventoryEditIdRoute
@@ -320,6 +328,7 @@ export interface FileRouteTypes {
     | '/iam/'
     | '/inventory/'
     | '/suppliers/'
+    | '/users/'
     | '/iam/roles/$id'
     | '/iam/roles/new'
     | '/inventory/edit/$id'
@@ -337,7 +346,6 @@ export interface FileRouteTypes {
     | '/complete-profile'
     | '/dashboard'
     | '/sign-in'
-    | '/users'
     | '/inventory/catalogue'
     | '/inventory/movements'
     | '/inventory/register'
@@ -348,6 +356,7 @@ export interface FileRouteTypes {
     | '/iam'
     | '/inventory'
     | '/suppliers'
+    | '/users'
     | '/iam/roles/$id'
     | '/iam/roles/new'
     | '/inventory/edit/$id'
@@ -381,6 +390,7 @@ export interface FileRouteTypes {
     | '/iam/'
     | '/inventory/'
     | '/suppliers/'
+    | '/users/'
     | '/iam/roles/$id'
     | '/iam/roles/new'
     | '/inventory/edit/$id'
@@ -469,6 +479,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/users/': {
+      id: '/users/'
+      path: '/'
+      fullPath: '/users/'
+      preLoaderRoute: typeof UsersIndexRouteImport
+      parentRoute: typeof UsersRoute
     }
     '/suppliers/': {
       id: '/suppliers/'
@@ -721,10 +738,12 @@ const SuppliersRouteWithChildren = SuppliersRoute._addFileChildren(
 
 interface UsersRouteChildren {
   UsersIdRoute: typeof UsersIdRoute
+  UsersIndexRoute: typeof UsersIndexRoute
 }
 
 const UsersRouteChildren: UsersRouteChildren = {
   UsersIdRoute: UsersIdRoute,
+  UsersIndexRoute: UsersIndexRoute,
 }
 
 const UsersRouteWithChildren = UsersRoute._addFileChildren(UsersRouteChildren)
