@@ -28,8 +28,10 @@ const DotsIcon = () => (
   </svg>
 );
 
-const thClass = 'px-4 py-3 text-left text-[13px] font-semibold text-navy-600 whitespace-nowrap bg-canvas-300 border-b border-canvas-300 select-none';
-const tdClass = 'px-4 h-20 align-middle border-b border-canvas-300 text-sm text-navy-900';
+// Header cells per Figma: bg #E6EAEB, padding 16, height 56, Poppins 16/24 weight 500.
+const thClass = 'p-4 h-14 text-left font-poppins text-base font-medium leading-6 text-text-tertiary whitespace-nowrap bg-stroke-light border-b border-stroke-light select-none';
+// Body cells: padding 16, height 80, Inter 16/24 weight 400.
+const tdClass = 'p-4 h-20 align-middle border-b border-stroke-light font-inter text-base font-normal leading-6 text-text-primary';
 
 const InventoryTable: React.FC<Props> = ({
   items,

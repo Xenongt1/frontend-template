@@ -88,7 +88,7 @@ const ToolBar: React.FC<Props> = ({ filters, onSearch, onFiltersApply }) => {
             ref={filterBtnRef}
             type="button"
             onClick={openFilter}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-[#061C2A] rounded-lg bg-transparent text-[#061C2A] text-sm font-medium cursor-pointer whitespace-nowrap transition-colors hover:bg-[#F0F2F3] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-button-focus-ring"
+            className="inline-flex items-center gap-2 px-5 py-2.5 border border-[#061C2A] rounded-lg bg-transparent text-[#061C2A] text-sm font-medium leading-[21px] cursor-pointer whitespace-nowrap transition-colors hover:bg-[#F0F2F3] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-button-focus-ring"
           >
             <FilterIcon />
             {t('toolbar.filter')}
@@ -97,7 +97,7 @@ const ToolBar: React.FC<Props> = ({ filters, onSearch, onFiltersApply }) => {
           <button
             type="button"
             onClick={() => navigate({ to: '/inventory/register' })}
-            className="inline-flex items-center gap-2 px-[18px] py-2 border-none rounded-lg bg-navy-900 text-canvas-50 text-sm font-medium cursor-pointer whitespace-nowrap transition-colors hover:bg-navy-800 active:bg-button-primary-click focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-button-focus-ring"
+            className="inline-flex items-center gap-2 px-5 py-2.5 border-none rounded-lg bg-navy-900 text-canvas-50 text-sm font-medium leading-[21px] cursor-pointer whitespace-nowrap transition-colors hover:bg-navy-800 active:bg-button-primary-click focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-button-focus-ring"
           >
             <PlusIcon />
             {t('toolbar.addInventory')}

@@ -157,12 +157,12 @@ const CataloguePage: React.FC = () => {
         onDismiss={() => setToast(null)}
       />
 
-      <div className="flex flex-col gap-5 w-full min-h-0">
+      <div className="flex flex-col gap-4 w-full min-h-0">
        <PageHeader
           title={t('inventory.catalogue.title')}
           description={t('inventory.catalogue.description')}
         />
-        <div className="bg-canvas-50 rounded-xl border border-canvas-300 overflow-hidden flex flex-col flex-1">
+        <div className="bg-canvas-50 rounded-lg border border-stroke-light overflow-hidden flex flex-col flex-1">
           <ToolBar
             filters={filters}
             onSearch={updateSearch}
