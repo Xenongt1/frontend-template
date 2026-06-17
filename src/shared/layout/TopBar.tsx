@@ -18,12 +18,12 @@ const PAGE_TITLE_KEYS: Record<string, string> = {
   '/payments': 'page.payments',
   '/fulfillment': 'page.fulfillment',
   '/reports': 'page.reports',
-  '/users': 'page.users',
+  '/users': 'nav.iamFull',
   '/notifications': 'page.notifications',
-  '/iam/roles': 'page.roleManagement',
-  '/iam/roles/new': 'page.roleManagement',
-  '/iam/roles/:id': 'page.roleManagement',
-  '/iam/roles/:id/edit': 'page.roleManagement',
+  '/iam/roles': 'nav.iamFull',
+  '/iam/roles/new': 'nav.iamFull',
+  '/iam/roles/:id': 'nav.iamFull',
+  '/iam/roles/:id/edit': 'nav.iamFull',
 };
 
 const BellIcon = () => (
@@ -38,10 +38,22 @@ const ChevronDownIcon = () => (
   </svg>
 );
 
+// Resolve the i18n key for the current pathname. Exact match wins; otherwise
+// fall back to prefix-based matches for dynamic routes (e.g. /users/$id,
+// /iam/roles/$id/edit).
+function resolveTitleKey(pathname: string): string | undefined {
+  if (PAGE_TITLE_KEYS[pathname]) return PAGE_TITLE_KEYS[pathname];
+  if (pathname.startsWith('/users')) return 'nav.iamFull';
+  if (pathname.startsWith('/iam')) return 'nav.iamFull';
+  if (pathname.startsWith('/inventory')) return 'page.inventoryManagement';
+  if (pathname.startsWith('/suppliers')) return 'page.suppliers';
+  return undefined;
+}
+
 const TopBar: React.FC = () => {
   const { pathname } = useLocation();
   const { t } = useTranslation();
-  const titleKey = PAGE_TITLE_KEYS[pathname];
+  const titleKey = resolveTitleKey(pathname);
   const title = titleKey ? t(titleKey) : 'ChainPilot';
 
   return (
