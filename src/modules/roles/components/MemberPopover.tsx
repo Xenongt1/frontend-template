@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getRoleById } from '../api/rolesApi';
 import type { RoleMember } from '../types';
@@ -11,6 +11,7 @@ interface Props {
 }
 
 const POPOVER_WIDTH = 320;
+const VIEWPORT_MARGIN = 8;
 
 const CloseIcon = () => (
   <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -36,6 +37,11 @@ const MemberPopover: React.FC<Props> = ({ roleId, anchor, onClose }) => {
   const [members, setMembers] = useState<RoleMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  // Position state — initialised from the trigger anchor, then clamped to
+  // the viewport in useLayoutEffect below so the popover never spills off
+  // the bottom or right edge.
+  const [position, setPosition] = useState({ top: anchor.top, left: anchor.left });
+  const [maxHeight, setMaxHeight] = useState<number>(() => window.innerHeight - VIEWPORT_MARGIN * 2);
 
   // Lazy-fetch members on open.
   useEffect(() => {
@@ -83,6 +89,33 @@ const MemberPopover: React.FC<Props> = ({ roleId, anchor, onClose }) => {
     };
   }, [onClose]);
 
+  // After mount + on size changes, clamp the popover so it stays in the
+  // viewport. If its natural height exceeds available space, shift it up
+  // and cap its max-height. Same idea horizontally for the right edge.
+  // Re-runs on resize and whenever member loading flips (height changes
+  // once the list materializes).
+  useLayoutEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const clamp = () => {
+      const rect = el.getBoundingClientRect();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const cappedHeight = vh - VIEWPORT_MARGIN * 2;
+      setMaxHeight(cappedHeight);
+      const effectiveHeight = Math.min(rect.height, cappedHeight);
+      const maxTop = vh - effectiveHeight - VIEWPORT_MARGIN;
+      const maxLeft = vw - rect.width - VIEWPORT_MARGIN;
+      setPosition({
+        top: Math.max(VIEWPORT_MARGIN, Math.min(anchor.top, maxTop)),
+        left: Math.max(VIEWPORT_MARGIN, Math.min(anchor.left, maxLeft)),
+      });
+    };
+    clamp();
+    window.addEventListener('resize', clamp);
+    return () => window.removeEventListener('resize', clamp);
+  }, [anchor.top, anchor.left, loading, members.length]);
+
   const filtered = useMemo(() => {
     if (!search.trim()) return members;
     const q = search.trim().toLowerCase();
@@ -97,12 +130,13 @@ const MemberPopover: React.FC<Props> = ({ roleId, anchor, onClose }) => {
       aria-label={t('roles.list.peoplePopover.title', { count: members.length })}
       style={{
         position: 'fixed',
-        top: anchor.top,
-        left: anchor.left,
+        top: position.top,
+        left: position.left,
         width: POPOVER_WIDTH,
+        maxHeight,
         zIndex: 60,
       }}
-      className="bg-canvas-50 border border-canvas-300 rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.10)] flex flex-col"
+      className="bg-canvas-50 border border-canvas-300 rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.10)] flex flex-col overflow-hidden"
     >
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-2 border-b border-canvas-300">
