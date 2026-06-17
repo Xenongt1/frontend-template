@@ -233,17 +233,15 @@ const InviteUserModal: React.FC<Props> = ({ onClose, onSuccess }) => {
               lineHeight: '21px',
               color: '#2C2B29',
               cursor: 'pointer',
-              transition: 'background 0.12s, color 0.12s',
+              transition: 'background 0.12s',
             }}
             onMouseEnter={(e) => {
               if (isLoading) return;
-              e.currentTarget.style.background = '#2C2B29';
-              e.currentTarget.style.color = '#FDFDFD';
+              e.currentTarget.style.background = '#F7F7F7';
             }}
             onMouseLeave={(e) => {
               if (isLoading) return;
               e.currentTarget.style.background = 'transparent';
-              e.currentTarget.style.color = '#2C2B29';
             }}
           >
             {t('users.invite.cancelButton')}
