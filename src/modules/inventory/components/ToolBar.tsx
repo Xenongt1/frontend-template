@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import type { InventoryFilters, InventoryStatus } from '../types';
 import AdvancedFilterModal from './AdvancedFilterModal';
 import { useNavigate } from '@tanstack/react-router';
@@ -36,15 +36,29 @@ const XIcon = () => (
 );
 
 const ToolBar: React.FC<Props> = ({ filters, onSearch, onFiltersApply }) => {
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  // The filter dropdown anchors to the Filter button — capture its rect on
+  // open so the panel renders right below it (instead of being a centered
+  // modal). null = closed.
+  const filterBtnRef = useRef<HTMLButtonElement>(null);
+  const [filterAnchor, setFilterAnchor] = useState<{ top: number; right: number } | null>(null);
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const openFilter = () => {
+    const btn = filterBtnRef.current;
+    if (!btn) return;
+    const rect = btn.getBoundingClientRect();
+    setFilterAnchor({
+      top: rect.bottom + 6,
+      right: Math.max(8, window.innerWidth - rect.right),
+    });
+  };
 
   return (
     <>
       <div className="flex justify-between items-center gap-3 px-5 py-4 flex-wrap">
         {/* Search input */}
-        <div className="relative flex-1  min-w-[220px] min-w-0 max-w-[400px]">
+        <div className="relative flex-1 min-w-[220px] max-w-[400px]">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
             <SearchIcon />
           </span>
@@ -53,13 +67,14 @@ const ToolBar: React.FC<Props> = ({ filters, onSearch, onFiltersApply }) => {
             placeholder={t('toolbar.searchPlaceholder')}
             value={filters.search}
             onChange={(e) => onSearch(e.target.value)}
-            className="w-full pl-9 py-2 bg-canvas-200 border border-navy-300 rounded-lg text-sm text-navy-900 outline-none box-border focus:border-navy-600 transition-colors"
+            className="w-full pl-9 py-2 bg-canvas-200 border border-navy-300 rounded-lg text-sm text-navy-900 outline-none box-border focus:border-stroke-focus transition-colors"
             style={{ paddingRight: filters.search ? 36 : 12 }}
           />
           {filters.search && (
             <button
+              type="button"
               onClick={() => onSearch('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 border-none bg-transparent cursor-pointer flex items-center p-0.5"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 border-none bg-transparent cursor-pointer flex items-center p-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-button-focus-ring rounded"
               aria-label={t('toolbar.clearSearch')}
             >
               <XIcon />
@@ -70,28 +85,31 @@ const ToolBar: React.FC<Props> = ({ filters, onSearch, onFiltersApply }) => {
         {/* Right buttons */}
         <div className="flex items-center gap-2.5 flex-shrink-0 flex-wrap">
           <button
-            onClick={() => setShowAdvanced(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-[#061C2A] rounded-lg bg-transparent text-[#061C2A] text-sm font-medium cursor-pointer whitespace-nowrap transition-colors hover:bg-[#F0F2F3]"
+            ref={filterBtnRef}
+            type="button"
+            onClick={openFilter}
+            className="inline-flex items-center gap-2 px-4 py-2 border border-[#061C2A] rounded-lg bg-transparent text-[#061C2A] text-sm font-medium cursor-pointer whitespace-nowrap transition-colors hover:bg-[#F0F2F3] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-button-focus-ring"
           >
             <FilterIcon />
             {t('toolbar.filter')}
           </button>
 
           <button
-          onClick={() => navigate({ to: '/inventory/register' })}
-            className="inline-flex items-center gap-2 px-[18px] py-2 border-none rounded-lg bg-navy-900 text-canvas-50 text-sm font-medium cursor-pointer whitespace-nowrap transition-colors hover:bg-navy-800"
+            type="button"
+            onClick={() => navigate({ to: '/inventory/register' })}
+            className="inline-flex items-center gap-2 px-[18px] py-2 border-none rounded-lg bg-navy-900 text-canvas-50 text-sm font-medium cursor-pointer whitespace-nowrap transition-colors hover:bg-navy-800 active:bg-button-primary-click focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-button-focus-ring"
           >
-            <PlusIcon  />
+            <PlusIcon />
             {t('toolbar.addInventory')}
           </button>
         </div>
       </div>
 
       <AdvancedFilterModal
-        isOpen={showAdvanced}
+        anchor={filterAnchor}
         currentFilters={filters}
         onApply={onFiltersApply}
-        onClose={() => setShowAdvanced(false)}
+        onClose={() => setFilterAnchor(null)}
       />
     </>
   );
