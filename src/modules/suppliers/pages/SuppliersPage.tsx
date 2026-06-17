@@ -399,11 +399,11 @@ const SuppliersPage: React.FC = () => {
                     <td className={tdClass}>
                       {firstName ? (
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="inline-flex items-center px-2.5 py-0.5 bg-[#E6F4F1] border border-[#B2D8D2] rounded text-[13px] text-[#1A5C54] whitespace-nowrap">
+                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md font-inter text-xs font-medium leading-[18px] whitespace-nowrap bg-[#F3FAF7] border border-[#DEF7EC] text-[#03543F]">
                             {firstName}
                           </span>
                           {extra > 0 && (
-                            <span className="inline-flex items-center px-2 py-0.5 bg-canvas-200 border border-canvas-300 rounded-full text-[13px] text-navy-600 font-medium whitespace-nowrap">
+                            <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md font-inter text-xs font-medium leading-[18px] whitespace-nowrap bg-canvas-200 border border-canvas-300 text-navy-600">
                               +{extra}
                             </span>
                           )}
