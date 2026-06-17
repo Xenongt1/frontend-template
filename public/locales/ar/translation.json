@@ -608,7 +608,13 @@
       "descriptionLabel": "الوصف",
       "descriptionOptional": "(اختياري)",
       "descriptionPlaceholder": "اكتب الوصف هنا…",
-      "noMembersMatch": "لا يوجد أعضاء يطابقون بحثك"
+      "noMembersMatch": "لا يوجد أعضاء يطابقون بحثك",
+      "andNMore_zero": "بدون أعضاء إضافيين",
+      "andNMore_one": "+ عضو واحد آخر",
+      "andNMore_two": "+ عضوان آخران",
+      "andNMore_few": "+ {{count}} أعضاء آخرين",
+      "andNMore_many": "+ {{count}} عضوًا آخر",
+      "andNMore_other": "+ {{count}} عضو آخر"
     },
     "detail": {
       "title": "تفاصيل الدور",

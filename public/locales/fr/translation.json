@@ -600,7 +600,9 @@
       "descriptionLabel": "Description",
       "descriptionOptional": "(optionnel)",
       "descriptionPlaceholder": "Saisissez la description ici…",
-      "noMembersMatch": "Aucun membre ne correspond à votre recherche"
+      "noMembersMatch": "Aucun membre ne correspond à votre recherche",
+      "andNMore_one": "+ {{count}} autre membre",
+      "andNMore_other": "+ {{count}} autres membres"
     },
     "detail": {
       "title": "Détails du rôle",

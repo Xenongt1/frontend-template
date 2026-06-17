@@ -35,6 +35,17 @@ const AssignedMembersSidebar: React.FC<Props> = ({ members, hideSearchWhenEmpty 
   const empty = members.length === 0;
   const showSearch = !(empty && hideSearchWhenEmpty);
 
+  // Cap the visible list when no search is active. Searching always shows
+  // every match — the user is specifically looking for them.
+  const MEMBERS_VISIBLE_LIMIT = 10;
+  const isSearching = search.trim().length > 0;
+  const visibleMembers = isSearching
+    ? filteredMembers
+    : filteredMembers.slice(0, MEMBERS_VISIBLE_LIMIT);
+  const hiddenCount = isSearching
+    ? 0
+    : Math.max(0, filteredMembers.length - MEMBERS_VISIBLE_LIMIT);
+
   return (
     <aside
       aria-label={t('roles.form.assignedMembers', { count: members.length })}
@@ -75,28 +86,39 @@ const AssignedMembersSidebar: React.FC<Props> = ({ members, hideSearchWhenEmpty 
       )}
       {!empty && filteredMembers.length > 0 && (
         <ul className="flex flex-col list-none m-0 p-0">
-          {filteredMembers.map((m, i) => (
-            <li
-              key={m.id}
-              className={`flex items-center gap-2 p-4 ${i < filteredMembers.length - 1 ? 'border-b border-canvas-300' : ''}`}
-            >
-              {m.avatarUrl ? (
-                <img
-                  src={m.avatarUrl}
-                  alt=""
-                  className="w-12 h-12 rounded-full object-cover flex-shrink-0"
-                />
-              ) : (
-                <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#C3C3C2] text-[12px] font-medium text-[#222220] flex-shrink-0">
-                  {initialsOf(m.name)}
-                </span>
-              )}
-              <div className="flex flex-col min-w-0">
-                <span className="text-[16px] font-medium text-navy-900 truncate leading-6">{m.name}</span>
-                <span className="text-[14px] text-[#395362] truncate leading-[21px]">{m.email}</span>
-              </div>
+          {visibleMembers.map((m, i) => {
+            const isLastVisible = i === visibleMembers.length - 1;
+            // Show a separator under every row except the last one *unless*
+            // we're appending a +N-more footer below the list.
+            const showSeparator = !isLastVisible || hiddenCount > 0;
+            return (
+              <li
+                key={m.id}
+                className={`flex items-center gap-2 p-4 ${showSeparator ? 'border-b border-canvas-300' : ''}`}
+              >
+                {m.avatarUrl ? (
+                  <img
+                    src={m.avatarUrl}
+                    alt=""
+                    className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                  />
+                ) : (
+                  <span className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#C3C3C2] text-[12px] font-medium text-[#222220] flex-shrink-0">
+                    {initialsOf(m.name)}
+                  </span>
+                )}
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[16px] font-medium text-navy-900 truncate leading-6">{m.name}</span>
+                  <span className="text-[14px] text-[#395362] truncate leading-[21px]">{m.email}</span>
+                </div>
+              </li>
+            );
+          })}
+          {hiddenCount > 0 && (
+            <li className="px-4 py-3 text-center text-[13px] text-[#395362]">
+              {t('roles.form.andNMore', { count: hiddenCount })}
             </li>
-          ))}
+          )}
         </ul>
       )}
     </aside>

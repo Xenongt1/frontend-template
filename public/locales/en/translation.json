@@ -600,7 +600,9 @@
       "descriptionLabel": "Description",
       "descriptionOptional": "(optional)",
       "descriptionPlaceholder": "Type description here…",
-      "noMembersMatch": "No members match your search"
+      "noMembersMatch": "No members match your search",
+      "andNMore_one": "+ {{count}} more member",
+      "andNMore_other": "+ {{count}} more members"
     },
     "detail": {
       "title": "Role Details",
