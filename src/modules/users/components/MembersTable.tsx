@@ -32,15 +32,17 @@ const STATUS_BADGE: Record<MemberStatus, { bg: string; text: string; dot: string
   SUSPENDED: { bg: '#FEF2F2', text: '#991B1B', dot: '#EF4444' },
 };
 
-const ROLE_COLORS: Record<string, { bg: string; text: string }> = {
-  admin:           { bg: '#EDE9FE', text: '#6D28D9' },
-  manager:         { bg: '#DBEAFE', text: '#1D4ED8' },
-  viewer:          { bg: '#F3F4F6', text: '#374151' },
-  'store officer': { bg: '#D1FAE5', text: '#065F46' },
+// Role chip palette per Figma. Each theme reuses the same outline-as-bg
+// pattern from the Catalogue badges so the chip reads as a soft pill.
+const ROLE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
+  admin:           { bg: '#EDEBFE', text: '#5521B5', border: '#EDEBFE' },
+  manager:         { bg: '#FFF9E6', text: '#8C6900', border: '#FFEBB0' },
+  viewer:          { bg: '#F0F5FF', text: '#020769', border: '#E5EDFF' },
+  'store officer': { bg: '#F3FAF7', text: '#03543F', border: '#DEF7EC' },
 };
 
-function getRoleBadgeColors(role: string): { bg: string; text: string } {
-  return ROLE_COLORS[role.toLowerCase()] ?? { bg: '#F3F4F6', text: '#374151' };
+function getRoleBadgeColors(role: string): { bg: string; text: string; border: string } {
+  return ROLE_COLORS[role.toLowerCase()] ?? { bg: '#F3F4F6', text: '#374151', border: '#E5E7EB' };
 }
 
 const MAX_VISIBLE_ROLES = 1;
@@ -101,8 +103,8 @@ const MembersTable: React.FC<Props> = ({
               </div>
             </div>
           </td>
-          <td className={tdBase}><div className="h-6 w-20 bg-canvas-200 rounded-full animate-pulse" /></td>
-          <td className={tdBase}><div className="h-6 w-20 bg-canvas-200 rounded-full animate-pulse" /></td>
+          <td className={tdBase}><div className="h-6 w-20 bg-canvas-200 rounded-md animate-pulse" /></td>
+          <td className={tdBase}><div className="h-6 w-20 bg-canvas-200 rounded-md animate-pulse" /></td>
           <td className={tdBase}><div className="h-3 w-28 bg-canvas-200 rounded animate-pulse" /></td>
           <td className={tdBase}><div className="h-6 w-6 bg-canvas-200 rounded animate-pulse" /></td>
         </tr>
@@ -178,19 +180,19 @@ const MembersTable: React.FC<Props> = ({
               ) : (
                 <>
                   {visibleRoles.map((role) => {
-                    const { bg, text } = getRoleBadgeColors(role);
+                    const { bg, text, border } = getRoleBadgeColors(role);
                     return (
                       <span
                         key={role}
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-medium"
-                        style={{ background: bg, color: text }}
+                        className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md text-[12px] font-medium leading-[18px] font-['Inter'] border"
+                        style={{ background: bg, color: text, borderColor: border }}
                       >
                         {role}
                       </span>
                     );
                   })}
                   {overflowCount > 0 && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[12px] font-medium bg-[#F3F4F6] text-[#374151]">
+                    <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md text-[12px] font-medium leading-[18px] font-['Inter'] bg-[#F3F4F6] text-[#374151] border border-[#E5E7EB]">
                       +{overflowCount}
                     </span>
                   )}
@@ -201,8 +203,8 @@ const MembersTable: React.FC<Props> = ({
 
           <td className={tdBase}>
             <span
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium"
-              style={{ background: badge.bg, color: badge.text }}
+              className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[12px] font-medium leading-[18px] font-['Inter'] border"
+              style={{ background: badge.bg, color: badge.text, borderColor: badge.bg }}
             >
               <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: badge.dot }} aria-hidden="true" />
               {statusLabel}
