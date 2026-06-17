@@ -5,6 +5,7 @@ import { Toaster } from 'sonner'
 
 import '../styles.css'
 import AppLayout from '../shared/layout/AppLayout'
+import NotFoundPage from '../shared/components/NotFoundPage'
 
 // Public routes that do not require an access token. They also render outside
 // the AppLayout (no sidebar / topbar).
@@ -25,6 +26,7 @@ export const Route = createRootRoute({
     }
   },
   component: RootComponent,
+  notFoundComponent: NotFoundPage,
 })
 
 function RootComponent() {

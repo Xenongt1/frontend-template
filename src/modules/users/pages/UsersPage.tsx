@@ -223,7 +223,11 @@ const UsersPage: React.FC = () => {
                 cursor: 'pointer',
                 padding: 0,
                 whiteSpace: 'nowrap',
+                textDecoration: 'none',
+                transition: 'text-decoration 0.12s, color 0.12s',
               }}
+              onMouseEnter={(e) => { e.currentTarget.style.textDecoration = 'underline'; e.currentTarget.style.color = '#004E37'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.textDecoration = 'none'; e.currentTarget.style.color = '#00684A'; }}
             >
               {t('users.list.clearFilters')}
             </button>
@@ -325,6 +329,19 @@ const UsersPage: React.FC = () => {
                       fontWeight: 400,
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
+                      transition: 'background 0.12s, border-color 0.12s',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!rolesOpen && !roleFilter) {
+                        e.currentTarget.style.background = '#F7F7F7';
+                        e.currentTarget.style.borderColor = '#B2BCC2';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!rolesOpen && !roleFilter) {
+                        e.currentTarget.style.background = '#FFFFFF';
+                        e.currentTarget.style.borderColor = '#E6EAEB';
+                      }
                     }}
                   >
                     {roleFilter || t('users.list.allRoles')}
@@ -368,6 +385,19 @@ const UsersPage: React.FC = () => {
                       fontWeight: 400,
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
+                      transition: 'background 0.12s, border-color 0.12s',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!statusOpen && !statusFilter) {
+                        e.currentTarget.style.background = '#F7F7F7';
+                        e.currentTarget.style.borderColor = '#B2BCC2';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!statusOpen && !statusFilter) {
+                        e.currentTarget.style.background = '#FFFFFF';
+                        e.currentTarget.style.borderColor = '#E6EAEB';
+                      }
                     }}
                   >
                     {statusFilter ? t(`users.members.status.${statusFilter.toLowerCase()}`) : t('users.list.allStatus')}
@@ -404,6 +434,15 @@ const UsersPage: React.FC = () => {
                     color: '#2C2B29',
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
+                    transition: 'background 0.12s, color 0.12s',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#2C2B29';
+                    e.currentTarget.style.color = '#FDFDFD';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = '#2C2B29';
                   }}
                 >
                   <Download size={14} />
@@ -428,7 +467,12 @@ const UsersPage: React.FC = () => {
                     color: '#FDFDFD',
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
+                    transition: 'background 0.12s',
                   }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = '#041620'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = '#08283B'; }}
+                  onMouseDown={(e) => { e.currentTarget.style.background = '#072436'; }}
+                  onMouseUp={(e) => { e.currentTarget.style.background = '#041620'; }}
                 >
                   <Plus size={14} />
                   {t('users.list.inviteButton')}

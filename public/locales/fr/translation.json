@@ -11,6 +11,7 @@
     "stock": "Stock",
     "warehouse": "Entrepôt",
     "iam": "IAM",
+    "iamFull": "Gestion des identités et des accès",
     "stockLocations": "Emplacements de stock",
     "movements": "Mouvements",
     "suppliers": "Fournisseurs",
