@@ -233,6 +233,17 @@ const InviteUserModal: React.FC<Props> = ({ onClose, onSuccess }) => {
               lineHeight: '21px',
               color: '#2C2B29',
               cursor: 'pointer',
+              transition: 'background 0.12s, color 0.12s',
+            }}
+            onMouseEnter={(e) => {
+              if (isLoading) return;
+              e.currentTarget.style.background = '#2C2B29';
+              e.currentTarget.style.color = '#FDFDFD';
+            }}
+            onMouseLeave={(e) => {
+              if (isLoading) return;
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = '#2C2B29';
             }}
           >
             {t('users.invite.cancelButton')}
@@ -253,6 +264,10 @@ const InviteUserModal: React.FC<Props> = ({ onClose, onSuccess }) => {
               cursor: isLoading ? 'not-allowed' : 'pointer',
               transition: 'background 0.15s ease',
             }}
+            onMouseEnter={(e) => { if (!isLoading) e.currentTarget.style.background = '#041620'; }}
+            onMouseLeave={(e) => { if (!isLoading) e.currentTarget.style.background = '#08283B'; }}
+            onMouseDown={(e) => { if (!isLoading) e.currentTarget.style.background = '#072436'; }}
+            onMouseUp={(e) => { if (!isLoading) e.currentTarget.style.background = '#041620'; }}
           >
             {isLoading ? t('users.invite.sending') : t('users.invite.sendButton')}
           </button>
