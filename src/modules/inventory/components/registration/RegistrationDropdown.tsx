@@ -36,7 +36,7 @@ export const RegistrationDropdown: React.FC<RegistrationDropdownProps> = ({
   const selectedOption = options.find((option) => option.value === value);
 
   function resolveBorderClass(): string {
-    if (open) return 'border-[1.5px] border-stroke-focus';
+    if (open) return 'border-[1.5px] border-text-secondary';
     if (error) return 'border border-[#C81E1E]';
     return 'border border-stroke-input';
   }
@@ -63,9 +63,8 @@ export const RegistrationDropdown: React.FC<RegistrationDropdownProps> = ({
         className={[
           'w-full pl-3.5 pr-9 py-2.5 rounded-lg box-border outline-none cursor-pointer',
           'flex items-center justify-between gap-3',
-          'bg-surface-input transition-[border-color,box-shadow] duration-150',
+          'bg-surface-input transition-[border-color] duration-150',
           resolveBorderClass(),
-          open ? 'shadow-[0_0_0_3px_rgba(26,127,193,0.12)]' : 'shadow-none',
         ].join(' ')}
       >
         <span

@@ -12,7 +12,7 @@ const baseClass = [
   'bg-surface-input border border-stroke-input',
   'font-inter text-sm leading-5 text-text-primary',
   'transition-[border-color] duration-150',
-  'focus:border-[1.5px] focus:border-stroke-medium',
+  'focus:border-[1.5px] focus:border-text-secondary',
 ].join(' ');
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(

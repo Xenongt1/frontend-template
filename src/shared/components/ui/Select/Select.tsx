@@ -14,7 +14,7 @@ const baseClass = [
   'bg-surface-input border border-stroke-input appearance-none',
   'font-inter text-sm leading-5',
   'transition-[border-color] duration-150',
-  'focus:border-[1.5px] focus:border-stroke-medium',
+  'focus:border-[1.5px] focus:border-text-secondary',
 ].join(' ');
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
