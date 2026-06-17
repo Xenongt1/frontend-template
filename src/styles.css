@@ -188,6 +188,33 @@ body {
   }
 }
 
+/* Legacy button utility classes still referenced across the codebase.
+   Restoring them here so existing call-sites keep their styling and we
+   don't have to churn 10+ files when the inventory flow needs a border
+   or a ghost variant. New code should prefer the canonical
+   <Button variant="primary|secondary|tertiary"> component instead. */
+@layer components {
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           rounded-lg border border-brand-navy-mid bg-transparent
+           text-brand-navy-mid font-inter text-sm font-medium leading-[1.5]
+           cursor-pointer transition-colors duration-150
+           hover:bg-stroke-light
+           focus-visible:outline-none focus-visible:ring-4
+           focus-visible:ring-button-focus-ring
+           disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-3 py-2
+           rounded-lg border-none bg-transparent text-text-primary
+           font-inter text-sm font-medium cursor-pointer
+           transition-colors duration-150 hover:bg-stroke-light
+           focus-visible:outline-none focus-visible:ring-4
+           focus-visible:ring-button-focus-ring
+           disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+}
+
 /* Sonner toast overrides — align with app's status badge palette */
 [data-sonner-toast][data-type='success'] {
   --success-bg: #F3FAF7;
