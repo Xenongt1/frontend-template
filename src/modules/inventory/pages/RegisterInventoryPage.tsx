@@ -233,7 +233,7 @@ const RegisterInventoryPage: React.FC = () => {
       <button
         type="button"
         onClick={() => navigate({ to: '/inventory/catalogue' })}
-        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border-none bg-transparent text-text-primary text-sm font-medium cursor-pointer w-fit transition-colors hover:bg-stroke-light"
+        className="inline-flex items-center gap-2 p-0 border-0 bg-transparent text-text-primary text-sm font-medium cursor-pointer w-fit outline-none hover:underline focus-visible:underline"
       >
         <ArrowLeft size={16} aria-hidden="true" />
         {t('inventory.register.back')}
