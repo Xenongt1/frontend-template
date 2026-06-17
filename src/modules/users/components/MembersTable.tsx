@@ -127,7 +127,12 @@ const MembersTable: React.FC<Props> = ({
       const isMenuOpen = openMenuId === member.id;
 
       return (
-        <tr key={member.id} className="transition-colors hover:bg-[#F7F7F7]">
+        <tr
+          key={member.id}
+          style={{ transition: 'background 0.12s' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = '#F7F7F7'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
+        >
           <td className={tdBase}>
             <input
               type="checkbox"
@@ -215,7 +220,10 @@ const MembersTable: React.FC<Props> = ({
               <button
                 type="button"
                 onClick={(e) => { e.stopPropagation(); setOpenMenuId(isMenuOpen ? null : member.id); }}
-                className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#E6EAEB] transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded"
+                style={{ transition: 'background 0.12s' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#E6EAEB'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                 aria-label={t('users.members.columns.actions')}
                 aria-haspopup="true"
                 aria-expanded={isMenuOpen}
@@ -231,7 +239,10 @@ const MembersTable: React.FC<Props> = ({
                   <button
                     type="button"
                     role="menuitem"
-                    className="w-full px-4 py-2.5 text-left text-[14px] text-[#041620] hover:bg-[#F7F7F7] transition-colors"
+                    className="w-full px-4 py-2.5 text-left text-[14px] text-[#041620]"
+                    style={{ transition: 'background 0.12s' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = '#F7F7F7'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                     onClick={() => { setOpenMenuId(null); onViewDetails?.(member); }}
                   >
                     {t('users.members.actions.viewDetails')}
@@ -240,7 +251,10 @@ const MembersTable: React.FC<Props> = ({
                     <button
                       type="button"
                       role="menuitem"
-                      className="w-full px-4 py-2.5 text-left text-[14px] text-[#C81E1E] hover:bg-[#FEF2F2] transition-colors"
+                      className="w-full px-4 py-2.5 text-left text-[14px] text-[#C81E1E]"
+                      style={{ transition: 'background 0.12s' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = '#FEF2F2'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                       onClick={() => { setOpenMenuId(null); onSuspend(member); }}
                     >
                       {t('users.members.actions.suspend')}
@@ -250,7 +264,10 @@ const MembersTable: React.FC<Props> = ({
                     <button
                       type="button"
                       role="menuitem"
-                      className="w-full px-4 py-2.5 text-left text-[14px] text-[#00684A] hover:bg-[#ECFDF5] transition-colors"
+                      className="w-full px-4 py-2.5 text-left text-[14px] text-[#00684A]"
+                      style={{ transition: 'background 0.12s' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = '#ECFDF5'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                       onClick={() => { setOpenMenuId(null); onActivate(member); }}
                     >
                       {t('users.members.actions.reactivate')}
