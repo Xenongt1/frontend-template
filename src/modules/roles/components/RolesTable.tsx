@@ -28,7 +28,10 @@ const RolesTable: React.FC<Props> = ({
   onView,
 }) => {
   const { t } = useTranslation();
-  const [popover, setPopover] = useState<{ roleId: string; anchor: { top: number; left: number } } | null>(null);
+  const [popover, setPopover] = useState<{
+    roleId: string;
+    anchor: { below: number; above: number; left: number };
+  } | null>(null);
 
   // Stable identifiers for the skeleton placeholder rows. Generated once per
   // mount so React doesn't reuse the wrong DOM nodes if `skeletonRowCount`
@@ -40,9 +43,17 @@ const RolesTable: React.FC<Props> = ({
 
   const openPopover = (roleId: string, btn: HTMLButtonElement) => {
     const rect = btn.getBoundingClientRect();
+    // Hand the popover both candidate positions so it can flip above the
+    // trigger if it doesn't fit below. "below" = top of popover when it
+    // renders under the trigger; "above" = bottom of popover when it
+    // renders over the trigger.
     setPopover({
       roleId,
-      anchor: { top: rect.bottom + 4, left: rect.left },
+      anchor: {
+        below: rect.bottom + 4,
+        above: rect.top - 4,
+        left: rect.left,
+      },
     });
   };
 

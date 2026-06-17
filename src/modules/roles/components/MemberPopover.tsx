@@ -6,7 +6,14 @@ import { initialsOf } from '../utils/initials';
 
 interface Props {
   roleId: string;
-  anchor: { top: number; left: number };
+  /**
+   * Candidate positions for the popover, both measured from the
+   * triggering element:
+   *   below — top edge if the popover renders under the trigger.
+   *   above — bottom edge if the popover renders over the trigger.
+   * The popover picks whichever side leaves the popover fully in view.
+   */
+  anchor: { below: number; above: number; left: number };
   onClose: () => void;
 }
 
@@ -40,7 +47,7 @@ const MemberPopover: React.FC<Props> = ({ roleId, anchor, onClose }) => {
   // Position state — initialised from the trigger anchor, then clamped to
   // the viewport in useLayoutEffect below so the popover never spills off
   // the bottom or right edge.
-  const [position, setPosition] = useState({ top: anchor.top, left: anchor.left });
+  const [position, setPosition] = useState({ top: anchor.below, left: anchor.left });
   const [maxHeight, setMaxHeight] = useState<number>(() => window.innerHeight - VIEWPORT_MARGIN * 2);
 
   // Lazy-fetch members on open.
@@ -89,32 +96,52 @@ const MemberPopover: React.FC<Props> = ({ roleId, anchor, onClose }) => {
     };
   }, [onClose]);
 
-  // After mount + on size changes, clamp the popover so it stays in the
-  // viewport. If its natural height exceeds available space, shift it up
-  // and cap its max-height. Same idea horizontally for the right edge.
-  // Re-runs on resize and whenever member loading flips (height changes
-  // once the list materializes).
+  // After mount + on size changes, pick whichever side (below vs above
+  // the trigger) fits the popover's natural height. Falls back to
+  // whichever side has more room and caps the popover's height to that
+  // space. Re-runs on resize and on the loading→loaded transition since
+  // the natural height changes once the member list materialises.
   useLayoutEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const clamp = () => {
-      const rect = el.getBoundingClientRect();
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      const cappedHeight = vh - VIEWPORT_MARGIN * 2;
-      setMaxHeight(cappedHeight);
-      const effectiveHeight = Math.min(rect.height, cappedHeight);
-      const maxTop = vh - effectiveHeight - VIEWPORT_MARGIN;
+      const spaceBelow = vh - anchor.below - VIEWPORT_MARGIN;
+      const spaceAbove = anchor.above - VIEWPORT_MARGIN;
+      // scrollHeight is the un-clipped content height even when overflow
+      // is hidden, so it gives us the popover's natural height regardless
+      // of any maxHeight we previously set.
+      const natural = el.scrollHeight;
+
+      let top: number;
+      let cap: number;
+      if (natural <= spaceBelow) {
+        top = anchor.below;
+        cap = spaceBelow;
+      } else if (natural <= spaceAbove) {
+        top = anchor.above - natural;
+        cap = spaceAbove;
+      } else if (spaceAbove > spaceBelow) {
+        top = VIEWPORT_MARGIN;
+        cap = spaceAbove;
+      } else {
+        top = anchor.below;
+        cap = spaceBelow;
+      }
+
+      const rect = el.getBoundingClientRect();
       const maxLeft = vw - rect.width - VIEWPORT_MARGIN;
+      setMaxHeight(cap);
       setPosition({
-        top: Math.max(VIEWPORT_MARGIN, Math.min(anchor.top, maxTop)),
+        top,
         left: Math.max(VIEWPORT_MARGIN, Math.min(anchor.left, maxLeft)),
       });
     };
     clamp();
     window.addEventListener('resize', clamp);
     return () => window.removeEventListener('resize', clamp);
-  }, [anchor.top, anchor.left, loading, members.length]);
+  }, [anchor.below, anchor.above, anchor.left, loading, members.length]);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return members;
