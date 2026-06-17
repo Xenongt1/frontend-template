@@ -56,7 +56,7 @@ const cardStyle: React.CSSProperties = {
 const UserDetailsPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { id } = useParams({ strict: false }) as { id?: string };
+  const { id } = useParams({ from: '/users/$id' });
 
   const { data: member, isLoading, isError } = useGetMemberByIdQuery(id ?? '', { skip: !id });
   const hasToken = !!localStorage.getItem('chainpilot_access_token');

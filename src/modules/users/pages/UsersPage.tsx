@@ -486,7 +486,13 @@ const UsersPage: React.FC = () => {
               loading={isTableLoading}
               onSuspend={(member) => setPendingAction({ type: 'suspend', member })}
               onActivate={(member) => setPendingAction({ type: 'activate', member })}
-              onViewDetails={(member) => navigate({ to: '/users/$id', params: { id: member.id } })}
+              onViewDetails={(member) => {
+                if (!member.id) {
+                  console.warn('[users] View details clicked but member.id is missing', member);
+                  return;
+                }
+                navigate({ to: '/users/$id', params: { id: member.id } });
+              }}
             />
             {!isTableLoading && totalItems > 0 && (
               <RolesPagination
