@@ -74,15 +74,10 @@ interface InventoryPageShellProps {
 }
 
 const InventoryPageShell: React.FC<InventoryPageShellProps> = ({ children }) => (
-  <div style={{
-    background: 'var(--Page-Background, #F7F7F7)',
-    minHeight: '100%',
-    padding: 24,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 16,
-    boxSizing: 'border-box',
-  }}>
+  // No padding / background here — AppLayout's <main> already provides
+  // bg-surface-page + p-6, and adding more here doubled the top gap
+  // under the TopBar (same fix applied to Users + Suppliers earlier).
+  <div className="flex-1 min-h-0 flex flex-col gap-4 w-full box-border">
     {children}
   </div>
 );
