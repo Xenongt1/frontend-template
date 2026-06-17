@@ -486,7 +486,7 @@ const UsersPage: React.FC = () => {
               loading={isTableLoading}
               onSuspend={(member) => setPendingAction({ type: 'suspend', member })}
               onActivate={(member) => setPendingAction({ type: 'activate', member })}
-              onViewDetails={(member) => navigate({ to: `/users/${member.id}` })}
+              onViewDetails={(member) => navigate({ to: '/users/$id', params: { id: member.id } })}
             />
             {!isTableLoading && totalItems > 0 && (
               <RolesPagination
