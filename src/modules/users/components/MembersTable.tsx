@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MoreHorizontal, ArrowUpDown } from 'lucide-react';
+import { MoreVertical, ArrowUpDown } from 'lucide-react';
 import type { Member, MemberStatus } from '../api/usersApi';
 
 interface Props {
@@ -228,7 +228,7 @@ const MembersTable: React.FC<Props> = ({
                 aria-haspopup="true"
                 aria-expanded={isMenuOpen}
               >
-                <MoreHorizontal size={16} color="#395362" />
+                <MoreVertical size={16} color="#395362" />
               </button>
               {isMenuOpen && (
                 <div
@@ -283,7 +283,7 @@ const MembersTable: React.FC<Props> = ({
   };
 
   return (
-    <div className="overflow-x-auto w-full" aria-busy={loading} aria-live="polite">
+    <div className="flex-1 min-h-0 overflow-auto w-full" aria-busy={loading} aria-live="polite">
       {loading && <span className="sr-only">{t('users.members.loading')}</span>}
       <table className="w-full border-collapse min-w-[700px]">
         <thead>

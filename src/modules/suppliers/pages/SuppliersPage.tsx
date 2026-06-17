@@ -175,13 +175,13 @@ const SuppliersPage: React.FC = () => {
   const tdClass = 'px-4 h-20 align-middle border-b border-canvas-300 text-sm text-navy-900';
 
   return (
-    <div className="flex-1 min-h-0 overflow-y-auto bg-surface-page p-6 flex flex-col gap-4 box-border">
-      {/* Header */}
-      <div className="flex flex-col gap-1">
-        <h1 className="m-0 font-inter font-semibold text-lg leading-7 text-brand-navy-dark">
+    <div className="flex-1 min-h-0 flex flex-col gap-4 w-full box-border">
+      {/* Header — match RolesListPage spacing (AppLayout already pads). */}
+      <div className="flex flex-col gap-2 pb-[10px]">
+        <h1 className="m-0 text-[18px] font-semibold leading-[28px] text-[#041620] font-['Inter']">
           {t('suppliers.list.title')}
         </h1>
-        <p className="m-0 font-inter font-normal text-sm text-text-primary">
+        <p className="m-0 text-[14px] font-normal leading-5 text-navy-900 font-['Inter']">
           {t('suppliers.list.subtitle')}
         </p>
       </div>

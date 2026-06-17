@@ -120,7 +120,7 @@ const EditInventoryPage: React.FC = () => {
         <button
           type="button"
           onClick={() => navigate({ to: '/inventory/catalogue' })}
-          className="btn-ghost w-fit"
+          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border-none bg-transparent text-text-primary text-sm font-medium cursor-pointer w-fit transition-colors hover:bg-stroke-light"
         >
           <ArrowLeft size={16} aria-hidden="true" />
           {t('inventory.register.back')}
@@ -138,7 +138,7 @@ const EditInventoryPage: React.FC = () => {
         <button
           type="button"
           onClick={() => navigate({ to: '/inventory/catalogue' })}
-          className="btn-ghost w-fit"
+          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border-none bg-transparent text-text-primary text-sm font-medium cursor-pointer w-fit transition-colors hover:bg-stroke-light"
         >
           <ArrowLeft size={16} aria-hidden="true" />
           {t('inventory.register.back')}
@@ -303,7 +303,7 @@ const EditInventoryPage: React.FC = () => {
       <button
         type="button"
         onClick={() => navigate({ to: '/inventory/catalogue' })}
-        className="btn-ghost w-fit"
+        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border-none bg-transparent text-text-primary text-sm font-medium cursor-pointer w-fit transition-colors hover:bg-stroke-light"
       >
         <ArrowLeft size={16} aria-hidden="true" />
         {t('inventory.register.back')}

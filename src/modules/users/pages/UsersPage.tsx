@@ -164,21 +164,14 @@ const UsersPage: React.FC = () => {
 
   return (
     <>
-      <div style={{
-        background: 'var(--Page-Background, #F7F7F7)',
-        minHeight: '100%',
-        padding: 24,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 16,
-        boxSizing: 'border-box',
-      }}>
-        {/* Page header */}
-        <div>
-          <h1 style={{ margin: 0, fontFamily: 'Inter', fontWeight: 600, fontSize: 18, lineHeight: '28px', color: '#041620' }}>
+      <div className="flex flex-col gap-4 w-full min-h-0 flex-1">
+        {/* Page header — match RolesListPage spacing (AppLayout already pads,
+            so no outer padding here). */}
+        <div className="flex flex-col gap-2 pb-[10px]">
+          <h1 className="m-0 text-[18px] font-semibold leading-[28px] text-[#041620] font-['Inter']">
             {t('users.list.title')}
           </h1>
-          <p style={{ margin: '4px 0 0', fontFamily: 'Inter', fontWeight: 400, fontSize: 14, lineHeight: '20px', color: '#08283B' }}>
+          <p className="m-0 text-[14px] font-normal leading-5 text-navy-900 font-['Inter']">
             {t('users.list.subtitle')}
           </p>
         </div>
@@ -264,7 +257,7 @@ const UsersPage: React.FC = () => {
 
         {/* Members table card */}
         {showTable && (
-          <div className="bg-white rounded-lg border border-[#E6EAEB] overflow-visible flex flex-col">
+          <div className="bg-white rounded-lg border border-[#E6EAEB] flex flex-col flex-1 min-h-0 overflow-hidden">
 
             {/* ── Toolbar ─────────────────────────────────────────────────────── */}
             <div style={{
@@ -286,21 +279,7 @@ const UsersPage: React.FC = () => {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder={t('users.list.searchPlaceholder')}
-                  style={{
-                    width: '100%',
-                    boxSizing: 'border-box',
-                    paddingLeft: 36,
-                    paddingRight: 12,
-                    paddingTop: 8,
-                    paddingBottom: 8,
-                    border: '1px solid #E6EAEB',
-                    borderRadius: 8,
-                    fontFamily: 'Inter',
-                    fontSize: 14,
-                    color: '#08283B',
-                    background: '#FDFDFD',
-                    outline: 'none',
-                  }}
+                  className="w-full pl-9 pr-3 py-2 bg-canvas-200 border border-navy-300 rounded-lg text-sm text-navy-900 outline-none box-border focus:border-navy-600 transition-colors"
                 />
               </div>
 
@@ -417,7 +396,7 @@ const UsersPage: React.FC = () => {
                   )}
                 </div>
 
-                {/* Export */}
+                {/* Export — same outline-light-gray-hover pattern as All Roles / All Status */}
                 <button
                   type="button"
                   style={{
@@ -425,24 +404,24 @@ const UsersPage: React.FC = () => {
                     alignItems: 'center',
                     gap: 6,
                     padding: '8px 16px',
-                    border: '1px solid #2C2B29',
+                    border: '1px solid #E6EAEB',
                     borderRadius: 8,
-                    background: 'transparent',
+                    background: '#FFFFFF',
                     fontFamily: 'Inter',
                     fontSize: 14,
                     fontWeight: 500,
-                    color: '#2C2B29',
+                    color: '#08283B',
                     cursor: 'pointer',
                     whiteSpace: 'nowrap',
-                    transition: 'background 0.12s, color 0.12s',
+                    transition: 'background 0.12s, border-color 0.12s',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#2C2B29';
-                    e.currentTarget.style.color = '#FDFDFD';
+                    e.currentTarget.style.background = '#F7F7F7';
+                    e.currentTarget.style.borderColor = '#B2BCC2';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = '#2C2B29';
+                    e.currentTarget.style.background = '#FFFFFF';
+                    e.currentTarget.style.borderColor = '#E6EAEB';
                   }}
                 >
                   <Download size={14} />
