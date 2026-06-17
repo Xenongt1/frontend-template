@@ -56,9 +56,9 @@ const ToolBar: React.FC<Props> = ({ filters, onSearch, onFiltersApply }) => {
 
   return (
     <>
-      <div className="flex justify-between items-center gap-3 px-5 py-4 flex-wrap">
-        {/* Search input */}
-        <div className="relative flex-1 min-w-[220px] max-w-[400px]">
+      <div className="flex justify-between items-center gap-4 px-6 py-4 flex-wrap">
+        {/* Search input — fixed 364px per Figma spec (the canonical width). */}
+        <div className="relative w-[364px] max-w-full">
           <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center">
             <SearchIcon />
           </span>

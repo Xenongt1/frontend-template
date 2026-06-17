@@ -263,12 +263,12 @@ const UsersPage: React.FC = () => {
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 8,
-              padding: '12px 16px',
+              gap: 16,
+              padding: '16px 24px',
               borderBottom: '1px solid #E6EAEB',
             }}>
-              {/* LEFT: Search */}
-              <div style={{ position: 'relative', width: 260, flexShrink: 0 }}>
+              {/* LEFT: Search — 364px to match Inventory Catalogue toolbar */}
+              <div style={{ position: 'relative', width: 364, maxWidth: '100%', flexShrink: 0 }}>
                 <Search
                   size={16}
                   color="#5A6F7C"
