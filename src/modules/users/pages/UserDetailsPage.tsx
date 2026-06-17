@@ -176,7 +176,10 @@ const UserDetailsPage: React.FC = () => {
             fontWeight: 500,
             color: '#08283B',
             cursor: 'pointer',
+            transition: 'background 0.12s, border-color 0.12s',
           }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = '#F7F7F7'; e.currentTarget.style.borderColor = '#B2BCC2'; }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = '#FFFFFF'; e.currentTarget.style.borderColor = '#E6EAEB'; }}
         >
           <ArrowLeft size={16} />
           {t('users.details.back')}
@@ -262,6 +265,23 @@ const UserDetailsPage: React.FC = () => {
                   fontFamily: 'Inter', fontSize: 14, fontWeight: 500,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
+                  transition: 'background 0.12s',
+                }}
+                onMouseEnter={(e) => {
+                  if (isSuspending || isActivating) return;
+                  e.currentTarget.style.background = isActive ? '#a11919' : '#041620';
+                }}
+                onMouseLeave={(e) => {
+                  if (isSuspending || isActivating) return;
+                  e.currentTarget.style.background = isActive ? '#C81E1E' : '#08283B';
+                }}
+                onMouseDown={(e) => {
+                  if (isSuspending || isActivating) return;
+                  e.currentTarget.style.background = isActive ? '#8b1515' : '#072436';
+                }}
+                onMouseUp={(e) => {
+                  if (isSuspending || isActivating) return;
+                  e.currentTarget.style.background = isActive ? '#a11919' : '#041620';
                 }}
               >
                 {isActive ? t('users.details.suspendUser') : t('users.details.activateUser')}
@@ -307,7 +327,12 @@ const UserDetailsPage: React.FC = () => {
                   cursor: isSavingRoles ? 'not-allowed' : 'pointer',
                   opacity: isSavingRoles ? 0.6 : 1,
                   whiteSpace: 'nowrap',
+                  transition: 'background 0.12s',
                 }}
+                onMouseEnter={(e) => { if (!isSavingRoles) e.currentTarget.style.background = '#041620'; }}
+                onMouseLeave={(e) => { if (!isSavingRoles) e.currentTarget.style.background = '#08283B'; }}
+                onMouseDown={(e) => { if (!isSavingRoles) e.currentTarget.style.background = '#072436'; }}
+                onMouseUp={(e) => { if (!isSavingRoles) e.currentTarget.style.background = '#041620'; }}
               >
                 <Plus size={14} />
                 {t('users.details.addRole')}
@@ -347,6 +372,17 @@ const UserDetailsPage: React.FC = () => {
                         fontFamily: 'Inter', fontSize: 13, fontWeight: 500, color: '#C81E1E',
                         cursor: resolvedRoles.length <= 1 ? 'not-allowed' : 'pointer',
                         opacity: resolvedRoles.length <= 1 ? 0.5 : 1,
+                        transition: 'background 0.12s, border-color 0.12s',
+                      }}
+                      onMouseEnter={(e) => {
+                        if (isSavingRoles || resolvedRoles.length <= 1) return;
+                        e.currentTarget.style.background = '#FEF2F2';
+                        e.currentTarget.style.borderColor = '#C81E1E';
+                      }}
+                      onMouseLeave={(e) => {
+                        if (isSavingRoles || resolvedRoles.length <= 1) return;
+                        e.currentTarget.style.background = '#FFFFFF';
+                        e.currentTarget.style.borderColor = '#E6B0B0';
                       }}
                     >
                       <X size={14} />
