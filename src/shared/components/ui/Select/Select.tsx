@@ -13,8 +13,8 @@ const baseClass = [
   'w-full pl-3.5 pr-9 py-2.5 rounded-lg outline-none box-border cursor-pointer',
   'bg-surface-input border border-stroke-input appearance-none',
   'font-inter text-sm leading-5',
-  'transition-[box-shadow] duration-150',
-  'focus:shadow-[0_0_0_3px_rgba(26,127,193,0.12)]',
+  'transition-[border-color] duration-150',
+  'focus:border-stroke-medium',
 ].join(' ');
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
