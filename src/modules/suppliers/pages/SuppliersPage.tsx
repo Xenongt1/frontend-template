@@ -38,15 +38,17 @@ const ChevronRightIcon = () => (
 
 const SupplierStatusBadge: React.FC<{ status?: SupplierStatus }> = ({ status }) => {
   const { t } = useTranslation();
+  // Same chip primitive as the Catalogue badges: rounded-md, py-0.5,
+  // Inter 12/18 weight 500.
   if (status === 'SUSPENDED') {
     return (
-      <span className="inline-flex items-center px-3 py-1 rounded-full text-[13px] font-medium whitespace-nowrap bg-[#FDF2F2] border border-[#FDE8E8] text-[#9B1C1C]">
+      <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md font-inter text-xs font-medium leading-[18px] whitespace-nowrap bg-[#FDF2F2] border border-[#FDE8E8] text-[#9B1C1C]">
         {t('suppliers.list.badgeSuspended')}
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center px-3 py-1 rounded-full text-[13px] font-medium whitespace-nowrap bg-[#F3FAF7] border border-[#DEF7EC] text-[#03543F]">
+    <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md font-inter text-xs font-medium leading-[18px] whitespace-nowrap bg-[#F3FAF7] border border-[#DEF7EC] text-[#03543F]">
       {t('suppliers.list.badgeActive')}
     </span>
   );
@@ -460,59 +462,83 @@ const SuppliersPage: React.FC = () => {
           </table>
         </div>
 
-        {/* Pagination */}
-        {!loading && (
-          <div className="flex items-center justify-between px-5 py-3 border-t border-canvas-300 gap-3 flex-wrap">
-            <span className="text-[13px] text-navy-600 whitespace-nowrap">
-              {t('suppliers.list.showing', { start: rangeStart, end: rangeEnd, total })}
-            </span>
-
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
-                <select
-                  value={pageSize}
-                  onChange={e => changePageSize(Number(e.target.value))}
-                  className="px-2.5 py-[5px] bg-canvas-200 border border-navy-300 rounded-md text-[13px] text-navy-900 cursor-pointer outline-none"
-                >
-                  {pageSizeOptions.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-                <span className="text-[13px] text-navy-500 whitespace-nowrap">Rows per page</span>
+        {/* Pagination — same pill-group shape as Catalogue + Roles. */}
+        {!loading && (() => {
+          // Inline cell class so the connected outline reads correctly
+          // (border-l-0 between cells, rounded ends on the leading/trailing
+          // buttons).
+          const cellBase = 'inline-flex items-center justify-center min-w-[36px] h-[33px] px-3 text-[14px] font-medium border border-canvas-300 bg-canvas-50 transition-colors';
+          return (
+            <div className="flex items-center justify-between px-4 py-4 gap-3 flex-wrap min-h-[69px] border-t border-stroke-light">
+              <div className="text-[14px] text-navy-600">
+                <span className="font-normal">Showing </span>
+                <span className="font-semibold text-navy-900">{rangeStart}-{rangeEnd}</span>
+                <span className="font-normal"> of </span>
+                <span className="font-semibold text-navy-900">{total} suppliers</span>
               </div>
 
-              <div className="flex items-center gap-1">
-                <button type="button" onClick={() => goToPage(page - 1)} disabled={page === 1}
-                  className="inline-flex items-center justify-center w-8 h-8 border border-canvas-300 rounded-md bg-canvas-50 text-navy-600 hover:bg-canvas-100 hover:border-navy-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                  aria-label="Previous page"
-                >
-                  <ChevronLeftIcon />
-                </button>
-
-                {buildPageNumbers(page, totalPages).map((p, idx) =>
-                  typeof p === 'string' ? (
-                    <span key={p + idx} className="inline-flex items-center justify-center min-w-8 h-8 px-1 text-[13px] text-navy-300">…</span>
-                  ) : (
-                    <button key={p} type="button" onClick={() => goToPage(p)}
-                      className={`inline-flex items-center justify-center min-w-8 h-8 px-1 rounded-md text-[13px] transition-colors border ${
-                        p === page
-                          ? 'bg-navy-300 text-navy-900 font-semibold border-navy-300'
-                          : 'bg-transparent text-navy-600 font-normal border-transparent hover:bg-canvas-200'
-                      }`}
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <select
+                      value={pageSize}
+                      onChange={(e) => changePageSize(Number(e.target.value))}
+                      aria-label="Rows per page"
+                      className="appearance-none pl-4 pr-8 py-3 bg-[#ECECEB] border border-[#B2BCC2] rounded-lg text-[14px] text-navy-500 cursor-pointer outline-none focus:border-stroke-focus"
                     >
-                      {p}
-                    </button>
-                  )
-                )}
+                      {pageSizeOptions.map((s) => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M4 6l4 4 4-4" stroke="#5A6F7C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </span>
+                  </div>
+                  <span className="text-[14px] text-navy-600 whitespace-nowrap">Rows per page</span>
+                </div>
 
-                <button type="button" onClick={() => goToPage(page + 1)} disabled={page === totalPages}
-                  className="inline-flex items-center justify-center w-8 h-8 border border-canvas-300 rounded-md bg-canvas-50 text-navy-600 hover:bg-canvas-100 hover:border-navy-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                  aria-label="Next page"
-                >
-                  <ChevronRightIcon />
-                </button>
+                <div className="inline-flex items-center rounded">
+                  <button
+                    type="button"
+                    onClick={() => goToPage(page - 1)}
+                    disabled={page === 1}
+                    aria-label="Previous page"
+                    className={`${cellBase} rounded-l hover:bg-canvas-100 disabled:opacity-40 disabled:cursor-not-allowed`}
+                  >
+                    <ChevronLeftIcon />
+                  </button>
+                  {buildPageNumbers(page, totalPages).map((p, idx) =>
+                    typeof p === 'string' ? (
+                      <span key={p + idx} className={`${cellBase} text-navy-600 cursor-default border-l-0`}>…</span>
+                    ) : (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => goToPage(p)}
+                        className={`${cellBase} border-l-0 ${
+                          p === page
+                            ? 'bg-navy-300 text-navy-900 font-semibold'
+                            : 'text-navy-600 hover:bg-canvas-100'
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    )
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => goToPage(page + 1)}
+                    disabled={page === totalPages}
+                    aria-label="Next page"
+                    className={`${cellBase} rounded-r border-l-0 hover:bg-canvas-100 disabled:opacity-40 disabled:cursor-not-allowed`}
+                  >
+                    <ChevronRightIcon />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
       </div>
 
       <ConfirmDialog
