@@ -164,6 +164,17 @@ const AddRoleModal: React.FC<Props> = ({ roles, saving = false, onClose, onAdd }
                 padding: '10px 20px', background: 'transparent', border: '1px solid #2C2B29',
                 borderRadius: 8, fontFamily: 'Inter', fontWeight: 500, fontSize: 14, color: '#2C2B29',
                 cursor: saving ? 'not-allowed' : 'pointer',
+                transition: 'background 0.12s, color 0.12s',
+              }}
+              onMouseEnter={(e) => {
+                if (saving) return;
+                e.currentTarget.style.background = '#2C2B29';
+                e.currentTarget.style.color = '#FDFDFD';
+              }}
+              onMouseLeave={(e) => {
+                if (saving) return;
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = '#2C2B29';
               }}
             >
               {t('users.details.cancel')}
@@ -177,7 +188,12 @@ const AddRoleModal: React.FC<Props> = ({ roles, saving = false, onClose, onAdd }
                 background: !selectedId || saving ? '#395362' : '#08283B',
                 fontFamily: 'Inter', fontWeight: 500, fontSize: 14, color: '#FDFDFD',
                 cursor: !selectedId || saving ? 'not-allowed' : 'pointer',
+                transition: 'background 0.12s',
               }}
+              onMouseEnter={(e) => { if (selectedId && !saving) e.currentTarget.style.background = '#041620'; }}
+              onMouseLeave={(e) => { if (selectedId && !saving) e.currentTarget.style.background = '#08283B'; }}
+              onMouseDown={(e) => { if (selectedId && !saving) e.currentTarget.style.background = '#072436'; }}
+              onMouseUp={(e) => { if (selectedId && !saving) e.currentTarget.style.background = '#041620'; }}
             >
               {t('users.details.addRoleConfirm')}
             </button>
