@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
+import { LogOut } from 'lucide-react';
+import { useAuthUser, useSignOutMutation } from '@/modules/auth/api/authApi';
 
 const IAMIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -148,6 +150,20 @@ const Sidebar: React.FC = () => {
   const [inventoryOpen, setInventoryOpen] = useState(true);
   const [iamOpen, setIamOpen] = useState(true);
   const { t } = useTranslation();
+  const user = useAuthUser();
+  const navigate = useNavigate();
+  const signOutMutation = useSignOutMutation();
+
+  const handleSignOut = async () => {
+    try {
+      // signOut() clears localStorage even if the network call fails,
+      // so we don't need a separate cleanup branch here.
+      await signOutMutation.mutateAsync();
+    } catch {
+      /* best effort */
+    }
+    navigate({ to: '/sign-in', replace: true });
+  };
 
   return (
     <div
@@ -306,23 +322,36 @@ const Sidebar: React.FC = () => {
         <div
           className={[
             'py-2 flex items-center gap-2.5',
-            collapsed ? 'px-2 justify-center' : 'px-4 justify-start',
+            collapsed ? 'px-2 justify-center' : 'px-4 justify-between',
           ].join(' ')}
         >
-          <img
-            className="w-8 h-8 rounded-full shrink-0"
-            src="https://placehold.co/32x32"
-            alt={t('nav.userAvatarAlt')}
-          />
+          <div className="flex items-center gap-2.5 min-w-0">
+            <img
+              className="w-8 h-8 rounded-full shrink-0"
+              src={user?.imageUrl ?? 'https://placehold.co/32x32'}
+              alt={t('nav.userAvatarAlt')}
+            />
+            {!collapsed && (
+              <div className="flex flex-col min-w-0">
+                <span className="text-text-primary text-base font-normal leading-6 font-inter overflow-hidden text-ellipsis whitespace-nowrap">
+                  {user?.fullName ?? ''}
+                </span>
+                <span className="text-text-secondary text-sm font-normal leading-[21px] font-inter overflow-hidden text-ellipsis whitespace-nowrap">
+                  {user?.email ?? ''}
+                </span>
+              </div>
+            )}
+          </div>
           {!collapsed && (
-            <div className="flex flex-col">
-              <span className="text-text-primary text-base font-normal leading-6 font-inter">
-                Ruth Gingo
-              </span>
-              <span className="text-text-secondary text-sm font-normal leading-[21px] font-inter">
-                ruth.gingo@amalitech.com
-              </span>
-            </div>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              disabled={signOutMutation.isPending}
+              title="Sign out"
+              className="shrink-0 bg-transparent border-none cursor-pointer p-1 flex items-center text-text-primary transition-colors duration-150 hover:bg-stroke-light rounded disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <LogOut size={18} />
+            </button>
           )}
         </div>
       </div>
