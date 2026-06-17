@@ -14,22 +14,19 @@ interface Props {
 
 const ChevronLeft = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M10 12L6 8L10 4" stroke="#395362" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
-
 const ChevronRight = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M6 4L10 8L6 12" stroke="#395362" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 type Ellipsis = 'ellipsis-leading' | 'ellipsis-trailing';
 type PageEntry = number | Ellipsis;
 
-function isEllipsis(entry: PageEntry): entry is Ellipsis {
-  return entry === 'ellipsis-leading' || entry === 'ellipsis-trailing';
-}
+const isEllipsis = (e: PageEntry): e is Ellipsis => e === 'ellipsis-leading' || e === 'ellipsis-trailing';
 
 function getPageNumbers(page: number, totalPages: number): PageEntry[] {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -41,73 +38,83 @@ function getPageNumbers(page: number, totalPages: number): PageEntry[] {
   return pages;
 }
 
+// Pill-group cell — same shape as RolesPagination so the two tables read identically.
+const cellBase = 'inline-flex items-center justify-center min-w-[36px] h-[33px] px-3 text-[14px] font-medium border border-canvas-300 bg-canvas-50 transition-colors';
+
 const Pagination: React.FC<Props> = ({
   page, pageSize, total, totalPages, pageSizeOptions, onPageChange, onPageSizeChange, disabled = false,
 }) => {
   const { t } = useTranslation();
-  const pageNumbers = getPageNumbers(page, totalPages);
-
   const start = total === 0 ? 0 : (page - 1) * pageSize + 1;
   const end = Math.min(page * pageSize, total);
+  const pageNumbers = getPageNumbers(page, totalPages);
 
   return (
-    <div className="flex items-center justify-between px-5 py-3 border-t border-canvas-300 gap-3 flex-wrap">
-      {/* Left: showing range */}
-      <span className="text-[13px] text-navy-600 whitespace-nowrap flex-shrink-0">
-        {t('pagination.showing', { start, end, count: total })}
-      </span>
+    <div className="flex items-center justify-between px-4 py-4 gap-3 flex-wrap min-h-[69px] border-t border-stroke-light">
+      {/* Showing X-Y of N items */}
+      <div className="text-[14px] text-navy-600">
+        <span className="font-normal">Showing </span>
+        <span className="font-semibold text-navy-900">{start}-{end}</span>
+        <span className="font-normal"> of </span>
+        <span className="font-semibold text-navy-900">{total} {t('pagination.totalItems_other', { count: total }).replace(/^.*?\d+\s*/, '') || 'items'}</span>
+      </div>
 
-      {/* Right: page size selector + navigation */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <select
-          value={pageSize}
-          onChange={(e) => onPageSizeChange(Number(e.target.value))}
-          disabled={disabled}
-          className="px-2.5 py-[5px] bg-canvas-200 border border-navy-300 rounded-md text-[13px] text-navy-900 cursor-pointer outline-none disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          {pageSizeOptions.map((s) => <option key={s} value={s}>{s}</option>)}
-        </select>
-        <span className="text-[13px] text-navy-600 whitespace-nowrap">{t('pagination.rowsPerPage')}</span>
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <select
+              value={pageSize}
+              onChange={(e) => onPageSizeChange(Number(e.target.value))}
+              disabled={disabled}
+              aria-label={t('pagination.rowsPerPage')}
+              className="appearance-none pl-4 pr-8 py-3 bg-[#ECECEB] border border-[#B2BCC2] rounded-lg text-[14px] text-navy-500 cursor-pointer outline-none focus:border-stroke-focus disabled:opacity-50"
+            >
+              {pageSizeOptions.map((s) => <option key={s} value={s}>{s}</option>)}
+            </select>
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M4 6l4 4 4-4" stroke="#5A6F7C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+          </div>
+          <span className="text-[14px] text-navy-600 whitespace-nowrap">{t('pagination.rowsPerPage')}</span>
+        </div>
 
-        <div className="flex items-center gap-1">
+        <div className="inline-flex items-center rounded">
           <button
+            type="button"
             onClick={() => onPageChange(page - 1)}
             disabled={disabled || page === 1}
-            className="inline-flex items-center justify-center w-8 h-8 border border-canvas-300 rounded-md bg-canvas-50 text-navy-600 transition-colors flex-shrink-0 hover:bg-canvas-100 hover:border-navy-300 disabled:opacity-40 disabled:cursor-not-allowed"
             aria-label={t('pagination.previousPage')}
+            className={`${cellBase} rounded-l hover:bg-canvas-100 disabled:opacity-40 disabled:cursor-not-allowed`}
           >
             <ChevronLeft />
           </button>
-
-          {pageNumbers.map((p) =>
+          {pageNumbers.map((p, i) =>
             isEllipsis(p) ? (
-              <span
-                key={p}
-                className="inline-flex items-center justify-center min-w-8 h-8 px-1 text-[13px] text-navy-300 cursor-default flex-shrink-0"
-              >
-                …
-              </span>
+              <span key={`${p}-${i}`} className={`${cellBase} text-navy-600 cursor-default border-l-0`}>…</span>
             ) : (
               <button
                 key={p}
+                type="button"
                 onClick={() => onPageChange(p)}
                 disabled={disabled}
-                className={`inline-flex items-center justify-center min-w-8 h-8 px-1 rounded-md text-[13px] flex-shrink-0 transition-colors border disabled:opacity-40 disabled:cursor-not-allowed ${
+                className={`${cellBase} border-l-0 ${
                   p === page
-                    ? 'bg-navy-300 text-navy-900 font-semibold border-navy-300'
-                    : 'bg-transparent text-navy-600 font-normal border-transparent hover:bg-canvas-200'
-                }`}
+                    ? 'bg-navy-300 text-navy-900 font-semibold'
+                    : 'text-navy-600 hover:bg-canvas-100'
+                } disabled:opacity-40 disabled:cursor-not-allowed`}
               >
                 {p}
               </button>
             )
           )}
-
           <button
+            type="button"
             onClick={() => onPageChange(page + 1)}
             disabled={disabled || page === totalPages}
-            className="inline-flex items-center justify-center w-8 h-8 border border-canvas-300 rounded-md bg-canvas-50 text-navy-600 transition-colors flex-shrink-0 hover:bg-canvas-100 hover:border-navy-300 disabled:opacity-40 disabled:cursor-not-allowed"
             aria-label={t('pagination.nextPage')}
+            className={`${cellBase} rounded-r border-l-0 hover:bg-canvas-100 disabled:opacity-40 disabled:cursor-not-allowed`}
           >
             <ChevronRight />
           </button>

@@ -181,8 +181,8 @@ const InventoryTable: React.FC<Props> = ({
                 onClick={() => onView(item)}
                 className="bg-canvas-50 transition-colors cursor-pointer hover:bg-canvas-100"
               >
-                <td className={`${tdClass} font-mono !text-[13px] text-navy-600`}>{item.sku}</td>
-                <td className={`${tdClass} font-medium`}>{item.displayName}</td>
+                <td className={tdClass}>{item.sku}</td>
+                <td className={tdClass}>{item.displayName}</td>
                 <td className={`${tdClass} hide-on-mobile`}><CategoryBadge category={item.category} /></td>
                 <td className={`${tdClass} text-navy-600 hide-on-mobile`}>{item.uomLabel}</td>
                 <td className={tdClass}><StatusBadge status={item.status} /></td>
