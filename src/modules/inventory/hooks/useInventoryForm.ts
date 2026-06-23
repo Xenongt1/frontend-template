@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useForm, useStore } from '@tanstack/react-form';
 import i18n from '@/i18n';
 import type { InventoryItem } from '@/types';
 import type {
@@ -33,6 +34,24 @@ export interface InventoryFormPayload {
   tags: string[];
 }
 
+interface NotificationsConfig {
+  enableExpiryAlert: boolean;
+  expiryDays: string;
+  enableReorderAlert: boolean;
+  reorderLevel: string;
+  enableMinStockAlert: boolean;
+  minStockLevel: string;
+}
+
+interface InventoryFormValues {
+  basicInfo: BasicInfoValues;
+  attributes: AttributeItem[];
+  intakeFields: IntakeField[];
+  tags: string[];
+  grades: GradeItem[];
+  notifications: NotificationsConfig;
+}
+
 /* ─── Constants ─────────────────────────────────────────────────────────────── */
 
 export const FORM_STEPS = ['Basic Information', 'Properties', 'Notifications', 'Review'];
@@ -48,18 +67,33 @@ const INITIAL_BASIC_INFO: BasicInfoValues = {
 const INITIAL_GRADE_DRAFT: GradeDraft = { name: '', rank: '' };
 const INITIAL_INTAKE_DRAFT: IntakeFieldDraft = { label: '', type: 'text', required: true };
 
+const INITIAL_NOTIFICATIONS: NotificationsConfig = {
+  enableExpiryAlert: false,
+  expiryDays: '',
+  enableReorderAlert: false,
+  reorderLevel: '',
+  enableMinStockAlert: false,
+  minStockLevel: '',
+};
+
+const INITIAL_FORM_VALUES: InventoryFormValues = {
+  basicInfo: INITIAL_BASIC_INFO,
+  attributes: [],
+  intakeFields: [],
+  tags: [],
+  grades: [],
+  notifications: INITIAL_NOTIFICATIONS,
+};
+
 /* ─── Helpers ────────────────────────────────────────────────────────────────── */
 
 function findOptionId(options: SelectOption[], rawValue: string | undefined): string {
   if (!rawValue) return '';
-  // 1. Exact value match (UUID/ID)
   const byValue = options.find((o) => o.value === rawValue);
   if (byValue) return byValue.value;
   const normalized = rawValue.replace(/_/g, ' ').toLowerCase().trim();
-  // 2. Exact label match (case-insensitive)
   const byLabel = options.find((o) => o.label.replace(/_/g, ' ').toLowerCase().trim() === normalized);
   if (byLabel) return byLabel.value;
-  // 3. Substring fallback — handles "KG" vs "Kilogram (KG)" or similar
   const byPartial = options.find((o) => {
     const lbl = o.label.replace(/_/g, ' ').toLowerCase().trim();
     return lbl.includes(normalized) || normalized.includes(lbl);
@@ -77,39 +111,47 @@ function clearKey(prev: StepErrors, key: string): StepErrors {
 /* ─── Hook ───────────────────────────────────────────────────────────────────── */
 
 export function useInventoryForm() {
-  /* Steps */
+  /* Persisted form values — single TanStack Form tree */
+  const form = useForm({
+    defaultValues: INITIAL_FORM_VALUES,
+  });
+
+  /* Reactive reads via useStore selectors */
+  const basicInfo = useStore(form.store, (s) => s.values.basicInfo);
+  const attributes = useStore(form.store, (s) => s.values.attributes);
+  const intakeFields = useStore(form.store, (s) => s.values.intakeFields);
+  const tags = useStore(form.store, (s) => s.values.tags);
+  const grades = useStore(form.store, (s) => s.values.grades);
+  const notifications = useStore(form.store, (s) => s.values.notifications);
+  const {
+    enableExpiryAlert,
+    expiryDays,
+    enableReorderAlert,
+    reorderLevel,
+    enableMinStockAlert,
+    minStockLevel,
+  } = notifications;
+
+  /* Step navigation + cross-step error display — not form values */
   const [activeStep, setActiveStep] = useState(0);
   const [stepErrors, setStepErrors] = useState<StepErrors>({});
 
-  /* Step 0 — Basic Info */
-  const [basicInfo, setBasicInfo] = useState<BasicInfoValues>(INITIAL_BASIC_INFO);
-
-  /* Step 1 — Properties */
-  const [attributes, setAttributes] = useState<AttributeItem[]>([]);
+  /* Step 1 — Attributes draft sub-form (transient UI) */
   const [attrName, setAttrName] = useState('');
   const [attrType, setAttrType] = useState<AttributeType>('text');
   const [attrValue, setAttrValue] = useState('');
   const [isAttributeFormOpen, setIsAttributeFormOpen] = useState(false);
 
-  const [intakeFields, setIntakeFields] = useState<IntakeField[]>([]);
+  /* Step 1 — Intake field draft sub-form */
   const [intakeFieldDraft, setIntakeFieldDraft] = useState<IntakeFieldDraft>(INITIAL_INTAKE_DRAFT);
   const [isIntakeFieldFormOpen, setIsIntakeFieldFormOpen] = useState(false);
 
-  const [tags, setTags] = useState<string[]>([]);
+  /* Step 1 — Tag draft sub-form */
   const [tagDraft, setTagDraft] = useState('');
   const [isTagFormOpen, setIsTagFormOpen] = useState(false);
 
-  /* Step 2 — Notifications */
-  const [enableExpiryAlert, setEnableExpiryAlert] = useState(false);
-  const [expiryDays, setExpiryDays] = useState('');
-  const [enableReorderAlert, setEnableReorderAlert] = useState(false);
-  const [reorderLevel, setReorderLevel] = useState('');
-  const [enableMinStockAlert, setEnableMinStockAlert] = useState(false);
-  const [minStockLevel, setMinStockLevel] = useState('');
-
-  /* Grades (kept for backward compat / edit mode pre-population) */
+  /* Grade draft sub-form (legacy / edit mode) */
   const [gradeDraft, setGradeDraft] = useState<GradeDraft>(INITIAL_GRADE_DRAFT);
-  const [grades, setGrades] = useState<GradeItem[]>([]);
   const [isGradeFormOpen, setIsGradeFormOpen] = useState(false);
   const [editingGradeId, setEditingGradeId] = useState<string | null>(null);
 
@@ -124,44 +166,46 @@ export function useInventoryForm() {
 
   /* ── Validation ── */
   function validateBasicInfo(errors: StepErrors): void {
-    const name = basicInfo.name.trim();
+    const bi = form.state.values.basicInfo;
+    const name = bi.name.trim();
     if (!name) errors.name = i18n.t('inventory.validation.nameRequired');
     else if (name.length < 2) errors.name = i18n.t('inventory.validation.nameTooShort');
 
-    if (!basicInfo.category) errors.category = i18n.t('inventory.validation.categoryRequired');
-    if (!basicInfo.uom) errors.uom = i18n.t('inventory.validation.uomRequired');
-    if (!basicInfo.stockUnit) errors.stockUnit = i18n.t('inventory.validation.stockUnitRequired');
+    if (!bi.category) errors.category = i18n.t('inventory.validation.categoryRequired');
+    if (!bi.uom) errors.uom = i18n.t('inventory.validation.uomRequired');
+    if (!bi.stockUnit) errors.stockUnit = i18n.t('inventory.validation.stockUnitRequired');
   }
 
   function validateIntakeFields(errors: StepErrors): void {
-    intakeFields.forEach((f, i) => {
+    form.state.values.intakeFields.forEach((f, i) => {
       if (!f.label.trim()) errors[`intakeField_${i}`] = i18n.t('inventory.validation.intakeFieldLabelRequired');
     });
   }
 
   function validateNotifications(errors: StepErrors): void {
-    const days = expiryDays.trim();
-    if (enableExpiryAlert && !days) {
+    const n = form.state.values.notifications;
+    const days = n.expiryDays.trim();
+    if (n.enableExpiryAlert && !days) {
       errors.expiryDays = i18n.t('inventory.validation.expiryDaysRequired');
     } else if (days) {
-      const n = Number(days);
-      if (isNaN(n) || n <= 0) errors.expiryDays = i18n.t('inventory.validation.expiryDaysPositive');
+      const num = Number(days);
+      if (isNaN(num) || num <= 0) errors.expiryDays = i18n.t('inventory.validation.expiryDaysPositive');
     }
 
-    const rLevel = reorderLevel.trim();
-    if (enableReorderAlert && !rLevel) {
+    const rLevel = n.reorderLevel.trim();
+    if (n.enableReorderAlert && !rLevel) {
       errors.reorderLevel = i18n.t('inventory.validation.reorderRequired');
     } else if (rLevel) {
-      const n = Number(rLevel);
-      if (isNaN(n) || n < 0) errors.reorderLevel = i18n.t('inventory.validation.reorderPositive');
+      const num = Number(rLevel);
+      if (isNaN(num) || num < 0) errors.reorderLevel = i18n.t('inventory.validation.reorderPositive');
     }
 
-    const mLevel = minStockLevel.trim();
-    if (enableMinStockAlert && !mLevel) {
+    const mLevel = n.minStockLevel.trim();
+    if (n.enableMinStockAlert && !mLevel) {
       errors.minStockLevel = i18n.t('inventory.validation.minStockRequired');
     } else if (mLevel) {
-      const n = Number(mLevel);
-      if (isNaN(n) || n < 0) errors.minStockLevel = i18n.t('inventory.validation.minStockPositive');
+      const num = Number(mLevel);
+      if (isNaN(num) || num < 0) errors.minStockLevel = i18n.t('inventory.validation.minStockPositive');
     }
   }
 
@@ -196,10 +240,10 @@ export function useInventoryForm() {
   /* ── Handlers — Basic Info ── */
   const handleBasicInfoChange = useCallback(
     (field: keyof BasicInfoValues, value: string) => {
-      setBasicInfo((prev) => ({ ...prev, [field]: value }));
+      form.setFieldValue(`basicInfo.${field}`, value);
       setStepErrors((prev) => clearKey(prev, field));
     },
-    []
+    [form]
   );
 
   /* ── Handlers — Attributes ── */
@@ -229,7 +273,7 @@ export function useInventoryForm() {
       delete next.attrValue;
       return next;
     });
-    setAttributes((prev) => [
+    form.setFieldValue('attributes', (prev) => [
       ...prev,
       { id: crypto.randomUUID(), label: attrName.trim(), type: attrType, value: attrValue.trim() },
     ]);
@@ -237,11 +281,11 @@ export function useInventoryForm() {
     setAttrType('text');
     setAttrValue('');
     setIsAttributeFormOpen(false);
-  }, [attrName, attrType, attrValue]);
+  }, [attrName, attrType, attrValue, form]);
 
   const handleRemoveAttribute = useCallback(
-    (id: string) => setAttributes((prev) => prev.filter((a) => a.id !== id)),
-    []
+    (id: string) => form.setFieldValue('attributes', (prev) => prev.filter((a) => a.id !== id)),
+    [form]
   );
 
   /* ── Handlers — Intake Fields ── */
@@ -266,7 +310,7 @@ export function useInventoryForm() {
       }));
       return;
     }
-    setIntakeFields((prev) => [
+    form.setFieldValue('intakeFields', (prev) => [
       ...prev,
       {
         id: crypto.randomUUID(),
@@ -278,58 +322,71 @@ export function useInventoryForm() {
     setIntakeFieldDraft(INITIAL_INTAKE_DRAFT);
     setIsIntakeFieldFormOpen(false);
     setStepErrors((prev) => clearKey(prev, 'intakeFieldDraftLabel'));
-  }, [intakeFieldDraft]);
+  }, [intakeFieldDraft, form]);
 
   const handleRemoveIntakeField = useCallback((id: string) => {
-    setIntakeFields((prev) => prev.filter((f) => f.id !== id));
-  }, []);
+    form.setFieldValue('intakeFields', (prev) => prev.filter((f) => f.id !== id));
+  }, [form]);
 
   /* Legacy inline-edit handlers kept for backward compat */
   const handleUpdateIntakeField = useCallback((id: string, value: string) => {
-    setIntakeFields((prev) => {
+    form.setFieldValue('intakeFields', (prev) => {
       const index = prev.findIndex((f) => f.id === id);
       if (index !== -1) {
         setStepErrors((prevErrors) => clearKey(prevErrors, `intakeField_${index}`));
       }
       return prev.map((f) => (f.id === id ? { ...f, label: value } : f));
     });
-  }, []);
+  }, [form]);
 
   const handleToggleIntakeField = useCallback((id: string) => {
-    setIntakeFields((prev) =>
+    form.setFieldValue('intakeFields', (prev) =>
       prev.map((f) => (f.id === id ? { ...f, required: !f.required } : f))
     );
-  }, []);
+  }, [form]);
 
   /* ── Handlers — Tags ── */
   const handleAddTag = useCallback(() => {
     const tag = tagDraft.trim();
     if (!tag) return;
-    setTags((prev) => (prev.includes(tag) ? prev : [...prev, tag]));
+    form.setFieldValue('tags', (prev) => (prev.includes(tag) ? prev : [...prev, tag]));
     setTagDraft('');
     setIsTagFormOpen(false);
-  }, [tagDraft]);
+  }, [tagDraft, form]);
 
   const handleRemoveTag = useCallback(
-    (tag: string) => setTags((prev) => prev.filter((t) => t !== tag)),
-    []
+    (tag: string) => form.setFieldValue('tags', (prev) => prev.filter((t) => t !== tag)),
+    [form]
   );
 
   /* ── Handlers — Notifications ── */
+  const setExpiryDays = useCallback(
+    (value: string) => form.setFieldValue('notifications.expiryDays', value),
+    [form]
+  );
+  const setReorderLevel = useCallback(
+    (value: string) => form.setFieldValue('notifications.reorderLevel', value),
+    [form]
+  );
+  const setMinStockLevel = useCallback(
+    (value: string) => form.setFieldValue('notifications.minStockLevel', value),
+    [form]
+  );
+
   const handleToggleExpiryAlert = useCallback(() => {
-    setEnableExpiryAlert((v) => !v);
+    form.setFieldValue('notifications.enableExpiryAlert', (v) => !v);
     setStepErrors((prev) => clearKey(prev, 'expiryDays'));
-  }, []);
+  }, [form]);
 
   const handleToggleReorderAlert = useCallback(() => {
-    setEnableReorderAlert((v) => !v);
+    form.setFieldValue('notifications.enableReorderAlert', (v) => !v);
     setStepErrors((prev) => clearKey(prev, 'reorderLevel'));
-  }, []);
+  }, [form]);
 
   const handleToggleMinStockAlert = useCallback(() => {
-    setEnableMinStockAlert((v) => !v);
+    form.setFieldValue('notifications.enableMinStockAlert', (v) => !v);
     setStepErrors((prev) => clearKey(prev, 'minStockLevel'));
-  }, []);
+  }, [form]);
 
   /* ── Handlers — Grades (legacy) ── */
   const handleGradeDraftChange = useCallback(
@@ -339,16 +396,17 @@ export function useInventoryForm() {
   );
 
   const handleStartEditGrade = useCallback((id: string) => {
-    const grade = grades.find((g) => g.id === id);
+    const grade = form.state.values.grades.find((g) => g.id === id);
     if (!grade) return;
     setGradeDraft({ name: grade.name, rank: grade.rank });
     setEditingGradeId(id);
     setIsGradeFormOpen(true);
-  }, [grades]);
+  }, [form]);
 
   const handleAddGrade = useCallback(() => {
     if (!gradeDraft.name.trim() || !gradeDraft.rank.trim()) return;
-    const duplicate = grades.some(
+    const currentGrades = form.state.values.grades;
+    const duplicate = currentGrades.some(
       (g) =>
         g.id !== editingGradeId &&
         g.name.trim().toLowerCase() === gradeDraft.name.trim().toLowerCase()
@@ -358,7 +416,7 @@ export function useInventoryForm() {
       return;
     }
     if (editingGradeId) {
-      setGrades((prev) =>
+      form.setFieldValue('grades', (prev) =>
         prev.map((g) =>
           g.id === editingGradeId
             ? { ...g, name: gradeDraft.name.trim(), rank: gradeDraft.rank.trim() }
@@ -367,36 +425,39 @@ export function useInventoryForm() {
       );
       setEditingGradeId(null);
     } else {
-      setGrades((prev) => [
+      form.setFieldValue('grades', (prev) => [
         ...prev,
         { id: crypto.randomUUID(), name: gradeDraft.name.trim(), rank: gradeDraft.rank.trim() },
       ]);
     }
     setGradeDraft(INITIAL_GRADE_DRAFT);
     setIsGradeFormOpen(false);
-  }, [gradeDraft, editingGradeId, grades]);
+  }, [gradeDraft, editingGradeId, form]);
 
   const handleRemoveGrade = useCallback(
-    (id: string) => setGrades((prev) => prev.filter((g) => g.id !== id)),
-    []
+    (id: string) => form.setFieldValue('grades', (prev) => prev.filter((g) => g.id !== id)),
+    [form]
   );
 
   /* ── Build payload ── */
   function buildPayload(): InventoryFormPayload {
-    const uomEntry = uomOptions.find((o) => o.value === basicInfo.uom);
+    const values = form.state.values;
+    const bi = values.basicInfo;
+    const notif = values.notifications;
+    const uomEntry = uomOptions.find((o) => o.value === bi.uom);
     return {
-      name: basicInfo.name.trim(),
-      description: basicInfo.description.trim() || undefined,
-      categoryId: basicInfo.category,
-      uomLabel: uomEntry?.label ?? basicInfo.uom,
-      stockUnit: Number(basicInfo.stockUnit),
-      minStockReorderLevel: reorderLevel.trim() ? Number(reorderLevel) : undefined,
-      minStockNotificationLevel: minStockLevel.trim() ? Number(minStockLevel) : undefined,
-      daysBeforeExpiryNotification: expiryDays.trim() ? Number(expiryDays) : undefined,
-      notifyOnMinStockEnabled: enableMinStockAlert,
-      reorderOnMinStockEnabled: enableReorderAlert,
-      notifyExpiryEnabled: enableExpiryAlert,
-      properties: attributes.map((a) => {
+      name: bi.name.trim(),
+      description: bi.description.trim() || undefined,
+      categoryId: bi.category,
+      uomLabel: uomEntry?.label ?? bi.uom,
+      stockUnit: Number(bi.stockUnit),
+      minStockReorderLevel: notif.reorderLevel.trim() ? Number(notif.reorderLevel) : undefined,
+      minStockNotificationLevel: notif.minStockLevel.trim() ? Number(notif.minStockLevel) : undefined,
+      daysBeforeExpiryNotification: notif.expiryDays.trim() ? Number(notif.expiryDays) : undefined,
+      notifyOnMinStockEnabled: notif.enableMinStockAlert,
+      reorderOnMinStockEnabled: notif.enableReorderAlert,
+      notifyExpiryEnabled: notif.enableExpiryAlert,
+      properties: values.attributes.map((a) => {
         let type: string;
         if (a.type === 'text') type = 'STRING';
         else if (a.type === 'number') type = 'NUMERIC';
@@ -407,76 +468,98 @@ export function useInventoryForm() {
         else if (a.type === 'boolean') value = a.value === 'true';
         return { ...(a.serverId ? { id: a.serverId } : {}), label: a.label, value, type };
       }),
-      stockIntakeProperties: intakeFields
+      stockIntakeProperties: values.intakeFields
         .filter((f) => f.label.trim())
-        .map((f) => ({ ...(f.serverId ? { id: f.serverId } : {}), label: f.label.trim(), required: f.required, type: f.type === 'text' ? 'STRING' : 'NUMERIC' })),
-      tags,
+        .map((f) => ({
+          ...(f.serverId ? { id: f.serverId } : {}),
+          label: f.label.trim(),
+          required: f.required,
+          type: f.type === 'text' ? 'STRING' : 'NUMERIC',
+        })),
+      tags: values.tags,
     };
   }
 
   /* ── Pre-populate form from existing item (edit mode) ── */
   function populateForm(item: InventoryItem, cats: SelectOption[], uoms: SelectOption[]) {
     const uomSearch = item.uomLabel ?? item.baseUnitOfMeasure;
-    setBasicInfo({
+    const nextBasicInfo: BasicInfoValues = {
       name: item.displayName,
       stockUnit: item.stockUnit != null ? String(item.stockUnit) : '',
       category: findOptionId(cats, item.category),
       uom: findOptionId(uoms, uomSearch),
       description: item.description ?? '',
+    };
+
+    const properties = item.properties
+      ?? (item.attributes ?? []).map((a) => ({
+        id: crypto.randomUUID(),
+        label: a.label,
+        value: a.value,
+        type: 'STRING',
+      }));
+    const nextAttributes: AttributeItem[] = properties.map((p) => {
+      let attrTypeNext: AttributeType;
+      if (p.type === 'NUMERIC') attrTypeNext = 'number';
+      else if (p.type === 'BOOLEAN') attrTypeNext = 'boolean';
+      else if (p.type === 'DATE') attrTypeNext = 'date';
+      else attrTypeNext = 'text';
+      return {
+        id: crypto.randomUUID(),
+        serverId: p.id,
+        label: p.label,
+        value: String(p.value),
+        type: attrTypeNext,
+      };
     });
-    const properties = item.properties ?? (item.attributes ?? []).map((a) => ({ id: crypto.randomUUID(), label: a.label, value: a.value, type: 'STRING' }));
-    setAttributes(
-      properties.map((p) => {
-        let attrType: AttributeType;
-        if (p.type === 'NUMERIC') attrType = 'number';
-        else if (p.type === 'BOOLEAN') attrType = 'boolean';
-        else if (p.type === 'DATE') attrType = 'date';
-        else attrType = 'text';
-        return {
-          id: crypto.randomUUID(),
-          serverId: p.id,
-          label: p.label,
-          value: String(p.value),
-          type: attrType,
-        };
-      })
-    );
-    // Expiry alert — prefer new field names, fall back to legacy
+
     const expiryDaysVal = item.daysBeforeExpiryNotification ?? item.expiryNotificationDays;
     const hasExpiry = item.notifyExpiryEnabled ?? (expiryDaysVal != null && expiryDaysVal > 0);
-    setEnableExpiryAlert(hasExpiry);
-    setExpiryDays(expiryDaysVal != null ? String(expiryDaysVal) : '');
 
-    // Reorder alert
     const reorderVal = item.minStockReorderLevel ?? item.reorderThreshold;
     const hasReorder = item.reorderOnMinStockEnabled ?? (reorderVal != null && reorderVal > 0);
-    setEnableReorderAlert(hasReorder);
-    setReorderLevel(reorderVal != null ? String(reorderVal) : '');
 
-    // Min stock alert
     const minStockVal = item.minStockNotificationLevel;
     const hasMinStock = item.notifyOnMinStockEnabled ?? (minStockVal != null && minStockVal > 0);
-    setEnableMinStockAlert(hasMinStock);
-    setMinStockLevel(minStockVal != null ? String(minStockVal) : '');
 
     const rawTags = item.tags ?? [];
-    setTags(rawTags.map((t) => (typeof t === 'string' ? t : (t as { name?: string }).name ?? '')));
-    setGrades(
-      (item.grades ?? []).map((g) => ({
-        id: g.id ?? crypto.randomUUID(),
-        serverId: g.id,
-        name: g.name,
-        rank: String(g.rank),
-      }))
-    );
+    const nextTags = rawTags.map((t) => (typeof t === 'string' ? t : (t as { name?: string }).name ?? ''));
+
+    const nextGrades: GradeItem[] = (item.grades ?? []).map((g) => ({
+      id: g.id ?? crypto.randomUUID(),
+      serverId: g.id,
+      name: g.name,
+      rank: String(g.rank),
+    }));
+
     const intakeSource = item.stockIntakeProperties ?? item.batchFields ?? [];
-    setIntakeFields(
-      intakeSource.map((f) => {
-        const fType = (f as { type?: string }).type;
-        const type: 'number' | 'text' = fType === 'NUMERIC' ? 'number' : 'text';
-        return { id: crypto.randomUUID(), serverId: (f as { id?: string }).id, label: f.label, required: f.required, type };
-      })
-    );
+    const nextIntakeFields: IntakeField[] = intakeSource.map((f) => {
+      const fType = (f as { type?: string }).type;
+      const type: 'number' | 'text' = fType === 'NUMERIC' ? 'number' : 'text';
+      return {
+        id: crypto.randomUUID(),
+        serverId: (f as { id?: string }).id,
+        label: f.label,
+        required: f.required,
+        type,
+      };
+    });
+
+    form.reset({
+      basicInfo: nextBasicInfo,
+      attributes: nextAttributes,
+      intakeFields: nextIntakeFields,
+      tags: nextTags,
+      grades: nextGrades,
+      notifications: {
+        enableExpiryAlert: hasExpiry,
+        expiryDays: expiryDaysVal != null ? String(expiryDaysVal) : '',
+        enableReorderAlert: hasReorder,
+        reorderLevel: reorderVal != null ? String(reorderVal) : '',
+        enableMinStockAlert: hasMinStock,
+        minStockLevel: minStockVal != null ? String(minStockVal) : '',
+      },
+    });
     setStepErrors({});
   }
 
