@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useRouterState } from '@tanstack/react-router';
+import { liteDebounce } from '@tanstack/pacer-lite';
 import type { InventoryItem, InventoryFilters, InventoryStatus } from '../types';
 import { inventoryApi } from '../api/inventoryApi';
 
@@ -40,24 +41,28 @@ export const useInventory = () => {
     setInputSearch(urlSearch);
   }, [urlSearch]);
 
-  // Debounce: write inputSearch → URL after 300 ms of inactivity.
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearchParams(
-        (prev) => {
-          const trimmed = inputSearch.trim();
-          // Guard: skip the write if nothing actually changed.
-          if ((prev.get('search') ?? '') === trimmed) return prev;
-          const next = new URLSearchParams(prev);
-          trimmed ? next.set('search', trimmed) : next.delete('search');
-          next.set('page', '1');
-          return next;
-        },
-        { replace: true },
-      );
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [inputSearch, setSearchParams]);
+  // Hold the latest URL-write closure in a ref so the debouncer (created once)
+  // always sees the current rawSearch when it fires.
+  const writeSearchToUrlRef = useRef<(search: string) => void>(() => {});
+  writeSearchToUrlRef.current = (search: string) => {
+    setSearchParams(
+      (prev) => {
+        const trimmed = search.trim();
+        if ((prev.get('search') ?? '') === trimmed) return prev;
+        const next = new URLSearchParams(prev);
+        trimmed ? next.set('search', trimmed) : next.delete('search');
+        next.set('page', '1');
+        return next;
+      },
+      { replace: true },
+    );
+  };
+
+  // 300ms trailing-edge debounce on search→URL writes via @tanstack/pacer-lite.
+  const debouncedWriteSearch = useMemo(
+    () => liteDebounce((s: string) => writeSearchToUrlRef.current(s), { wait: 300 }),
+    [],
+  );
 
   // ── API state ──────────────────────────────────────────────────────────────
   const [items, setItems] = useState<InventoryItem[]>([]);
@@ -106,8 +111,11 @@ export const useInventory = () => {
 
   // ── Update functions ───────────────────────────────────────────────────────
 
-  // Search: update local state immediately; the debounce effect writes to URL.
-  const updateSearch = (search: string) => setInputSearch(search);
+  // Search: update local state immediately; the pacer-lite debouncer writes to URL.
+  const updateSearch = (search: string) => {
+    setInputSearch(search);
+    debouncedWriteSearch(search);
+  };
 
   // Category / status: write straight to URL, reset to page 1.
   const updateCategory = (category: string) => {
