@@ -545,20 +545,18 @@ export function useInventoryForm() {
       };
     });
 
-    form.reset({
-      basicInfo: nextBasicInfo,
-      attributes: nextAttributes,
-      intakeFields: nextIntakeFields,
-      tags: nextTags,
-      grades: nextGrades,
-      notifications: {
-        enableExpiryAlert: hasExpiry,
-        expiryDays: expiryDaysVal != null ? String(expiryDaysVal) : '',
-        enableReorderAlert: hasReorder,
-        reorderLevel: reorderVal != null ? String(reorderVal) : '',
-        enableMinStockAlert: hasMinStock,
-        minStockLevel: minStockVal != null ? String(minStockVal) : '',
-      },
+    form.setFieldValue('basicInfo', nextBasicInfo);
+    form.setFieldValue('attributes', nextAttributes);
+    form.setFieldValue('intakeFields', nextIntakeFields);
+    form.setFieldValue('tags', nextTags);
+    form.setFieldValue('grades', nextGrades);
+    form.setFieldValue('notifications', {
+      enableExpiryAlert: hasExpiry,
+      expiryDays: expiryDaysVal != null ? String(expiryDaysVal) : '',
+      enableReorderAlert: hasReorder,
+      reorderLevel: reorderVal != null ? String(reorderVal) : '',
+      enableMinStockAlert: hasMinStock,
+      minStockLevel: minStockVal != null ? String(minStockVal) : '',
     });
     setStepErrors({});
   }
