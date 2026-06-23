@@ -13,6 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { liteDebounce } from '@tanstack/pacer-lite';
 import emptyStateIllustration from '@/assert/Empty-state-illustration.svg';
 import InventoryPageShell, { InventoryPageHeader } from '../components/InventoryPageShell';
 import StockLocationFilterModal from '../components/StockLocationFilterModal';
@@ -112,10 +113,10 @@ const StockLocationsPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('All');
   const [showFilterModal, setShowFilterModal] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedSearch(search), 400);
-    return () => clearTimeout(timer);
-  }, [search]);
+  const debouncedSetSearch = useMemo(
+    () => liteDebounce(setDebouncedSearch, { wait: 400 }),
+    [],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -144,7 +145,11 @@ const StockLocationsPage: React.FC = () => {
   const from = total === 0 ? 0 : (page - 1) * rowsPerPage + 1;
   const to = Math.min(page * rowsPerPage, total);
 
-  const handleSearch = (value: string) => { setSearch(value); setPage(1); };
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    debouncedSetSearch(value);
+    setPage(1);
+  };
 
   const getPageItems = () => {
     if (totalPages <= 5) return Array.from({ length: totalPages }, (_, i) => i + 1);

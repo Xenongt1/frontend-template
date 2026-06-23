@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
+import { liteDebounce } from '@tanstack/pacer-lite';
 import { useRoles } from '../hooks/useRoles';
 import RolesTable from '../components/RolesTable';
 import RolesPagination from '../components/RolesPagination';
@@ -28,11 +29,19 @@ const RolesListPage: React.FC = () => {
   const { items, total, page, pageSize, loading, error, setPage, setPageSize, setSearch } = useRoles();
   const [searchInput, setSearchInput] = useState('');
 
-  // Debounce the user's typing so we don't refetch on every keystroke.
-  useEffect(() => {
-    const handle = window.setTimeout(() => setSearch(searchInput), SEARCH_DEBOUNCE_MS);
-    return () => window.clearTimeout(handle);
-  }, [searchInput, setSearch]);
+  // Keep the latest setSearch in a ref so the once-built debouncer always
+  // calls the current closure when it fires.
+  const setSearchRef = useRef(setSearch);
+  setSearchRef.current = setSearch;
+  const debouncedSetSearch = useMemo(
+    () => liteDebounce((value: string) => setSearchRef.current(value), { wait: SEARCH_DEBOUNCE_MS }),
+    [],
+  );
+
+  const handleSearchInputChange = (value: string) => {
+    setSearchInput(value);
+    debouncedSetSearch(value);
+  };
 
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
@@ -65,7 +74,7 @@ const RolesListPage: React.FC = () => {
               placeholder={t('roles.list.searchPlaceholder')}
               aria-label={t('roles.list.searchPlaceholder')}
               value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
+              onChange={(e) => handleSearchInputChange(e.target.value)}
               className={[
                 'w-full pl-10 py-2 bg-[#ECECEB] border border-[#B2BCC2] rounded-lg',
                 'text-[14px] text-navy-900 outline-none box-border',

@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useRouterState } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
+import { liteDebounce } from '@tanstack/pacer-lite';
 import { supplierApi, inventoryApi } from '@/core/api';
 import type { SupplierStatus } from '@/core/api';
 
@@ -42,23 +43,30 @@ export const useSuppliers = () => {
 
   useEffect(() => { setInputSearch(urlSearch); }, [urlSearch]);
 
+  // Ref-wrap the URL writer so the once-built debouncer always sees the
+  // latest setSearchParams closure when it fires.
+  const writeSearchToUrlRef = useRef<(search: string) => void>(() => {});
+  writeSearchToUrlRef.current = (search: string) => {
+    setSearchParams(
+      (prev) => {
+        const trimmed = search.trim();
+        if ((prev.get('q') ?? '') === trimmed) return prev;
+        const next = new URLSearchParams(prev);
+        trimmed ? next.set('q', trimmed) : next.delete('q');
+        next.set('page', '1');
+        return next;
+      },
+      { replace: true },
+    );
+  };
+  const debouncedWriteSearch = useMemo(
+    () => liteDebounce((s: string) => writeSearchToUrlRef.current(s), { wait: 300 }),
+    [],
+  );
+
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setSearchParams(
-        prev => {
-          const trimmed = inputSearch.trim();
-          if ((prev.get('q') ?? '') === trimmed) return prev;
-          const next = new URLSearchParams(prev);
-          trimmed ? next.set('q', trimmed) : next.delete('q');
-          next.set('page', '1');
-          return next;
-        },
-        { replace: true },
-      );
-    }, 300);
-    return () => clearTimeout(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputSearch]);
+    debouncedWriteSearch(inputSearch);
+  }, [inputSearch, debouncedWriteSearch]);
 
   // ── Main query (filtered + paginated) ─────────────────────────────────────
   const queryKey = [
@@ -82,10 +90,14 @@ export const useSuppliers = () => {
   const [materialSearchInput, setMaterialSearchInput] = useState('');
   const [debouncedMaterialSearch, setDebouncedMaterialSearch] = useState('');
 
+  const debouncedSetMaterialSearch = useMemo(
+    () => liteDebounce((value: string) => setDebouncedMaterialSearch(value.trim()), { wait: 300 }),
+    [],
+  );
+
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedMaterialSearch(materialSearchInput.trim()), 300);
-    return () => clearTimeout(timer);
-  }, [materialSearchInput]);
+    debouncedSetMaterialSearch(materialSearchInput);
+  }, [materialSearchInput, debouncedSetMaterialSearch]);
 
   const { data: inventoryData, isFetching: materialsLoading } = useQuery({
     queryKey: ['inventory-items-for-supplier-filter', debouncedMaterialSearch],

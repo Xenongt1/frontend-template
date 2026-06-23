@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from '@tanstack/react-router';
 import { Search, Download, Plus, ChevronDown } from 'lucide-react';
+import { liteDebounce } from '@tanstack/pacer-lite';
 import EmptyState, { PanaIllustration } from '@/shared/components/EmptyState';
 import { SuccessToast, ConfirmDialog } from '@/shared/components/ui';
 import RolesPagination from '@/modules/roles/components/RolesPagination';
@@ -43,13 +44,18 @@ const UsersPage: React.FC = () => {
   const rolesDropdownRef = useRef<HTMLDivElement>(null);
   const statusDropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search);
+  const applyDebouncedSearch = useMemo(
+    () => liteDebounce((value: string) => {
+      setDebouncedSearch(value);
       setPage(1);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [search]);
+    }, { wait: 300 }),
+    [],
+  );
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    applyDebouncedSearch(value);
+  };
 
   // Reset to page 1 when filters change
   useEffect(() => { setPage(1); }, [roleFilter, statusFilter]);
@@ -277,7 +283,7 @@ const UsersPage: React.FC = () => {
                 <input
                   type="text"
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => handleSearchChange(e.target.value)}
                   placeholder={t('users.list.searchPlaceholder')}
                   className="w-full pl-9 pr-3 py-2 bg-canvas-200 border border-navy-300 rounded-lg text-sm text-navy-900 outline-none box-border focus:border-navy-600 transition-colors"
                 />
