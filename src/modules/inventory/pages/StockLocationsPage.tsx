@@ -1,10 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useTranslation } from 'react-i18next';
 import {
   Plus, Search, Info, MoreVertical, ListFilter,
   ArrowDownNarrowWide, ChevronDown, ChevronLeft, ChevronRight,
 } from 'lucide-react';
+import {
+  type ColumnDef,
+  type SortingState,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import emptyStateIllustration from '@/assert/Empty-state-illustration.svg';
 import InventoryPageShell, { InventoryPageHeader } from '../components/InventoryPageShell';
 import StockLocationFilterModal from '../components/StockLocationFilterModal';
@@ -176,6 +184,68 @@ const StockLocationsPage: React.FC = () => {
     'px-4 py-4 text-left border-b border-stroke-light ' +
     'font-poppins text-base font-medium text-text-secondary whitespace-nowrap';
   const tdClass = 'p-4';
+
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const columns = useMemo<ColumnDef<StockLocation>[]>(() => [
+    {
+      id: 'name',
+      accessorFn: (l) => l.name,
+      enableSorting: true,
+      sortingFn: 'alphanumeric',
+      header: () => 'Name',
+      cell: ({ row }) => {
+        const loc = row.original;
+        return (
+          <div className="inline-flex items-center gap-2">
+            <span className="font-inter text-base font-normal leading-[1.5] text-text-primary whitespace-nowrap">
+              {loc.name}
+            </span>
+            <button
+              type="button"
+              onMouseEnter={(e) => handleInfoMouseEnter(loc.id, loc.description ?? '', e)}
+              onMouseLeave={() => setActiveTooltip(null)}
+              className="bg-transparent border-none p-0 cursor-default flex items-center"
+              aria-label={`Description for ${loc.name}`}
+            >
+              <Info size={18} color="#395362" />
+            </button>
+          </div>
+        );
+      },
+    },
+    {
+      id: 'status',
+      accessorFn: (l) => l.status,
+      enableSorting: true,
+      header: () => 'Status',
+      cell: ({ row }) => <StatusBadge active={row.original.status === 'ACTIVE'} />,
+    },
+    {
+      id: 'actions',
+      enableSorting: false,
+      header: () => 'Actions',
+      cell: ({ row }) => (
+        <button
+          type="button"
+          onMouseDown={(e) => handleMenuToggle(row.original.id, e)}
+          className="bg-transparent border-none cursor-pointer p-2 rounded-lg inline-flex items-center transition-colors duration-150 hover:bg-stroke-light"
+          aria-label="Row actions"
+        >
+          <MoreVertical size={16} color="#08283B" />
+        </button>
+      ),
+    },
+  ], []);
+
+  const table = useReactTable({
+    data: locations,
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getRowId: (row) => row.id,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
 
   return (
     <>
@@ -354,64 +424,55 @@ const StockLocationsPage: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full border-collapse min-w-[480px]">
                 <thead>
-                  <tr className="bg-stroke-light">
-                    <th className={`${thClass} w-1/2`}>
-                      <span className="inline-flex items-center gap-1.5">
-                        Name <ArrowDownNarrowWide size={16} color="#395362" />
-                      </span>
-                    </th>
-                    <th className={thClass}>
-                      <span className="inline-flex items-center gap-1.5">
-                        Status <ArrowDownNarrowWide size={16} color="#395362" />
-                      </span>
-                    </th>
-                    <th className={`${thClass} text-right`}>
-                      Actions
-                    </th>
-                  </tr>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <tr key={headerGroup.id} className="bg-stroke-light">
+                      {headerGroup.headers.map((header) => {
+                        const canSort = header.column.getCanSort();
+                        const isActions = header.column.id === 'actions';
+                        const isName = header.column.id === 'name';
+                        const widthClass = isName ? 'w-1/2' : '';
+                        const alignClass = isActions ? 'text-right' : '';
+                        return (
+                          <th key={header.id} className={`${thClass} ${widthClass} ${alignClass}`}>
+                            {canSort ? (
+                              <button
+                                type="button"
+                                onClick={header.column.getToggleSortingHandler()}
+                                className="inline-flex items-center gap-1.5 bg-transparent border-0 p-0 cursor-pointer font-poppins text-base font-medium text-text-secondary"
+                              >
+                                {flexRender(header.column.columnDef.header, header.getContext())}
+                                <ArrowDownNarrowWide size={16} color="#395362" />
+                              </button>
+                            ) : (
+                              flexRender(header.column.columnDef.header, header.getContext())
+                            )}
+                          </th>
+                        );
+                      })}
+                    </tr>
+                  ))}
                 </thead>
                 <tbody>
-                  {locations.length === 0 && (
+                  {table.getRowModel().rows.length === 0 && (
                     <tr>
-                      <td colSpan={3} className="px-4 py-12 text-center font-inter text-sm text-text-secondary">
+                      <td colSpan={columns.length} className="px-4 py-12 text-center font-inter text-sm text-text-secondary">
                         {t('stockLocations.list.noMatch', 'No locations match your filters.')}
                       </td>
                     </tr>
                   )}
-                  {locations.map((loc: StockLocation) => (
+                  {table.getRowModel().rows.map((row) => (
                     <tr
-                      key={loc.id}
+                      key={row.id}
                       className="bg-canvas-50 hover:bg-canvas-200 border-b border-stroke-light h-20 cursor-pointer transition-colors duration-150"
                     >
-                      <td className={tdClass}>
-                        <div className="inline-flex items-center gap-2">
-                          <span className="font-inter text-base font-normal leading-[1.5] text-text-primary whitespace-nowrap">
-                            {loc.name}
-                          </span>
-                          <button
-                            type="button"
-                            onMouseEnter={(e) => handleInfoMouseEnter(loc.id, loc.description ?? '', e)}
-                            onMouseLeave={() => setActiveTooltip(null)}
-                            className="bg-transparent border-none p-0 cursor-default flex items-center"
-                            aria-label={`Description for ${loc.name}`}
-                          >
-                            <Info size={18} color="#395362" />
-                          </button>
-                        </div>
-                      </td>
-                      <td className={tdClass}>
-                        <StatusBadge active={loc.status === 'ACTIVE'} />
-                      </td>
-                      <td className={`${tdClass} text-right`}>
-                        <button
-                          type="button"
-                          onMouseDown={(e) => handleMenuToggle(loc.id, e)}
-                          className="bg-transparent border-none cursor-pointer p-2 rounded-lg inline-flex items-center transition-colors duration-150 hover:bg-stroke-light"
-                          aria-label="Row actions"
-                        >
-                          <MoreVertical size={16} color="#08283B" />
-                        </button>
-                      </td>
+                      {row.getVisibleCells().map((cell) => {
+                        const alignClass = cell.column.id === 'actions' ? 'text-right' : '';
+                        return (
+                          <td key={cell.id} className={`${tdClass} ${alignClass}`}>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
+                        );
+                      })}
                     </tr>
                   ))}
                 </tbody>

@@ -1,5 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  type ColumnDef,
+  type SortingState,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import type { RoleSummary } from '../types';
 import AssignedUsersAvatars from './AssignedUsersAvatars';
 import RoleRowActions from './RoleRowActions';
@@ -32,10 +40,8 @@ const RolesTable: React.FC<Props> = ({
     roleId: string;
     anchor: { below: number; above: number; left: number };
   } | null>(null);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
-  // Stable identifiers for the skeleton placeholder rows. Generated once per
-  // mount so React doesn't reuse the wrong DOM nodes if `skeletonRowCount`
-  // changes mid-render. Not array-index-keyed → Sonar happy.
   const skeletonKeys = useMemo(
     () => Array.from({ length: skeletonRowCount }, () => crypto.randomUUID()),
     [skeletonRowCount],
@@ -43,10 +49,6 @@ const RolesTable: React.FC<Props> = ({
 
   const openPopover = (roleId: string, btn: HTMLButtonElement) => {
     const rect = btn.getBoundingClientRect();
-    // Hand the popover both candidate positions so it can flip above the
-    // trigger if it doesn't fit below. "below" = top of popover when it
-    // renders under the trigger; "above" = bottom of popover when it
-    // renders over the trigger.
     setPopover({
       roleId,
       anchor: {
@@ -55,6 +57,78 @@ const RolesTable: React.FC<Props> = ({
         left: rect.left,
       },
     });
+  };
+
+  const columns = useMemo<ColumnDef<RoleSummary>[]>(() => [
+    {
+      id: 'name',
+      accessorFn: (r) => r.name,
+      enableSorting: true,
+      sortingFn: 'alphanumeric',
+      header: () => t('roles.list.table.roleName'),
+      cell: ({ row }) => row.original.name,
+    },
+    {
+      id: 'description',
+      enableSorting: false,
+      header: () => t('roles.list.table.description'),
+      cell: ({ row }) => (
+        <span className="block truncate">{row.original.description}</span>
+      ),
+    },
+    {
+      id: 'assignedUsers',
+      enableSorting: false,
+      header: () => t('roles.list.table.assignedUsers'),
+      cell: ({ row }) => {
+        const role = row.original;
+        const previews = (role.previewMembers ?? []).map((m) => ({
+          id: m.id,
+          url: m.avatarUrl,
+          name: m.name,
+        }));
+        const avatars = (
+          <AssignedUsersAvatars count={role.memberCount} previews={previews} />
+        );
+        return role.memberCount > 0 ? (
+          <button
+            type="button"
+            onClick={(e) => openPopover(role.id, e.currentTarget)}
+            aria-haspopup="dialog"
+            aria-expanded={popover?.roleId === role.id}
+            aria-label={t('roles.list.peoplePopover.openLabel', { count: role.memberCount })}
+            className="inline-flex items-center border-none bg-transparent p-0 cursor-pointer rounded-md hover:opacity-80 transition-opacity"
+          >
+            {avatars}
+          </button>
+        ) : (
+          avatars
+        );
+      },
+    },
+    {
+      id: 'actions',
+      enableSorting: false,
+      header: () => t('roles.list.table.actions'),
+      cell: ({ row }) => <RoleRowActions role={row.original} />,
+    },
+  ], [t, popover]);
+
+  const table = useReactTable({
+    data: items,
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getRowId: (row) => row.id,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
+  const headerWidthClass: Record<string, string> = {
+    name: 'min-w-[160px]',
+    description: 'min-w-[260px] max-w-[420px]',
+    assignedUsers: 'min-w-[200px]',
+    actions: 'w-24',
   };
 
   const renderBody = () => {
@@ -69,10 +143,11 @@ const RolesTable: React.FC<Props> = ({
       ));
     }
 
-    if (items.length === 0) {
+    const rows = table.getRowModel().rows;
+    if (rows.length === 0) {
       return (
         <tr>
-          <td colSpan={4} className="px-4 py-12 text-center text-navy-500 border-b border-canvas-300 text-[14px] align-middle bg-canvas-50">
+          <td colSpan={columns.length} className="px-4 py-12 text-center text-navy-500 border-b border-canvas-300 text-[14px] align-middle bg-canvas-50">
             <div className="flex flex-col items-center gap-2">
               <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
                 <rect width="40" height="40" rx="8" fill="#F0F0F0" />
@@ -85,47 +160,27 @@ const RolesTable: React.FC<Props> = ({
       );
     }
 
-    return items.map((role) => {
-      const previews = (role.previewMembers ?? []).map((m) => ({
-        id: m.id,
-        url: m.avatarUrl,
-        name: m.name,
-      }));
-      const avatars = (
-        <AssignedUsersAvatars count={role.memberCount} previews={previews} />
-      );
-      return (
-        <tr
-          key={role.id}
-          onClick={() => onView(role)}
-          className="transition-colors cursor-pointer hover:bg-canvas-100"
-        >
-          <td className={tdClass}>{role.name}</td>
-          <td className={`${tdClass} max-w-[420px]`}>
-            <span className="block truncate">{role.description}</span>
-          </td>
-          <td className={tdClass} onClick={(e) => e.stopPropagation()}>
-            {role.memberCount > 0 ? (
-              <button
-                type="button"
-                onClick={(e) => openPopover(role.id, e.currentTarget)}
-                aria-haspopup="dialog"
-                aria-expanded={popover?.roleId === role.id}
-                aria-label={t('roles.list.peoplePopover.openLabel', { count: role.memberCount })}
-                className="inline-flex items-center border-none bg-transparent p-0 cursor-pointer rounded-md hover:opacity-80 transition-opacity"
-              >
-                {avatars}
-              </button>
-            ) : (
-              avatars
-            )}
-          </td>
-          <td className={tdClass} onClick={(e) => e.stopPropagation()}>
-            <RoleRowActions role={role} />
-          </td>
-        </tr>
-      );
-    });
+    return rows.map((row) => (
+      <tr
+        key={row.id}
+        onClick={() => onView(row.original)}
+        className="transition-colors cursor-pointer hover:bg-canvas-100"
+      >
+        {row.getVisibleCells().map((cell) => {
+          const stopProp = cell.column.id === 'assignedUsers' || cell.column.id === 'actions';
+          const widthClass = cell.column.id === 'description' ? 'max-w-[420px]' : '';
+          return (
+            <td
+              key={cell.id}
+              className={`${tdClass} ${widthClass}`}
+              onClick={stopProp ? (e) => e.stopPropagation() : undefined}
+            >
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </td>
+          );
+        })}
+      </tr>
+    ));
   };
 
   return (
@@ -133,17 +188,30 @@ const RolesTable: React.FC<Props> = ({
       {loading && <span className="sr-only">{t('roles.list.loading')}</span>}
       <table className="w-full border-collapse min-w-[600px]">
         <thead>
-          <tr>
-            <th className={`${thClass} min-w-[160px]`}>
-              <span className="inline-flex items-center gap-2">
-                {t('roles.list.table.roleName')}
-                <SortIcon />
-              </span>
-            </th>
-            <th className={`${thClass} min-w-[260px]`}>{t('roles.list.table.description')}</th>
-            <th className={`${thClass} min-w-[200px]`}>{t('roles.list.table.assignedUsers')}</th>
-            <th className={`${thClass} w-24`}>{t('roles.list.table.actions')}</th>
-          </tr>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                const canSort = header.column.getCanSort();
+                const widthClass = headerWidthClass[header.column.id] ?? '';
+                return (
+                  <th key={header.id} className={`${thClass} ${widthClass}`}>
+                    {canSort ? (
+                      <button
+                        type="button"
+                        onClick={header.column.getToggleSortingHandler()}
+                        className="inline-flex items-center gap-2 bg-transparent border-0 p-0 cursor-pointer font-medium text-[16px] text-[#395362] font-['Poppins']"
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        <SortIcon />
+                      </button>
+                    ) : (
+                      flexRender(header.column.columnDef.header, header.getContext())
+                    )}
+                  </th>
+                );
+              })}
+            </tr>
+          ))}
         </thead>
         <tbody>{renderBody()}</tbody>
       </table>

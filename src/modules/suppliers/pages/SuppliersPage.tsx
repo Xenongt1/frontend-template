@@ -1,8 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Search, ChevronDown, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import {
+  type ColumnDef,
+  type SortingState,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import { supplierApi } from '@/core/api';
 import type { Supplier, SupplierStatus } from '@/core/api';
 import { ConfirmDialog } from '@/shared/components/ui';
@@ -175,6 +183,132 @@ const SuppliersPage: React.FC = () => {
 
   const thClass = 'px-4 py-3 text-left text-[13px] font-semibold text-navy-600 whitespace-nowrap bg-canvas-300 border-b border-canvas-300 select-none';
   const tdClass = 'px-4 h-20 align-middle border-b border-canvas-300 text-sm text-navy-900';
+
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const columns = useMemo<ColumnDef<Supplier>[]>(() => [
+    {
+      id: 'companyName',
+      accessorFn: (s) => s.companyName ?? '',
+      enableSorting: true,
+      sortingFn: 'alphanumeric',
+      header: () => t('suppliers.list.colCompanyName'),
+      cell: ({ row }) => row.original.companyName || <span className="text-navy-300">—</span>,
+    },
+    {
+      id: 'status',
+      accessorFn: (s) => s.status ?? '',
+      enableSorting: true,
+      header: () => t('suppliers.list.colStatus'),
+      cell: ({ row }) => <SupplierStatusBadge status={row.original.status} />,
+    },
+    {
+      id: 'supplierName',
+      accessorFn: (s) => s.fullName,
+      enableSorting: true,
+      sortingFn: 'alphanumeric',
+      header: () => t('suppliers.list.colSupplierName'),
+      cell: ({ row }) => (
+        <>
+          <div className="font-medium text-navy-900">{row.original.fullName}</div>
+          <div className="text-[13px] text-navy-500 mt-0.5">{row.original.email}</div>
+        </>
+      ),
+    },
+    {
+      id: 'approvedMaterials',
+      enableSorting: false,
+      header: () => t('suppliers.list.colApprovedMaterials'),
+      cell: ({ row }) => {
+        const items = row.original.approvedItems ?? [];
+        const firstName = items[0]?.name ?? null;
+        const extra = items.length > 1 ? items.length - 1 : 0;
+        if (!firstName) return <span className="text-navy-300">—</span>;
+        return (
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md font-inter text-xs font-medium leading-[18px] whitespace-nowrap bg-[#F3FAF7] border border-[#DEF7EC] text-[#03543F]">
+              {firstName}
+            </span>
+            {extra > 0 && (
+              <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md font-inter text-xs font-medium leading-[18px] whitespace-nowrap bg-canvas-200 border border-canvas-300 text-navy-600">
+                +{extra}
+              </span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      id: 'actions',
+      enableSorting: false,
+      header: () => t('suppliers.list.colActions'),
+      cell: ({ row }) => {
+        const s = row.original;
+        const isSuspended = s.status === 'SUSPENDED';
+        return (
+          <>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                openMenuId === s.id ? closeMenu() : openMenuFor(s.id, e.currentTarget);
+              }}
+              className="inline-flex items-center justify-center w-8 h-8 border-none bg-transparent rounded-md cursor-pointer text-navy-600 hover:bg-canvas-300 transition-colors"
+              aria-label="Open actions"
+            >
+              <DotsIcon />
+            </button>
+            {openMenuId === s.id && menuPos && (
+              <div
+                role="menu"
+                className="z-50 bg-surface-card border border-stroke-medium rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.10)] py-1"
+                style={{ position: 'fixed', top: menuPos.top, left: menuPos.left, width: MENU_WIDTH }}
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
+              >
+                <button role="menuitem" type="button"
+                  onClick={() => { navigate({ to: '/suppliers/$id', params: { id: s.id } }); closeMenu(); }}
+                  className="block w-full text-left px-4 py-2.5 border-none bg-transparent text-sm text-navy-900 cursor-pointer hover:bg-canvas-100"
+                >
+                  {t('suppliers.list.viewDetails')}
+                </button>
+                <button role="menuitem" type="button"
+                  onClick={() => { navigate({ to: '/suppliers/$id/edit', params: { id: s.id } }); closeMenu(); }}
+                  className="block w-full text-left px-4 py-2.5 border-none bg-transparent text-sm text-navy-900 cursor-pointer hover:bg-canvas-100"
+                >
+                  {t('suppliers.list.editAction')}
+                </button>
+                <div className="h-px bg-canvas-300 my-1" />
+                <button role="menuitem" type="button"
+                  onClick={() => handleToggleSuspension(s)}
+                  className="block w-full text-left px-4 py-2.5 border-none bg-transparent text-sm text-navy-900 cursor-pointer hover:bg-canvas-100"
+                >
+                  {isSuspended ? t('suppliers.list.activate') : t('suppliers.list.suspend')}
+                </button>
+              </div>
+            )}
+          </>
+        );
+      },
+    },
+  ], [t, openMenuId, menuPos, navigate]);
+
+  const table = useReactTable({
+    data: suppliers,
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getRowId: (row) => row.id,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
+  const headerWidthClass: Record<string, string> = {
+    companyName: 'min-w-[160px]',
+    status: 'min-w-[130px]',
+    supplierName: 'min-w-[220px]',
+    approvedMaterials: 'min-w-[220px]',
+    actions: 'w-20 text-center',
+  };
 
   return (
     <div className="flex-1 min-h-0 flex flex-col gap-4 w-full box-border">
@@ -351,113 +485,57 @@ const SuppliersPage: React.FC = () => {
         <div className="overflow-x-auto w-full" ref={tableRef}>
           <table className="w-full border-collapse min-w-[700px]">
             <thead>
-              <tr>
-                <th className={`${thClass} min-w-[160px]`}>
-                  <span className="inline-flex items-center gap-1.5">{t('suppliers.list.colCompanyName')} <SortIcon /></span>
-                </th>
-                <th className={`${thClass} min-w-[130px]`}>
-                  <span className="inline-flex items-center gap-1.5">{t('suppliers.list.colStatus')} <SortIcon /></span>
-                </th>
-                <th className={`${thClass} min-w-[220px]`}>
-                  <span className="inline-flex items-center gap-1.5">{t('suppliers.list.colSupplierName')} <SortIcon /></span>
-                </th>
-                <th className={`${thClass} min-w-[220px]`}>
-                  <span className="inline-flex items-center gap-1.5">{t('suppliers.list.colApprovedMaterials')} <SortIcon /></span>
-                </th>
-                <th className={`${thClass} w-20 text-center`}>{t('suppliers.list.colActions')}</th>
-              </tr>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    const canSort = header.column.getCanSort();
+                    const widthClass = headerWidthClass[header.column.id] ?? '';
+                    return (
+                      <th key={header.id} className={`${thClass} ${widthClass}`}>
+                        {canSort ? (
+                          <button
+                            type="button"
+                            onClick={header.column.getToggleSortingHandler()}
+                            className="inline-flex items-center gap-1.5 bg-transparent border-0 p-0 cursor-pointer text-[13px] font-semibold text-navy-600"
+                          >
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            <SortIcon />
+                          </button>
+                        ) : (
+                          flexRender(header.column.columnDef.header, header.getContext())
+                        )}
+                      </th>
+                    );
+                  })}
+                </tr>
+              ))}
             </thead>
             <tbody>
               {loading && Array.from({ length: pageSize }).map((_, i) => <SkeletonRow key={i} />)}
 
-              {!loading && suppliers.length === 0 && (
+              {!loading && table.getRowModel().rows.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-16 text-center text-navy-500 text-sm border-b border-canvas-300">
+                  <td colSpan={columns.length} className="px-4 py-16 text-center text-navy-500 text-sm border-b border-canvas-300">
                     {t('suppliers.list.empty')}
                   </td>
                 </tr>
               )}
 
-              {!loading && suppliers.map(s => {
-                const items    = s.approvedItems ?? [];
-                const firstName = items[0]?.name ?? null;
-                const extra    = items.length > 1 ? items.length - 1 : 0;
-                const isSuspended = s.status === 'SUSPENDED';
-
-                return (
-                  <tr key={s.id} className="bg-canvas-50 transition-colors hover:bg-canvas-100">
-                    <td className={`${tdClass} font-medium`}>
-                      {s.companyName || <span className="text-navy-300">—</span>}
-                    </td>
-                    <td className={tdClass}>
-                      <SupplierStatusBadge status={s.status} />
-                    </td>
-                    <td className={tdClass}>
-                      <div className="font-medium text-navy-900">{s.fullName}</div>
-                      <div className="text-[13px] text-navy-500 mt-0.5">{s.email}</div>
-                    </td>
-                    <td className={tdClass}>
-                      {firstName ? (
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-md font-inter text-xs font-medium leading-[18px] whitespace-nowrap bg-[#F3FAF7] border border-[#DEF7EC] text-[#03543F]">
-                            {firstName}
-                          </span>
-                          {extra > 0 && (
-                            <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-md font-inter text-xs font-medium leading-[18px] whitespace-nowrap bg-canvas-200 border border-canvas-300 text-navy-600">
-                              +{extra}
-                            </span>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-navy-300">—</span>
-                      )}
-                    </td>
-                    <td className={`${tdClass} text-center`}>
-                      <button
-                        type="button"
-                        onClick={e => {
-                          e.stopPropagation();
-                          openMenuId === s.id ? closeMenu() : openMenuFor(s.id, e.currentTarget);
-                        }}
-                        className="inline-flex items-center justify-center w-8 h-8 border-none bg-transparent rounded-md cursor-pointer text-navy-600 hover:bg-canvas-300 transition-colors"
-                        aria-label="Open actions"
-                      >
-                        <DotsIcon />
-                      </button>
-
-                      {openMenuId === s.id && menuPos && (
-                        <div
-                          role="menu"
-                          className="z-50 bg-surface-card border border-stroke-medium rounded-lg shadow-[0_4px_16px_rgba(0,0,0,0.10)] py-1"
-                          style={{ position: 'fixed', top: menuPos.top, left: menuPos.left, width: MENU_WIDTH }}
-                          onClick={e => e.stopPropagation()}
-                          onKeyDown={e => e.stopPropagation()}
-                        >
-                          <button role="menuitem" type="button"
-                            onClick={() => { navigate({ to: '/suppliers/$id', params: { id: s.id } }); closeMenu(); }}
-                            className="block w-full text-left px-4 py-2.5 border-none bg-transparent text-sm text-navy-900 cursor-pointer hover:bg-canvas-100"
-                          >
-                            {t('suppliers.list.viewDetails')}
-                          </button>
-                          <button role="menuitem" type="button"
-                            onClick={() => { navigate({ to: '/suppliers/$id/edit', params: { id: s.id } }); closeMenu(); }}
-                            className="block w-full text-left px-4 py-2.5 border-none bg-transparent text-sm text-navy-900 cursor-pointer hover:bg-canvas-100"
-                          >
-                            {t('suppliers.list.editAction')}
-                          </button>
-                          <div className="h-px bg-canvas-300 my-1" />
-                          <button role="menuitem" type="button"
-                            onClick={() => handleToggleSuspension(s)}
-                            className="block w-full text-left px-4 py-2.5 border-none bg-transparent text-sm text-navy-900 cursor-pointer hover:bg-canvas-100"
-                          >
-                            {isSuspended ? t('suppliers.list.activate') : t('suppliers.list.suspend')}
-                          </button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
+              {!loading && table.getRowModel().rows.map((row) => (
+                <tr key={row.id} className="bg-canvas-50 transition-colors hover:bg-canvas-100">
+                  {row.getVisibleCells().map((cell) => {
+                    const extras = [
+                      cell.column.id === 'companyName' ? 'font-medium' : '',
+                      cell.column.id === 'actions' ? 'text-center' : '',
+                    ].filter(Boolean).join(' ');
+                    return (
+                      <td key={cell.id} className={`${tdClass} ${extras}`}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

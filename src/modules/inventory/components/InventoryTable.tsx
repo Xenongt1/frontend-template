@@ -1,5 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import {
+  type ColumnDef,
+  type SortingState,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from '@tanstack/react-table';
 import type { InventoryItem } from '../types';
 import StatusBadge from './StatusBadge';
 import CategoryBadge from './CategoryBadge';
@@ -28,10 +36,10 @@ const DotsIcon = () => (
   </svg>
 );
 
-// Header cells per Figma: bg #E6EAEB, padding 16, height 56, Poppins 16/24 weight 500.
 const thClass = 'p-4 h-14 text-left font-poppins text-base font-medium leading-6 text-text-tertiary whitespace-nowrap bg-stroke-light border-b border-stroke-light select-none';
-// Body cells: padding 16, height 80, Inter 16/24 weight 400.
 const tdClass = 'p-4 h-20 align-middle border-b border-stroke-light font-inter text-base font-normal leading-6 text-text-primary';
+
+const MENU_WIDTH = 160;
 
 const InventoryTable: React.FC<Props> = ({
   items,
@@ -43,9 +51,8 @@ const InventoryTable: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  // Position-fixed coords for the open menu, computed from the button so the
-  // menu escapes the table's overflow-clipping ancestors.
   const [menuPos, setMenuPos] = useState<{ top: number; left: number } | null>(null);
+  const [sorting, setSorting] = useState<SortingState>([]);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,8 +66,6 @@ const InventoryTable: React.FC<Props> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Close on scroll/resize — fixed-positioned menu would otherwise drift away
-  // from its anchor button.
   useEffect(() => {
     if (openMenuId === null) return;
     const close = () => { setOpenMenuId(null); setMenuPos(null); };
@@ -72,7 +77,6 @@ const InventoryTable: React.FC<Props> = ({
     };
   }, [openMenuId]);
 
-  const MENU_WIDTH = 160;
   const openMenuFor = (itemId: string, btn: HTMLButtonElement) => {
     const rect = btn.getBoundingClientRect();
     setMenuPos({
@@ -126,6 +130,134 @@ const InventoryTable: React.FC<Props> = ({
     );
   };
 
+  const columns = useMemo<ColumnDef<InventoryItem>[]>(() => [
+    {
+      id: 'sku',
+      accessorFn: (i) => i.sku,
+      enableSorting: true,
+      sortingFn: 'alphanumeric',
+      header: () => t('table.columns.sku'),
+      cell: ({ row }) => row.original.sku,
+    },
+    {
+      id: 'name',
+      accessorFn: (i) => i.displayName,
+      enableSorting: true,
+      sortingFn: 'alphanumeric',
+      header: () => t('table.columns.name'),
+      cell: ({ row }) => row.original.displayName,
+    },
+    {
+      id: 'category',
+      enableSorting: false,
+      header: () => t('table.columns.category'),
+      cell: ({ row }) => <CategoryBadge category={row.original.category} />,
+    },
+    {
+      id: 'unit',
+      accessorFn: (i) => i.uomLabel,
+      enableSorting: true,
+      sortingFn: 'alphanumeric',
+      header: () => t('table.columns.unit'),
+      cell: ({ row }) => row.original.uomLabel,
+    },
+    {
+      id: 'status',
+      accessorFn: (i) => i.status,
+      enableSorting: true,
+      header: () => t('table.columns.status'),
+      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+    },
+    {
+      id: 'actions',
+      enableSorting: false,
+      header: () => t('table.columns.actions'),
+      cell: ({ row }) => {
+        const item = row.original;
+        return (
+          <>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (openMenuId === item.id) {
+                  setOpenMenuId(null);
+                  setMenuPos(null);
+                } else {
+                  openMenuFor(item.id, e.currentTarget);
+                }
+              }}
+              className="inline-flex items-center justify-center w-8 h-8 border-none bg-transparent rounded-md cursor-pointer text-navy-600 transition-colors hover:bg-canvas-300"
+              aria-label={t('table.rowActions.open')}
+            >
+              <DotsIcon />
+            </button>
+            {renderActionMenu(item)}
+          </>
+        );
+      },
+    },
+  ], [t, openMenuId, menuPos, onView, onEdit, onToggleSuspension]);
+
+  const table = useReactTable({
+    data: items,
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getRowId: (row) => row.id,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
+
+  const headerLayout: Record<string, { width: string; hideMobile?: boolean; align?: 'center' }> = {
+    sku: { width: 'min-w-[110px]' },
+    name: { width: 'min-w-[200px]' },
+    category: { width: 'min-w-[160px]', hideMobile: true },
+    unit: { width: 'min-w-[140px]', hideMobile: true },
+    status: { width: 'min-w-[160px]' },
+    actions: { width: 'w-20', align: 'center' },
+  };
+
+  const renderBody = () => {
+    if (loading) return <InventoryTableSkeleton rowCount={skeletonRowCount} />;
+    const rows = table.getRowModel().rows;
+    if (rows.length === 0) {
+      return (
+        <tr>
+          <td colSpan={columns.length} className="px-4 py-12 text-center text-navy-500 border-b border-canvas-300 text-sm align-middle">
+            <div className="flex flex-col items-center gap-2">
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <rect width="40" height="40" rx="8" fill="#F0F0F0" />
+                <path d="M12 20h16M20 12v16" stroke="#B2BCC2" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <span>{t('table.empty')}</span>
+            </div>
+          </td>
+        </tr>
+      );
+    }
+    return rows.map((row) => (
+      <tr
+        key={row.id}
+        onClick={() => onView(row.original)}
+        className="bg-canvas-50 transition-colors cursor-pointer hover:bg-canvas-100"
+      >
+        {row.getVisibleCells().map((cell) => {
+          const layout = headerLayout[cell.column.id];
+          const extras = [
+            layout?.hideMobile ? 'hide-on-mobile' : '',
+            layout?.align === 'center' ? 'text-center relative' : '',
+            cell.column.id === 'unit' ? 'text-navy-600' : '',
+          ].filter(Boolean).join(' ');
+          return (
+            <td key={cell.id} className={`${tdClass} ${extras}`}>
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </td>
+          );
+        })}
+      </tr>
+    ));
+  };
+
   return (
     <div
       className="overflow-x-auto w-full"
@@ -133,82 +265,40 @@ const InventoryTable: React.FC<Props> = ({
       aria-busy={loading}
       aria-live="polite"
     >
-      {loading && (
-        <span className="sr-only">{t('table.loading')}</span>
-      )}
-
+      {loading && <span className="sr-only">{t('table.loading')}</span>}
       <table className="w-full border-collapse min-w-[600px]">
         <thead>
-          <tr>
-            <th className={`${thClass} min-w-[110px]`}>
-              <span className="inline-flex items-center gap-1"> {t('table.columns.sku')} <SortIcon /></span>
-            </th>
-            <th className={`${thClass} min-w-[200px]`}>
-              <span className="inline-flex items-center gap-1"> {t('table.columns.name')} <SortIcon /></span>
-            </th>
-            <th className={`${thClass} min-w-[160px] hide-on-mobile`}>
-              {t('table.columns.category')}
-            </th>
-            <th className={`${thClass} min-w-[140px] hide-on-mobile`}>
-              <span className="inline-flex items-center gap-1"> {t('table.columns.unit')} <SortIcon /></span>
-            </th>
-            <th className={`${thClass} min-w-[160px]`}>
-              <span className="inline-flex items-center gap-1"> {t('table.columns.status')} <SortIcon /></span>
-            </th>
-            <th className={`${thClass} w-20 text-center`}>{t('table.columns.actions')}</th>
-          </tr>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => {
+                const canSort = header.column.getCanSort();
+                const layout = headerLayout[header.column.id];
+                const extras = [
+                  layout?.width ?? '',
+                  layout?.hideMobile ? 'hide-on-mobile' : '',
+                  layout?.align === 'center' ? 'text-center' : '',
+                ].filter(Boolean).join(' ');
+                return (
+                  <th key={header.id} className={`${thClass} ${extras}`}>
+                    {canSort ? (
+                      <button
+                        type="button"
+                        onClick={header.column.getToggleSortingHandler()}
+                        className="inline-flex items-center gap-1 bg-transparent border-0 p-0 cursor-pointer font-poppins text-base font-medium leading-6 text-text-tertiary"
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        <SortIcon />
+                      </button>
+                    ) : (
+                      flexRender(header.column.columnDef.header, header.getContext())
+                    )}
+                  </th>
+                );
+              })}
+            </tr>
+          ))}
         </thead>
-
-        <tbody>
-          {(() => {
-            if (loading) return <InventoryTableSkeleton rowCount={skeletonRowCount} />;
-            if (items.length === 0) return (
-              <tr>
-                <td colSpan={6} className="px-4 py-12 text-center text-navy-500 border-b border-canvas-300 text-sm align-middle">
-                  <div className="flex flex-col items-center gap-2">
-                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                      <rect width="40" height="40" rx="8" fill="#F0F0F0" />
-                      <path d="M12 20h16M20 12v16" stroke="#B2BCC2" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                    <span>{t('table.empty')}</span>
-                  </div>
-                </td>
-              </tr>
-            );
-            return items.map((item) => (
-              <tr
-                key={item.id}
-                onClick={() => onView(item)}
-                className="bg-canvas-50 transition-colors cursor-pointer hover:bg-canvas-100"
-              >
-                <td className={tdClass}>{item.sku}</td>
-                <td className={tdClass}>{item.displayName}</td>
-                <td className={`${tdClass} hide-on-mobile`}><CategoryBadge category={item.category} /></td>
-                <td className={`${tdClass} text-navy-600 hide-on-mobile`}>{item.uomLabel}</td>
-                <td className={tdClass}><StatusBadge status={item.status} /></td>
-                <td className={`${tdClass} text-center relative`}>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (openMenuId === item.id) {
-                        setOpenMenuId(null);
-                        setMenuPos(null);
-                      } else {
-                        openMenuFor(item.id, e.currentTarget);
-                      }
-                    }}
-                    className="inline-flex items-center justify-center w-8 h-8 border-none bg-transparent rounded-md cursor-pointer text-navy-600 transition-colors hover:bg-canvas-300"
-                    aria-label={t('table.rowActions.open')}
-                  >
-                    <DotsIcon />
-                  </button>
-
-                  {renderActionMenu(item)}
-                </td>
-              </tr>
-            ));
-          })()}
-        </tbody>
+        <tbody>{renderBody()}</tbody>
       </table>
     </div>
   );
